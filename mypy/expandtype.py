@@ -20,14 +20,14 @@ def expand_type(typ: Type, env: Mapping[TypeVarId, Type]) -> Type:
 def expand_type_by_instance(typ: Type, instance: Instance) -> Type:
     """Substitute type variables in type using values from an Instance.
     Type variables are considered to be bound by the class declaration."""
-    # TODO: use an overloaded signature? (ProperType stays proper after expansion.)
     if not instance.args:
         return typ
-    else:
-        variables: Dict[TypeVarId, Type] = {}
-        for binder, arg in zip(instance.type.defn.type_vars, instance.args):
-            variables[binder.id] = arg
-        return expand_type(typ, variables)
+    variables: Dict[TypeVarId, Type] = {
+        binder.id: arg
+        for binder, arg in zip(instance.type.defn.type_vars, instance.args)
+    }
+
+    return expand_type(typ, variables)
 
 
 F = TypeVar('F', bound=FunctionLike)
@@ -91,13 +91,12 @@ class ExpandTypeVisitor(TypeVisitor[Type]):
 
     def visit_type_var(self, t: TypeVarType) -> Type:
         repl = get_proper_type(self.variables.get(t.id, t))
-        if isinstance(repl, Instance):
-            inst = repl
-            # Return copy of instance with type erasure flag on.
-            return Instance(inst.type, inst.args, line=inst.line,
-                            column=inst.column, erased=True)
-        else:
+        if not isinstance(repl, Instance):
             return repl
+        inst = repl
+        # Return copy of instance with type erasure flag on.
+        return Instance(inst.type, inst.args, line=inst.line,
+                        column=inst.column, erased=True)
 
     def visit_param_spec(self, t: ParamSpecType) -> Type:
         repl = get_proper_type(self.variables.get(t.id, t))
@@ -176,7 +175,4 @@ class ExpandTypeVisitor(TypeVisitor[Type]):
         return t.copy_modified(args=self.expand_types(t.args))
 
     def expand_types(self, types: Iterable[Type]) -> List[Type]:
-        a: List[Type] = []
-        for t in types:
-            a.append(t.accept(self))
-        return a
+        return [t.accept(self) for t in types]

@@ -303,17 +303,17 @@ class MessageBuilder:
         else:
             # The non-special case: a missing ordinary attribute.
             extra = ''
-            if member == '__iter__':
-                extra = ' (not iterable)'
-            elif member == '__aiter__':
+            if member == '__aiter__':
                 extra = ' (not async iterable)'
+            elif member == '__iter__':
+                extra = ' (not iterable)'
             if not self.disable_type_names_count:
                 failed = False
                 if isinstance(original_type, Instance) and original_type.type.names:
                     alternatives = set(original_type.type.names.keys())
 
                     if module_symbol_table is not None:
-                        alternatives |= {key for key in module_symbol_table.keys()}
+                        alternatives |= set(module_symbol_table.keys())
 
                     # in some situations, the member is in the alternatives set
                     # but since we're in this function, we shouldn't suggest it
@@ -378,11 +378,7 @@ class MessageBuilder:
         Types can be Type objects or strings.
         """
         left_str = ''
-        if isinstance(left_type, str):
-            left_str = left_type
-        else:
-            left_str = format_type(left_type)
-
+        left_str = left_type if isinstance(left_type, str) else format_type(left_type)
         right_str = ''
         if isinstance(right_type, str):
             right_str = right_type

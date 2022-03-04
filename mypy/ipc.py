@@ -51,8 +51,8 @@ class IPCBase:
     def read(self, size: int = 100000) -> bytes:
         """Read bytes from an IPC connection until its empty."""
         bdata = bytearray()
-        if sys.platform == 'win32':
-            while True:
+        while True:
+            if sys.platform == 'win32':
                 ov, err = _winapi.ReadFile(self.connection, size, overlapped=True)
                 try:
                     if err == _winapi.ERROR_IO_PENDING:
@@ -64,8 +64,7 @@ class IPCBase:
                     ov.cancel()
                     raise
                 _, err = ov.GetOverlappedResult(True)
-                more = ov.getbuffer()
-                if more:
+                if more := ov.getbuffer():
                     bdata.extend(more)
                 if err == 0:
                     # we are done!
@@ -75,8 +74,7 @@ class IPCBase:
                     continue
                 elif err == _winapi.ERROR_OPERATION_ABORTED:
                     raise IPCException("ReadFile operation aborted.")
-        else:
-            while True:
+            else:
                 more = self.connection.recv(size)
                 if not more:
                     break
@@ -262,7 +260,4 @@ class IPCServer(IPCBase):
 
     @property
     def connection_name(self) -> str:
-        if sys.platform == 'win32':
-            return self.name
-        else:
-            return self.sock.getsockname()
+        return self.name if sys.platform == 'win32' else self.sock.getsockname()

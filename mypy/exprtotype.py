@@ -54,35 +54,29 @@ def expr_to_unanalyzed_type(expr: Expression,
         else:
             return UnboundType(name, line=expr.line, column=expr.column)
     elif isinstance(expr, MemberExpr):
-        fullname = get_member_expr_fullname(expr)
-        if fullname:
+        if fullname := get_member_expr_fullname(expr):
             return UnboundType(fullname, line=expr.line, column=expr.column)
         else:
             raise TypeTranslationError()
     elif isinstance(expr, IndexExpr):
         base = expr_to_unanalyzed_type(expr.base, options, allow_new_syntax, expr)
-        if isinstance(base, UnboundType):
-            if base.args:
-                raise TypeTranslationError()
-            if isinstance(expr.index, TupleExpr):
-                args = expr.index.items
-            else:
-                args = [expr.index]
-
-            if isinstance(expr.base, RefExpr) and expr.base.fullname in ANNOTATED_TYPE_NAMES:
-                # TODO: this is not the optimal solution as we are basically getting rid
-                # of the Annotation definition and only returning the type information,
-                # losing all the annotations.
-
-                return expr_to_unanalyzed_type(args[0], options, allow_new_syntax, expr)
-            else:
-                base.args = tuple(expr_to_unanalyzed_type(arg, options, allow_new_syntax, expr)
-                                  for arg in args)
-            if not base.args:
-                base.empty_tuple_index = True
-            return base
-        else:
+        if not isinstance(base, UnboundType):
             raise TypeTranslationError()
+        if base.args:
+            raise TypeTranslationError()
+        args = expr.index.items if isinstance(expr.index, TupleExpr) else [expr.index]
+        if isinstance(expr.base, RefExpr) and expr.base.fullname in ANNOTATED_TYPE_NAMES:
+            # TODO: this is not the optimal solution as we are basically getting rid
+            # of the Annotation definition and only returning the type information,
+            # losing all the annotations.
+
+            return expr_to_unanalyzed_type(args[0], options, allow_new_syntax, expr)
+        else:
+            base.args = tuple(expr_to_unanalyzed_type(arg, options, allow_new_syntax, expr)
+                              for arg in args)
+        if not base.args:
+            base.empty_tuple_index = True
+        return base
     elif (isinstance(expr, OpExpr)
           and expr.op == '|'
           and ((options and options.python_version >= (3, 10)) or allow_new_syntax)):
@@ -110,20 +104,21 @@ def expr_to_unanalyzed_type(expr: Expression,
         typ: Type = default_type
         for i, arg in enumerate(expr.args):
             if expr.arg_names[i] is not None:
-                if expr.arg_names[i] == "name":
-                    if name is not None:
-                        # Two names
-                        raise TypeTranslationError()
-                    name = _extract_argument_name(arg)
-                    continue
-                elif expr.arg_names[i] == "type":
-                    if typ is not default_type:
-                        # Two types
-                        raise TypeTranslationError()
-                    typ = expr_to_unanalyzed_type(arg, options, allow_new_syntax, expr)
-                    continue
-                else:
+                if (
+                    expr.arg_names[i] != "name"
+                    and expr.arg_names[i] == "type"
+                    and typ is not typ
+                    or expr.arg_names[i] not in ["name", "type"]
+                ):
+                    # Two types
                     raise TypeTranslationError()
+                elif expr.arg_names[i] != "name":
+                    typ = expr_to_unanalyzed_type(arg, options, allow_new_syntax, expr)
+                elif name is not None:
+                    # Two names
+                    raise TypeTranslationError()
+                else:
+                    name = _extract_argument_name(arg)
             elif i == 0:
                 typ = expr_to_unanalyzed_type(arg, options, allow_new_syntax, expr)
             elif i == 1:
@@ -146,10 +141,13 @@ def expr_to_unanalyzed_type(expr: Expression,
                                  assume_str_is_unicode=True)
     elif isinstance(expr, UnaryExpr):
         typ = expr_to_unanalyzed_type(expr.expr, options, allow_new_syntax)
-        if isinstance(typ, RawExpressionType):
-            if isinstance(typ.literal_value, int) and expr.op == '-':
-                typ.literal_value *= -1
-                return typ
+        if (
+            isinstance(typ, RawExpressionType)
+            and isinstance(typ.literal_value, int)
+            and expr.op == '-'
+        ):
+            typ.literal_value *= -1
+            return typ
         raise TypeTranslationError()
     elif isinstance(expr, IntExpr):
         return RawExpressionType(expr.value, 'builtins.int', line=expr.line, column=expr.column)

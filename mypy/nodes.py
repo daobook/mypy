@@ -303,11 +303,7 @@ class MypyFile(SymbolNode):
         self.is_bom = is_bom
         self.alias_deps = defaultdict(set)
         self.plugin_deps = {}
-        if ignored_lines:
-            self.ignored_lines = ignored_lines
-        else:
-            self.ignored_lines = {}
-
+        self.ignored_lines = ignored_lines or {}
         self.path = ''
         self.is_stub = False
         self.is_cache_skeleton = False
@@ -556,7 +552,7 @@ class OverloadedFuncDef(FuncBase, SymbolNode, Statement):
         self.items = items
         self.unanalyzed_items = items.copy()
         self.impl = None
-        if len(items) > 0:
+        if items:
             self.set_line(items[0].line, items[0].column)
         self.is_final = False
 
@@ -564,10 +560,9 @@ class OverloadedFuncDef(FuncBase, SymbolNode, Statement):
     def name(self) -> str:
         if self.items:
             return self.items[0].name
-        else:
-            # This may happen for malformed overload
-            assert self.impl is not None
-            return self.impl.name
+        # This may happen for malformed overload
+        assert self.impl is not None
+        return self.impl.name
 
     def accept(self, visitor: StatementVisitor[T]) -> T:
         return visitor.visit_overloaded_func_def(self)
@@ -1698,13 +1693,13 @@ class ArgKind(Enum):
         )
 
     def is_required(self) -> bool:
-        return self == ARG_POS or self == ARG_NAMED
+        return self in [ARG_POS, ARG_NAMED]
 
     def is_optional(self) -> bool:
-        return self == ARG_OPT or self == ARG_NAMED_OPT
+        return self in [ARG_OPT, ARG_NAMED_OPT]
 
     def is_star(self) -> bool:
-        return self == ARG_STAR or self == ARG_STAR2
+        return self in [ARG_STAR, ARG_STAR2]
 
 
 ARG_POS: Final = ArgKind.ARG_POS
@@ -2681,16 +2676,12 @@ class TypeInfo(SymbolNode):
 
     def get(self, name: str) -> 'Optional[SymbolTableNode]':
         for cls in self.mro:
-            n = cls.names.get(name)
-            if n:
+            if n := cls.names.get(name):
                 return n
         return None
 
     def get_containing_type_info(self, name: str) -> 'Optional[TypeInfo]':
-        for cls in self.mro:
-            if name in cls.names:
-                return cls
-        return None
+        return next((cls for cls in self.mro if name in cls.names), None)
 
     @property
     def protocol_members(self) -> List[str]:
@@ -2705,8 +2696,7 @@ class TypeInfo(SymbolNode):
         return sorted(list(members))
 
     def __getitem__(self, name: str) -> 'SymbolTableNode':
-        n = self.get(name)
-        if n:
+        if n := self.get(name):
             return n
         else:
             raise KeyError(name)
@@ -2727,12 +2717,7 @@ class TypeInfo(SymbolNode):
         for cls in self.mro:
             if name in cls.names:
                 node = cls.names[name].node
-                if isinstance(node, FuncBase):
-                    return node
-                elif isinstance(node, Decorator):  # Two `if`s make `mypyc` happy
-                    return node
-                else:
-                    return None
+                return node if isinstance(node, (FuncBase, Decorator)) else None
         return None
 
     def calculate_metaclass_type(self) -> 'Optional[mypy.types.Instance]':
@@ -2745,10 +2730,14 @@ class TypeInfo(SymbolNode):
                       for s in self.mro
                       if s.declared_metaclass is not None
                       and s.declared_metaclass.type is not None]
-        for c in candidates:
-            if all(other.type in c.type.mro for other in candidates):
-                return c
-        return None
+        return next(
+            (
+                c
+                for c in candidates
+                if all(other.type in c.type.mro for other in candidates)
+            ),
+            None,
+        )
 
     def is_metaclass(self) -> bool:
         return (self.has_base('builtins.type') or self.fullname == 'abc.ABCMeta' or
@@ -2759,10 +2748,7 @@ class TypeInfo(SymbolNode):
 
         This can be either via extension or via implementation.
         """
-        for cls in self.mro:
-            if cls.fullname == fullname:
-                return True
-        return False
+        return any(cls.fullname == fullname for cls in self.mro)
 
     def direct_base_classes(self) -> 'List[TypeInfo]':
         """Return a direct base classes.
@@ -2787,9 +2773,7 @@ class TypeInfo(SymbolNode):
         base: str = ""
 
         def type_str(typ: 'mypy.types.Type') -> str:
-            if type_str_conv:
-                return typ.accept(type_str_conv)
-            return str(typ)
+            return typ.accept(type_str_conv) if type_str_conv else str(typ)
 
         head = 'TypeInfo' + str_conv.format_id(self)
         if self.bases:
@@ -2820,28 +2804,36 @@ class TypeInfo(SymbolNode):
             str_conv=str_conv)
 
     def serialize(self) -> JsonDict:
-        # NOTE: This is where all ClassDefs originate, so there shouldn't be duplicates.
-        data = {'.class': 'TypeInfo',
-                'module_name': self.module_name,
-                'fullname': self.fullname,
-                'names': self.names.serialize(self.fullname),
-                'defn': self.defn.serialize(),
-                'abstract_attributes': self.abstract_attributes,
-                'type_vars': self.type_vars,
-                'bases': [b.serialize() for b in self.bases],
-                'mro': [c.fullname for c in self.mro],
-                '_promote': None if self._promote is None else self._promote.serialize(),
-                'declared_metaclass': (None if self.declared_metaclass is None
-                                       else self.declared_metaclass.serialize()),
-                'metaclass_type':
-                    None if self.metaclass_type is None else self.metaclass_type.serialize(),
-                'tuple_type': None if self.tuple_type is None else self.tuple_type.serialize(),
-                'typeddict_type':
-                    None if self.typeddict_type is None else self.typeddict_type.serialize(),
-                'flags': get_flags(self, TypeInfo.FLAGS),
-                'metadata': self.metadata,
-                }
-        return data
+        return {
+            '.class': 'TypeInfo',
+            'module_name': self.module_name,
+            'fullname': self.fullname,
+            'names': self.names.serialize(self.fullname),
+            'defn': self.defn.serialize(),
+            'abstract_attributes': self.abstract_attributes,
+            'type_vars': self.type_vars,
+            'bases': [b.serialize() for b in self.bases],
+            'mro': [c.fullname for c in self.mro],
+            '_promote': None
+            if self._promote is None
+            else self._promote.serialize(),
+            'declared_metaclass': (
+                None
+                if self.declared_metaclass is None
+                else self.declared_metaclass.serialize()
+            ),
+            'metaclass_type': None
+            if self.metaclass_type is None
+            else self.metaclass_type.serialize(),
+            'tuple_type': None
+            if self.tuple_type is None
+            else self.tuple_type.serialize(),
+            'typeddict_type': None
+            if self.typeddict_type is None
+            else self.typeddict_type.serialize(),
+            'flags': get_flags(self, TypeInfo.FLAGS),
+            'metadata': self.metadata,
+        }
 
     @classmethod
     def deserialize(cls, data: JsonDict) -> 'TypeInfo':
@@ -3039,7 +3031,7 @@ class TypeAlias(SymbolNode):
         return self._fullname
 
     def serialize(self) -> JsonDict:
-        data: JsonDict = {
+        return {
             ".class": "TypeAlias",
             "fullname": self._fullname,
             "target": self.target.serialize(),
@@ -3049,7 +3041,6 @@ class TypeAlias(SymbolNode):
             "line": self.line,
             "column": self.column,
         }
-        return data
 
     def accept(self, visitor: NodeVisitor[T]) -> T:
         return visitor.visit_type_alias(self)
@@ -3231,10 +3222,7 @@ class SymbolTableNode:
 
     @property
     def fullname(self) -> Optional[str]:
-        if self.node is not None:
-            return self.node.fullname
-        else:
-            return None
+        return self.node.fullname if self.node is not None else None
 
     @property
     def type(self) -> 'Optional[mypy.types.Type]':
@@ -3289,10 +3277,15 @@ class SymbolTableNode:
             assert self.node is not None, '%s:%s' % (prefix, name)
             if prefix is not None:
                 fullname = self.node.fullname
-                if (fullname is not None and '.' in fullname
-                        and fullname != prefix + '.' + name
-                        and not (isinstance(self.node, Var)
-                                 and self.node.from_module_getattr)):
+                if (
+                    fullname is not None
+                    and '.' in fullname
+                    and fullname != f'{prefix}.{name}'
+                    and not (
+                        isinstance(self.node, Var)
+                        and self.node.from_module_getattr
+                    )
+                ):
                     assert not isinstance(self.node, PlaceholderNode), (
                         'Definition of {} is unexpectedly incomplete'.format(fullname)
                     )
@@ -3340,7 +3333,7 @@ class SymbolTable(Dict[str, SymbolTableNode]):
                 if (value.fullname != 'builtins' and
                         (value.fullname or '').split('.')[-1] not in
                         implicit_module_attrs):
-                    a.append('  ' + str(key) + ' : ' + str(value))
+                    a.append(f'  {str(key)} : {str(value)}')
             else:
                 a.append('  <invalid item>')
         a = sorted(a)
@@ -3430,7 +3423,7 @@ def check_arg_kinds(
                 fail("Var args may not appear after named or var args", node)
                 break
             is_var_arg = True
-        elif kind == ARG_NAMED or kind == ARG_NAMED_OPT:
+        elif kind in [ARG_NAMED, ARG_NAMED_OPT]:
             seen_named = True
             if is_kw_arg:
                 fail("A **kwargs argument must be the last argument", node)
@@ -3454,9 +3447,7 @@ def check_arg_names(names: Sequence[Optional[str]], nodes: List[T], fail: Callab
 
 def is_class_var(expr: NameExpr) -> bool:
     """Return whether the expression is ClassVar[...]"""
-    if isinstance(expr.node, Var):
-        return expr.node.is_classvar
-    return False
+    return expr.node.is_classvar if isinstance(expr.node, Var) else False
 
 
 def is_final_node(node: Optional[SymbolNode]) -> bool:
@@ -3477,7 +3468,7 @@ def local_definitions(names: SymbolTable,
         if '-redef' in name:
             # Restore original name from mangled name of multiply defined function
             shortname = name.split('-redef')[0]
-        fullname = name_prefix + '.' + shortname
+        fullname = f'{name_prefix}.{shortname}'
         node = symnode.node
         if node and node.fullname == fullname:
             yield fullname, symnode, info

@@ -45,7 +45,7 @@ def download_asset(asset: Dict[str, Any], dst: Path) -> Path:
 
 
 def download_all_release_assets(release: Dict[str, Any], dst: Path) -> None:
-    print(f"Downloading assets...")
+    print("Downloading assets...")
     with ThreadPoolExecutor() as e:
         for asset in e.map(lambda asset: download_asset(asset, dst), release["assets"]):
             print(f"Downloaded {asset}")
@@ -103,9 +103,7 @@ def upload_to_pypi(version: str, dry_run: bool = True) -> None:
     assert re.match(r"v?0\.[0-9]{3}(\+\S+)?$", version)
     if "dev" in version:
         assert dry_run, "Must use --dry-run with dev versions of mypy"
-    if version.startswith("v"):
-        version = version[1:]
-
+    version = version.removeprefix("v")
     target_dir = tempfile.mkdtemp()
     dist = Path(target_dir) / "dist"
     dist.mkdir()

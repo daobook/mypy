@@ -130,10 +130,14 @@ class ConditionalTypeBinder:
     def _get(self, key: Key, index: int = -1) -> Optional[Type]:
         if index < 0:
             index += len(self.frames)
-        for i in range(index, -1, -1):
-            if key in self.frames[i].types:
-                return self.frames[i].types[key]
-        return None
+        return next(
+            (
+                self.frames[i].types[key]
+                for i in range(index, -1, -1)
+                if key in self.frames[i].types
+            ),
+            None,
+        )
 
     def put(self, expr: Expression, typ: Type) -> None:
         if not isinstance(expr, (IndexExpr, MemberExpr, AssignmentExpr, NameExpr)):
@@ -189,7 +193,7 @@ class ConditionalTypeBinder:
 
         frames = [f for f in frames if not f.unreachable]
         changed = False
-        keys = set(key for f in frames for key in f.types)
+        keys = {key for f in frames for key in f.types}
 
         for key in keys:
             current_value = self._get(key)

@@ -140,9 +140,7 @@ class FindModuleCache:
         self.results: Dict[str, ModuleSearchResult] = {}
         self.ns_ancestors: Dict[str, str] = {}
         self.options = options
-        custom_typeshed_dir = None
-        if options:
-            custom_typeshed_dir = options.custom_typeshed_dir
+        custom_typeshed_dir = options.custom_typeshed_dir if options else None
         self.stdlib_py_versions = (
             stdlib_py_versions or load_stdlib_py_versions(custom_typeshed_dir)
         )
@@ -242,11 +240,16 @@ class FindModuleCache:
             elif not plausible_match and (self.fscache.isdir(dir_path)
                                           or self.fscache.isfile(dir_path + ".py")):
                 plausible_match = True
-        if is_legacy_bundled_package(components[0], self.python_major_ver):
-            if (len(components) == 1
-                    or (self.find_module(components[0]) is
-                        ModuleNotFoundReason.APPROVED_STUBS_NOT_INSTALLED)):
-                return ModuleNotFoundReason.APPROVED_STUBS_NOT_INSTALLED
+        if is_legacy_bundled_package(components[0], self.python_major_ver) and (
+            (
+                len(components) == 1
+                or (
+                    self.find_module(components[0])
+                    is ModuleNotFoundReason.APPROVED_STUBS_NOT_INSTALLED
+                )
+            )
+        ):
+            return ModuleNotFoundReason.APPROVED_STUBS_NOT_INSTALLED
         if is_legacy_bundled_package('.'.join(components[:2]), self.python_major_ver):
             return ModuleNotFoundReason.APPROVED_STUBS_NOT_INSTALLED
         if plausible_match:
@@ -299,10 +302,10 @@ class FindModuleCache:
         need_installed_stubs = False
         # Third-party stub/typed packages
         for pkg_dir in self.search_paths.package_path:
-            stub_name = components[0] + '-stubs'
+            stub_name = f'{components[0]}-stubs'
             stub_dir = os.path.join(pkg_dir, stub_name)
             if self.python_major_ver == 2:
-                alt_stub_name = components[0] + '-python2-stubs'
+                alt_stub_name = f'{components[0]}-python2-stubs'
                 alt_stub_dir = os.path.join(pkg_dir, alt_stub_name)
                 if fscache.isdir(alt_stub_dir):
                     stub_name = alt_stub_name
@@ -357,7 +360,7 @@ class FindModuleCache:
         # elements of lib_path.  This is probably much shorter than lib_path itself.
         # Now just look for 'baz.pyi', 'baz/__init__.py', etc., inside those directories.
         seplast = os.sep + components[-1]  # so e.g. '/baz'
-        sepinit = os.sep + '__init__'
+        sepinit = f'{os.sep}__init__'
         near_misses = []  # Collect near misses for namespace mode (see below).
         for base_dir, verify in candidate_base_dirs:
             base_path = base_dir + seplast  # so e.g. '/usr/lib/python3.4/foo/bar/baz'
@@ -369,9 +372,10 @@ class FindModuleCache:
             for extension in PYTHON_EXTENSIONS:
                 path = base_path + sepinit + extension
                 suffix = '-stubs'
-                if self.python_major_ver == 2:
-                    if os.path.isdir(base_path + '-python2-stubs'):
-                        suffix = '-python2-stubs'
+                if self.python_major_ver == 2 and os.path.isdir(
+                    f'{base_path}-python2-stubs'
+                ):
+                    suffix = '-python2-stubs'
                 path_stubs = base_path + suffix + sepinit + extension
                 if fscache.isfile_case(path, dir_prefix):
                     has_init = True
@@ -386,9 +390,13 @@ class FindModuleCache:
                     return path_stubs
 
             # In namespace mode, register a potential namespace package
-            if self.options and self.options.namespace_packages:
-                if fscache.exists_case(base_path, dir_prefix) and not has_init:
-                    near_misses.append((base_path, dir_prefix))
+            if (
+                self.options
+                and self.options.namespace_packages
+                and fscache.exists_case(base_path, dir_prefix)
+                and not has_init
+            ):
+                near_misses.append((base_path, dir_prefix))
 
             # No package, look for module.
             for extension in PYTHON_EXTENSIONS:
@@ -498,7 +506,7 @@ class FindModuleCache:
                     or self.fscache.isfile(os.path.join(subpath, "__init__.pyi"))
                 ):
                     seen.add(name)
-                    sources.extend(self.find_modules_recursive(module + '.' + name))
+                    sources.extend(self.find_modules_recursive(f'{module}.{name}'))
             else:
                 stem, suffix = os.path.splitext(name)
                 if stem == '__init__':
@@ -507,7 +515,7 @@ class FindModuleCache:
                     # (If we sorted names by keyfunc) we could probably just make the BuildSource
                     # ourselves, but this ensures compatibility with find_module / the cache
                     seen.add(stem)
-                    sources.extend(self.find_modules_recursive(module + '.' + stem))
+                    sources.extend(self.find_modules_recursive(f'{module}.{stem}'))
         return sources
 
 
@@ -533,7 +541,7 @@ def verify_module(fscache: FileSystemCache, id: str, path: str, prefix: str) -> 
     """Check that all packages containing id have a __init__ file."""
     if path.endswith(('__init__.py', '__init__.pyi')):
         path = os.path.dirname(path)
-    for i in range(id.count('.')):
+    for _ in range(id.count('.')):
         path = os.path.dirname(path)
         if not any(fscache.isfile_case(os.path.join(path, '__init__{}'.format(extension)),
                                        prefix)
@@ -587,12 +595,7 @@ def default_lib_path(data_dir: str,
         # Python 2 variants of certain stdlib modules are in a separate directory.
         python2_dir = os.path.join(typeshed_dir, PYTHON2_STUB_DIR)
         path.append(python2_dir)
-    path.append(typeshed_dir)
-
-    # Get mypy-extensions stubs from typeshed, since we treat it as an
-    # "internal" library, similar to typing and typing-extensions.
-    path.append(mypy_extensions_dir)
-
+    path.extend((typeshed_dir, mypy_extensions_dir))
     # Add fallback path that can be used if we have a broken installation.
     if sys.platform != 'win32':
         path.append('/usr/local/lib/mypy')
@@ -705,9 +708,7 @@ def add_py2_mypypath_entries(mypypath: List[str]) -> List[str]:
             # @python2 takes precedence, but we also look into the parent
             # directory.
             result.append(python2_dir)
-            result.append(item)
-        else:
-            result.append(item)
+        result.append(item)
     return result
 
 
@@ -755,10 +756,7 @@ def compute_search_paths(sources: List[BuildSource],
         # to the lib_path
         # TODO: Don't do this in some cases; for motivation see see
         # https://github.com/python/mypy/issues/4195#issuecomment-341915031
-        if options.bazel:
-            dir = '.'
-        else:
-            dir = os.getcwd()
+        dir = '.' if options.bazel else os.getcwd()
         if dir not in lib_path:
             python_path.insert(0, dir)
 

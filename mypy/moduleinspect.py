@@ -64,10 +64,13 @@ def get_package_properties(package_id: str) -> ModuleProperties:
         if is_c:
             # This is a C extension module, now get the list of all sub-packages
             # using the inspect module
-            subpackages = [package.__name__ + "." + name
-                           for name, val in inspect.getmembers(package)
-                           if inspect.ismodule(val)
-                           and val.__name__ == package.__name__ + "." + name]
+            subpackages = [
+                f'{package.__name__}.{name}'
+                for name, val in inspect.getmembers(package)
+                if inspect.ismodule(val)
+                and val.__name__ == f'{package.__name__}.{name}'
+            ]
+
         else:
             # It's a module inside a package.  There's nothing else to walk/yield.
             subpackages = []

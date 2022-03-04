@@ -186,7 +186,7 @@ class ASTConverter:
         typeobj = type(node)
         visitor = self.visitor_cache.get(typeobj)
         if visitor is None:
-            method = 'visit_' + node.__class__.__name__
+            method = f'visit_{node.__class__.__name__}'
             visitor = getattr(self, method)
             self.visitor_cache[typeobj] = visitor
         return visitor(node)
@@ -233,16 +233,15 @@ class ASTConverter:
                                type_comment: Optional[str]) -> Optional[ProperType]:
         if type_comment is None:
             return None
-        else:
-            lineno = n.lineno
-            extra_ignore, typ = parse_type_comment(type_comment,
-                                                   lineno,
-                                                   n.col_offset,
-                                                   self.errors,
-                                                   assume_str_is_unicode=self.unicode_literals)
-            if extra_ignore is not None:
-                self.type_ignores[lineno] = extra_ignore
-            return typ
+        lineno = n.lineno
+        extra_ignore, typ = parse_type_comment(type_comment,
+                                               lineno,
+                                               n.col_offset,
+                                               self.errors,
+                                               assume_str_is_unicode=self.unicode_literals)
+        if extra_ignore is not None:
+            self.type_ignores[lineno] = extra_ignore
+        return typ
 
     op_map: Final[Dict[typing.Type[AST], str]] = {
         ast27.Add: '+',
@@ -262,7 +261,7 @@ class ASTConverter:
     def from_operator(self, op: ast27.operator) -> str:
         op_name = ASTConverter.op_map.get(type(op))
         if op_name is None:
-            raise RuntimeError('Unknown operator ' + str(type(op)))
+            raise RuntimeError(f'Unknown operator {str(type(op))}')
         elif op_name == '@':
             raise RuntimeError('mypy does not support the MatMult operator')
         else:
@@ -284,7 +283,7 @@ class ASTConverter:
     def from_comp_operator(self, op: ast27.cmpop) -> str:
         op_name = ASTConverter.comp_op_map.get(type(op))
         if op_name is None:
-            raise RuntimeError('Unknown comparison operator ' + str(type(op)))
+            raise RuntimeError(f'Unknown comparison operator {str(type(op))}')
         else:
             return op_name
 
@@ -563,8 +562,7 @@ class ASTConverter:
             comment = type_comments[i]
             if comment is not None:
                 typ = converter.visit_raw_str(comment)
-                extra_ignore = TYPE_IGNORE_PATTERN.match(comment)
-                if extra_ignore:
+                if extra_ignore := TYPE_IGNORE_PATTERN.match(comment):
                     tag: Optional[str] = cast(Any, extra_ignore).group(1)
                     ignored = parse_type_ignore_tag(tag)
                     if ignored is None:
@@ -670,15 +668,14 @@ class ASTConverter:
         legacy_mode = False
         if n.type is None:
             e = None
+        elif n.inst is None:
+            e = self.visit(n.type)
         else:
-            if n.inst is None:
-                e = self.visit(n.type)
+            legacy_mode = True
+            if n.tback is None:
+                e = TupleExpr([self.visit(n.type), self.visit(n.inst)])
             else:
-                legacy_mode = True
-                if n.tback is None:
-                    e = TupleExpr([self.visit(n.type), self.visit(n.inst)])
-                else:
-                    e = TupleExpr([self.visit(n.type), self.visit(n.inst), self.visit(n.tback)])
+                e = TupleExpr([self.visit(n.type), self.visit(n.inst), self.visit(n.tback)])
 
         stmt = RaiseStmt(e, None)
         stmt.legacy_mode = legacy_mode
@@ -810,7 +807,7 @@ class ASTConverter:
         elif isinstance(n.op, ast27.Or):
             op = 'or'
         else:
-            raise RuntimeError('unknown BoolOp ' + str(type(n)))
+            raise RuntimeError(f'unknown BoolOp {str(type(n))}')
 
         # potentially inefficient!
         e = self.group(self.translate_expr_list(n.values), op)
@@ -827,7 +824,7 @@ class ASTConverter:
         op = self.from_operator(n.op)
 
         if op is None:
-            raise RuntimeError('cannot translate BinOp ' + str(type(n.op)))
+            raise RuntimeError(f'cannot translate BinOp {str(type(n.op))}')
 
         e = OpExpr(op, self.visit(n.left), self.visit(n.right))
         return self.set_line(e, n)
@@ -845,7 +842,7 @@ class ASTConverter:
             op = '-'
 
         if op is None:
-            raise RuntimeError('cannot translate UnaryOp ' + str(type(n.op)))
+            raise RuntimeError(f'cannot translate UnaryOp {str(type(n.op))}')
 
         e = UnaryExpr(op, self.visit(n.operand))
         return self.set_line(e, n)
@@ -939,8 +936,8 @@ class ASTConverter:
 
         args = n.args
         arg_types.extend(args)
-        arg_kinds.extend(ARG_POS for a in args)
-        signature.extend(None for a in args)
+        arg_kinds.extend(ARG_POS for _ in args)
+        signature.extend(None for _ in args)
 
         if n.starargs is not None:
             arg_types.append(n.starargs)
@@ -949,7 +946,7 @@ class ASTConverter:
 
         keywords = n.keywords
         arg_types.extend(k.value for k in keywords)
-        arg_kinds.extend(ARG_NAMED for k in keywords)
+        arg_kinds.extend(ARG_NAMED for _ in keywords)
         signature.extend(k.arg for k in keywords)
 
         if n.kwargs is not None:
@@ -982,7 +979,7 @@ class ASTConverter:
         elif isinstance(value, complex):
             expr = ComplexExpr(value)
         else:
-            raise RuntimeError('num not implemented for ' + str(type(n.n)))
+            raise RuntimeError(f'num not implemented for {str(type(n.n))}')
 
         if is_inverse:
             expr = UnaryExpr('-', expr)
@@ -1002,10 +999,10 @@ class ASTConverter:
         if isinstance(n.s, bytes):
             contents = bytes_to_human_readable_repr(n.s)
             e: Union[StrExpr, UnicodeExpr] = StrExpr(contents, from_python_3=False)
-            return self.set_line(e, n)
         else:
             e = UnicodeExpr(n.s)
-            return self.set_line(e, n)
+
+        return self.set_line(e, n)
 
     # Ellipsis
     def visit_Ellipsis(self, n: ast27.Ellipsis) -> EllipsisExpr:

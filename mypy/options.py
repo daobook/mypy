@@ -428,8 +428,8 @@ class Options:
         parts = s.split('.')
         expr = re.escape(parts[0]) if parts[0] != '*' else '.*'
         for part in parts[1:]:
-            expr += re.escape('.' + part) if part != '*' else r'(\..*)?'
-        return re.compile(expr + '\\Z')
+            expr += re.escape(f'.{part}') if part != '*' else r'(\..*)?'
+        return re.compile(f'{expr}\\Z')
 
     def select_options_affecting_cache(self) -> Mapping[str, object]:
         return {opt: getattr(self, opt) for opt in OPTIONS_AFFECTING_CACHE}
