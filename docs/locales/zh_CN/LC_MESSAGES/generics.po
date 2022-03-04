@@ -84,6 +84,8 @@ msgid ""
 " ``Stack`` returns a *generic alias* to ``Stack`` that returns instances "
 "of the original class on instantiation:"
 msgstr ""
+"你可能想知道当你在运行时索引 ``Stack`` 时会发生什么。"
+"索引 ``Stack`` 返回一个 *泛型别名* 到 ``Stack``，在实例化时返回原始类的实例："
 
 #: ../../source/generics.rst:93
 msgid ""
@@ -93,6 +95,8 @@ msgid ""
 "objects, and they have no extra runtime overhead or magic due to being "
 "generic, other than a metaclass that overloads the indexing operator."
 msgstr ""
+"泛型别名可以实例化或子类化，类似于真实的类，但上面的例子说明类型变量在运行时被删除。"
+"泛型 ``Stack`` 实例只是普通的 Python 对象，由于泛型，它们没有额外的运行时开销或魔术，除了一个重载索引操作符的元类。"
 
 #: ../../source/generics.rst:100
 msgid ""
@@ -103,12 +107,16 @@ msgid ""
 "generic alias that resembles generic aliases constructed by directly "
 "indexing the target class in more recent versions of Python:"
 msgstr ""
+"请注意，在 Python 3.8 及以下版本中，内置类型 :py:class:`list`，:py:class:`dict` 和其他类型不支持索引。"
+"这就是我们在 :py:mod:`typing` 模块中使用别名 :py:class:`~typing.List`，:py:class:`~typing.Dict` 等的原因。："
+"索引这些别名会给你一个泛型别名，它类似于在 Python 的最新版本中直接索引目标类所构造的泛型别名："
 
 #: ../../source/generics.rst:116
 msgid ""
 "Note that the generic aliases in ``typing`` don't support constructing "
 "instances:"
 msgstr ""
+"请注意，``typing`` 中的泛型别名不支持构造实例："
 
 #: ../../source/generics.rst:129
 msgid ""
@@ -117,10 +125,13 @@ msgid ""
 "a significant runtime cost. This was changed in Python 3.7, and indexing "
 "generic types became a cheap operation."
 msgstr ""
+"在 Python 3.6 中，对泛型类型或类型别名进行索引将产生实际的类型对象。"
+"这意味着类型注释中的泛型类型可能有很大的运行时成本。"
+"这在 Python 3.7 中被改变了，索引泛型类型变成了一个廉价的操作。"
 
 #: ../../source/generics.rst:137
 msgid "Defining sub-classes of generic classes"
-msgstr ""
+msgstr "定义泛型类的子类"
 
 #: ../../source/generics.rst:139
 msgid ""
@@ -128,6 +139,7 @@ msgid ""
 ":py:mod:`typing` can be used as base classes for another classes, both "
 "generic and non-generic. For example:"
 msgstr ""
+"用户定义的泛型类和定义在 :py:mod:`typing` 中的泛型类可以用作其他类的基类，包括泛型类和非泛型类。例如："
 
 #: ../../source/generics.rst:176
 msgid ""
@@ -138,6 +150,8 @@ msgid ""
 "protocols like :py:class:`~typing.Iterable`, which use :ref:`structural "
 "subtyping <protocol-types>`."
 msgstr ""
+"你必须添加显式的 :py:class:`~typing.Mapping` 基类，如果你想让 mypy 把用户定义的类看作映射（和 :py:class:`~typing.Sequence` 表示序列，等等）。"
+"这是因为 mypy 不像 :py:class:`~typing.Iterable` 使用 :ref:`structural subtyping <protocol-types>` 这样的简单协议那样，对这些 ABC 使用 *结构性子类型*。"
 
 #: ../../source/generics.rst:182
 msgid ""
@@ -148,30 +162,34 @@ msgid ""
 "if needed). The order of type variables is defined by the following "
 "rules:"
 msgstr ""
+":py:class:`Generic <typing.Generic>` 可以在基类中省略，如果有其他基类包含类型变量，例如上面例子中的 ``Mapping[KT, VT]``。"
+"如果你使用了 ``Generic[...]``，然后它应该列出所有类型变量出现在其他基（或更多，如果需要）。类型变量的顺序由以下规则定义："
 
 #: ../../source/generics.rst:189
 msgid ""
 "If ``Generic[...]`` is present, then the order of variables is always "
 "determined by their order in ``Generic[...]``."
 msgstr ""
+"如果 ``Generic[...]`` 存在，那么变量的顺序总是由它们在 ``Generic[...]`` 中的顺序决定的。"
 
 #: ../../source/generics.rst:191
 msgid ""
 "If there are no ``Generic[...]`` in bases, then all type variables are "
 "collected in the lexicographic order (i.e. by first appearance)."
 msgstr ""
+"如果没有 ``Generic[...]``，然后按字典顺序（即按首次出现）收集所有类型变量。"
 
 #: ../../source/generics.rst:194
 msgid "For example:"
-msgstr ""
+msgstr "示例："
 
 #: ../../source/generics.rst:216
 msgid "Generic functions"
-msgstr ""
+msgstr "泛型函数"
 
 #: ../../source/generics.rst:218
 msgid "Generic type variables can also be used to define generic functions:"
-msgstr ""
+msgstr "泛型类型变量也可以用来定义泛型函数："
 
 #: ../../source/generics.rst:229
 msgid ""
@@ -179,6 +197,8 @@ msgid ""
 " That means ``first`` can be used with any sequence type, and the return "
 "type is derived from the sequence item type. For example:"
 msgstr ""
+"“与泛型类一样，类型变量可以用任何类型替换。"
+"这意味着 ``first`` 可以用于任何序列类型，并且返回类型派生自序列项类型。例如："
 
 #: ../../source/generics.rst:240
 msgid ""
@@ -186,16 +206,19 @@ msgid ""
 "above) can be used in multiple generic functions or classes. In this "
 "example we use the same type variable in two generic functions:"
 msgstr ""
+"还要注意，类型变量的单个定义（如上面的 ``T``）可以在多个泛型函数或类中使用。"
+"在这个例子中，我们在两个泛型函数中使用了相同的类型变量："
 
 #: ../../source/generics.rst:256
 msgid ""
 "A variable cannot have a type variable in its type unless the type "
 "variable is bound in a containing generic class or function."
 msgstr ""
+"变量不能在其类型中具有类型变量，除非该类型变量被绑定在包含的泛型类或函数中。"
 
 #: ../../source/generics.rst:262
 msgid "Generic methods and generic self"
-msgstr ""
+msgstr "泛型方法和泛型 self"
 
 #: ../../source/generics.rst:264
 msgid ""
@@ -204,6 +227,8 @@ msgid ""
 "particular, ``self`` may also be generic, allowing a method to return the"
 " most precise type known at the point of access."
 msgstr ""
+"你也可以定义泛型方法——只是在方法签名中使用不同于 class type 变量的 type 变量。"
+"特别地，``self`` 也可能是泛型的，它允许方法在访问点返回最精确的类型。"
 
 #: ../../source/generics.rst:271
 msgid ""
@@ -211,16 +236,19 @@ msgid ""
 "self arguments is still not fully implemented. Mypy may disallow valid "
 "code or allow unsafe code."
 msgstr ""
+"这个功能是实验性的。使用类型注解检查 self 参数的代码仍然没有完全实现。"
+"Mypy 可能禁止有效的代码，也可能允许不安全的代码。"
 
 #: ../../source/generics.rst:275
 msgid "In this way, for example, you can typecheck chaining of setter methods:"
-msgstr ""
+msgstr "例如，通过这种方式，您可以检查 setter 方法的类型链："
 
 #: ../../source/generics.rst:301
 msgid ""
 "Without using generic ``self``, the last two lines could not be type-"
 "checked properly."
 msgstr ""
+"如果不使用泛型的 ``self``，最后两行就不能正确地进行类型检查。"
 
 #: ../../source/generics.rst:303
 msgid ""
@@ -228,6 +256,7 @@ msgid ""
 "class methods, you can also define generic ``cls``, using "
 ":py:class:`Type[T] <typing.Type>`:"
 msgstr ""
+"其他用途是工厂方法，如复制和反序列化。对于类方法，你也可以定义泛型的 ``cls``，使用 :py:class:`Type[T] <typing.Type>`："
 
 #: ../../source/generics.rst:327
 msgid ""
@@ -236,6 +265,8 @@ msgid ""
 "class. In the latter case, you must implement this method in all future "
 "subclasses."
 msgstr ""
+"请注意，当用泛型 ``self`` 覆盖一个方法时，你必须也返回一个泛型 ``self``，或者返回当前类的一个实例。"
+"在后一种情况下，你必须在以后所有的子类中实现这个方法。"
 
 #: ../../source/generics.rst:331
 msgid ""
@@ -244,16 +275,19 @@ msgid ""
 "Therefore you may need to silence mypy inside these methods (but not at "
 "the call site), possibly by making use of the ``Any`` type."
 msgstr ""
+"还要注意，mypy 不能总是验证副本或反序列化方法的实现是否返回 self 的实际类型。"
+"因此，你可能需要在这些方法内部（但不是在调用站点）关闭 mypy，可能是通过使用 ``Any`` 类型。"
 
 #: ../../source/generics.rst:336
 msgid ""
 "For some advanced uses of self-types see :ref:`additional examples "
 "<advanced_self>`."
 msgstr ""
+"关于 self-type 的一些高级用法，请参阅 :ref:`additional examples <advanced_self>`。"
 
 #: ../../source/generics.rst:341
 msgid "Variance of generic types"
-msgstr ""
+msgstr "泛型类型的方差"
 
 #: ../../source/generics.rst:343
 msgid ""
@@ -262,6 +296,8 @@ msgid ""
 " that we have a pair of types ``A`` and ``B``, and ``B`` is a subtype of "
 "``A``, these are defined as follows:"
 msgstr ""
+"根据它们之间的子类型关系，有三种主要的泛型类型：invariant、covariant 和 contravariant。"
+"假设有一对类型 ``A`` 和 ``B``，而 ``B`` 是 ``A`` 的子类型，它们的定义如下："
 
 #: ../../source/generics.rst:348
 msgid ""
@@ -269,6 +305,7 @@ msgid ""
 " ``T`` if ``MyCovGen[B, ...]`` is always a subtype of ``MyCovGen[A, "
 "...]``."
 msgstr ""
+"如果 ``MyCovGen[B, ...]`` 总是 ``MyCovGen[A, ...]`` 的子类型，则泛型类 ``MyCovGen[T, ...]`` 被称为类型变量 ``T`` 的 **协变量** （covariant）。"
 
 #: ../../source/generics.rst:350
 msgid ""
@@ -276,16 +313,18 @@ msgid ""
 "variable ``T`` if ``MyContraGen[A, ...]`` is always a subtype of "
 "``MyContraGen[B, ...]``."
 msgstr ""
+"如果 ``MyContraGen[A, ...]`` 总是 ``MyContraGen[B, ...]`` 的子类型，则称泛型类 ``MyContraGen[T, ...]`` 为类型变量 ``T`` 的 **逆变量** （contravariant）。"
 
 #: ../../source/generics.rst:353
 msgid ""
 "A generic class ``MyInvGen[T, ...]`` is called invariant in ``T`` if "
 "neither of the above is true."
 msgstr ""
+"如果以上两个都不成立，则称泛型类 ``MyInvGen[T, ...]`` 为类型变量 ``T`` 的 **不变量** （invariant）。"
 
 #: ../../source/generics.rst:356
 msgid "Let us illustrate this by few simple examples:"
-msgstr ""
+msgstr "让我们举几个简单的例子来说明这一点："
 
 #: ../../source/generics.rst:358
 msgid ""
@@ -295,6 +334,9 @@ msgid ""
 "such as :py:class:`~typing.Sequence` and :py:class:`~typing.FrozenSet` "
 "are also covariant."
 msgstr ""
+":py:data:`~typing.Union` 在所有变量中都是协变的：``Union[Cat, int]`` 是 ``Union[Animal, int]`` 的子类型，"
+"``Union[Dog, int]`` 也是 ``Union[Animal, int]`` 的子类型。"
+"大多数不可变容器，比如 :py:class:`~typing.Sequence` 和 :py:class:`~typing.FrozenSet` 也是协变的。"
 
 #: ../../source/generics.rst:363
 msgid ""
@@ -303,6 +345,8 @@ msgid ""
 " is a subtype of ``Callable[[Manager], int]``. To understand this, "
 "consider a function:"
 msgstr ""
+":py:data:`~typing.Callable` 是在参数类型中表现为逆变量类型的例子，即 ``Callable[[Employee], int]`` 是 ``Callable[[Manager], int]`` 的子类型。"
+"要理解这一点，请考虑一个函数："
 
 #: ../../source/generics.rst:372
 msgid ""
@@ -310,18 +354,22 @@ msgid ""
 "and if we give it a callable that can calculate a salary for an arbitrary"
 " employee, it's still safe."
 msgstr ""
+"这个函数需要可调用对象来计算 manager 的工资，如果给它一个可调用对象来计算任意 employee 的工资，它仍然是安全的。"
 
 #: ../../source/generics.rst:375
 msgid ""
 ":py:class:`~typing.List` is an invariant generic type. Naively, one would"
 " think that it is covariant, but let us consider this code:"
 msgstr ""
+":py:class:`~typing.List` 是不变量泛型类型。"
+"天真地，人们会认为它是协变的，但是让我们考虑一下这个代码："
 
 #: ../../source/generics.rst:394
 msgid ""
 "Another example of invariant type is :py:class:`~typing.Dict`. Most "
 "mutable containers are invariant."
 msgstr ""
+"另一个不变类型的例子是 :py:class:`~typing.Dict`。大多数可变容器都是不变量。"
 
 #: ../../source/generics.rst:397
 msgid ""
@@ -330,10 +378,12 @@ msgid ""
 "variables defined with special keyword arguments ``covariant`` or "
 "``contravariant``. For example:"
 msgstr ""
+"默认情况下，mypy 假定所有用户定义的泛型都是不变的。"
+"要将给定的泛型类声明为协变或逆变，请使用用特殊关键字参数 ``covariant`` 或 ``contravariant`` 定义的类型变量。例如："
 
 #: ../../source/generics.rst:423
 msgid "Type variables with value restriction"
-msgstr ""
+msgstr "具有值限制的类型变量"
 
 #: ../../source/generics.rst:425
 msgid ""
@@ -342,6 +392,9 @@ msgid ""
 "specific types as its value. A typical example is a type variable that "
 "can only have values ``str`` and ``bytes``:"
 msgstr ""
+"默认情况下，类型变量可以被替换为任何类型。"
+"但是，有时候，拥有一个只能以某些特定类型作为值的类型变量是很有用的。"
+"典型的例子是类型变量只能有值 ``str`` 和 ``bytes``："
 
 #: ../../source/generics.rst:436
 msgid ""
@@ -349,6 +402,7 @@ msgid ""
 ":py:data:`~typing.AnyStr` is defined in :py:mod:`typing` and we don't "
 "need to define it ourselves."
 msgstr ""
+"这实际上是非常常见的在 :py:mod:`typing` 中定义的类型变量 :py:data:`~typing.AnyStr`，我们不需要自己定义它。"
 
 #: ../../source/generics.rst:439
 msgid ""
@@ -398,7 +452,7 @@ msgstr ""
 
 #: ../../source/generics.rst:500
 msgid "Type variables with upper bounds"
-msgstr ""
+msgstr "具有上界的类型变量"
 
 #: ../../source/generics.rst:502
 msgid ""
@@ -407,6 +461,8 @@ msgid ""
 "variable, and is specified with the ``bound=...`` keyword argument to "
 ":py:class:`~typing.TypeVar`."
 msgstr ""
+"类型变量还可以被限制为具有特定类型的子类型的值。"
+"这个类型被称为类型变量的上限，用于 :py:class:`~typing.TypeVar` 的关键字参数 ``bound=...``。"
 
 #: ../../source/generics.rst:513
 msgid ""
@@ -415,28 +471,32 @@ msgid ""
 "upper bound, so the function can use methods of the upper bound on values"
 " of type ``T``."
 msgstr ""
+"在使用类型变量 ``T`` 的泛型函数的定义中，``T`` 表示的类型被假定为其上界的一个子类型，因此函数可以对 ``T`` 类型的值使用上界的方法。"
 
 #: ../../source/generics.rst:523
 msgid ""
 "In a call to such a function, the type ``T`` must be replaced by a type "
 "that is a subtype of its upper bound. Continuing the example above,"
 msgstr ""
+"在调用这样一个函数时，类型 ``T`` 必须替换为其上界的子类型。继续上面的例子，"
 
 #: ../../source/generics.rst:533
 msgid ""
 "Type parameters of generic classes may also have upper bounds, which "
 "restrict the valid values for the type parameter in the same way."
 msgstr ""
+"泛型类的类型参数也可以有上限，以同样的方式限制类型参数的有效值。"
 
 #: ../../source/generics.rst:536
 msgid ""
 "A type variable may not have both a value restriction (see :ref:`type-"
 "variable-value-restriction`) and an upper bound."
 msgstr ""
+"类型变量不能同时具有值限制（参见 :ref:`type-variable-value-restriction`）和上限。"
 
 #: ../../source/generics.rst:542
 msgid "Declaring decorators"
-msgstr ""
+msgstr "声明装饰器"
 
 #: ../../source/generics.rst:544
 msgid ""
@@ -444,6 +504,7 @@ msgid ""
 "decorator that preserves the signature of the function it decorates, "
 "regardless of that signature."
 msgstr ""
+"类型变量上界的常见应用是声明装饰器，该装饰器保留它所装饰的函数的签名，而不管该签名是什么。"
 
 #: ../../source/generics.rst:548
 msgid ""
@@ -451,10 +512,11 @@ msgid ""
 "decorators in mypy: decorating a class does not erase its type, even if "
 "the decorator has incomplete type annotations."
 msgstr ""
+"请注意，在 mypy 中，类装饰器的处理方式与函数装饰器不同：装饰类不会删除其类型，即使装饰器有不完整的类型注解。"
 
 #: ../../source/generics.rst:552
 msgid "Here's a complete example of a function decorator:"
-msgstr ""
+msgstr "下面是函数装饰器的完整示例："
 
 #: ../../source/generics.rst:576
 msgid ""
@@ -462,12 +524,14 @@ msgid ""
 "functions ``foo()`` and ``bar()`` are the same as those of the original "
 "functions (before the decorator is applied)."
 msgstr ""
+"从最后一个块中，看到装饰函数 ``foo()`` 和 ``bar()`` 的签名与原始函数（在应用装饰器之前）的签名相同。"
 
 #: ../../source/generics.rst:580
 msgid ""
 "The bound on ``F`` is used so that calling the decorator on a non-"
 "function (e.g. ``my_decorator(1)``) will be rejected."
 msgstr ""
+"``F`` 的边界是用来在非函数（例如 ``my_decorator(1)``）将被拒绝。"
 
 #: ../../source/generics.rst:583
 msgid ""
@@ -476,16 +540,20 @@ msgid ""
 " is also the reason for the :py:func:`~typing.cast` call in the "
 "``return`` statement in ``my_decorator()``. See :ref:`casts <casts>`."
 msgstr ""
+"还要注意，``wrapper()`` 函数不是类型检查的。"
+"包装器函数通常足够小，所以这不是一个大问题。"
+"这也是 :py:func:`~typing.cast` 调用 ``my_decorator()`` 中的 ``return`` 语句的原因。参阅 :ref:`casts <casts>`。"
 
 #: ../../source/generics.rst:591
 msgid "Decorator factories"
-msgstr ""
+msgstr "装饰器工厂"
 
 #: ../../source/generics.rst:593
 msgid ""
 "Functions that take arguments and return a decorator (also called second-"
 "order decorators), are similarly supported via generics:"
 msgstr ""
+"接受参数并返回装饰器（也称为二阶装饰器）的函数，类似地通过泛型得到支持："
 
 #: ../../source/generics.rst:609
 msgid ""
@@ -493,10 +561,12 @@ msgid ""
 "arguments. This can be achieved by combining with :py:func:`@overload "
 "<typing.overload>`:"
 msgstr ""
+"有时同个 decorator 既支持裸调用，也支持带参数的调用。"
+"这可以通过结合 :py:func:`@overload <typing.overload>` 来实现："
 
 #: ../../source/generics.rst:642
 msgid "Generic protocols"
-msgstr ""
+msgstr "泛型协议"
 
 #: ../../source/generics.rst:644
 msgid ""
@@ -506,6 +576,8 @@ msgid ""
 "generic protocols. Generic protocols mostly follow the normal rules for "
 "generic classes. Example:"
 msgstr ""
+"Mypy 支持泛型协议（参见 :ref:`protocol-types`）。有几个 :ref:`predefined protocols <predefined_protocols>` 是泛型的，"
+"例如 :py:class:`Iterable[T] <typing.Iterable>`，你还可以定义其他的泛型协议。泛型协议大多遵循泛型类的常规规则。示例："
 
 #: ../../source/generics.rst:676
 msgid ""
@@ -513,6 +585,8 @@ msgid ""
 "ClassName(Protocol[T])`` is allowed as a shorthand for ``class "
 "ClassName(Protocol, Generic[T])``."
 msgstr ""
+"根据 :pep:`PEP 544: 泛型协议 <544#generic-protocols>`， ``class "
+"ClassName(Protocol[T])`` 可以作为 ``class ClassName(Protocol, Generic[T])`` 的缩写。"
 
 #: ../../source/generics.rst:680
 msgid ""
@@ -523,22 +597,24 @@ msgid ""
 "variable ``T`` is used covariantly as a return type, but the type "
 "variable is invariant:"
 msgstr ""
+"泛型协议和普通泛型类之间的主要区别是，mypy 检查协议中声明的泛型类型变量的方差是否与它们在协议中使用的方式相匹配。"
+"本例中的协议被拒绝，因为类型变量 ``T`` 被协变地用作返回类型，但类型变量是不变量："
 
 #: ../../source/generics.rst:697
 msgid "This example correctly uses a covariant type variable:"
-msgstr ""
+msgstr "这个例子正确地使用了协变类型变量："
 
 #: ../../source/generics.rst:713
 msgid "See :ref:`variance-of-generics` for more about variance."
-msgstr ""
+msgstr "查阅 :ref:`variance-of-generics` 了解更多关于 variance 的信息。"
 
 #: ../../source/generics.rst:715
 msgid "Generic protocols can also be recursive. Example:"
-msgstr ""
+msgstr "泛型协议也可以递归。例子："
 
 #: ../../source/generics.rst:741
 msgid "Generic type aliases"
-msgstr ""
+msgstr "泛型类型别名"
 
 #: ../../source/generics.rst:743
 msgid ""
