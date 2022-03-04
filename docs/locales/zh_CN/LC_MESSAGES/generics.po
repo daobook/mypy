@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../../source/generics.rst:2
 msgid "Generics"
-msgstr ""
+msgstr "泛型"
 
 #: ../../source/generics.rst:4
 msgid ""
@@ -30,10 +30,12 @@ msgid ""
 "you can get far without ever using them -- feel free to skip this section"
 " and come back later."
 msgstr ""
+"本节解释了如何定义自己的泛型类，这些类接受一个或多个类型参数，类似于 ``list[X]`` 等内置类型。"
+"用户定义的泛型是一种中等高级的特性，你可以在不使用它们的情况下走得很远——可以跳过这一节，稍后再回来。"
 
 #: ../../source/generics.rst:12
 msgid "Defining generic classes"
-msgstr ""
+msgstr "定义泛型类"
 
 #: ../../source/generics.rst:14
 msgid ""
@@ -42,34 +44,39 @@ msgid ""
 "``dict[int, str]`` has the type parameters ``int`` and ``str``, and "
 "``list[int]`` has a type parameter ``int``."
 msgstr ""
+"内置 collection 类是泛型类。"
+"泛型类型有一个或多个类型参数，这些参数可以是任意类型。"
+"例如，``dict[int, str]`` 有类型参数 ``int`` 和 ``str``，而 ``list[int]`` 有类型参数 ``int``。"
 
 #: ../../source/generics.rst:19
 msgid ""
 "Programs can also define new generic classes. Here is a very simple "
 "generic class that represents a stack:"
 msgstr ""
+"程序也可以定义新的泛型类。下面是一个非常简单的泛型类，它代表一个堆栈："
 
 #: ../../source/generics.rst:42
 msgid ""
 "The ``Stack`` class can be used to represent a stack of any type: "
 "``Stack[int]``, ``Stack[tuple[int, str]]``, etc."
 msgstr ""
+"``Stack`` 类可以用来表示任何类型的堆栈：``Stack[int]``，``Stack[tuple[int, str]]`` 等等。"
 
 #: ../../source/generics.rst:45
 msgid "Using ``Stack`` is similar to built-in container types:"
-msgstr ""
+msgstr "使用 ``Stack`` 类似于内置容器类型："
 
 #: ../../source/generics.rst:55
 msgid "Type inference works for user-defined generic types as well:"
-msgstr ""
+msgstr "类型推理也适用于用户定义的泛型类型："
 
 #: ../../source/generics.rst:63
 msgid "Construction of instances of generic types is also type checked:"
-msgstr ""
+msgstr "泛型类型实例的构造也要进行类型检查："
 
 #: ../../source/generics.rst:77
 msgid "Generic class internals"
-msgstr ""
+msgstr "泛型类内部"
 
 #: ../../source/generics.rst:79
 msgid ""

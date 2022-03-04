@@ -42,6 +42,7 @@ jobs:
         shell: bash
         run: |
           pip install --upgrade pip
+          pip install sphinx
           pip install -r test-requirements.txt
 
       - name: 🔧 Build HTML
