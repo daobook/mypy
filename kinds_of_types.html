@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Kinds of types &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <title>Kinds of types &#8212; Mypy 0.940+dev.7f0839b552c99f62636632bfd44522e91b26dc54 文档</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css" />
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="type_inference_and_annotations.html" title="Type inference and type annotations"
              accesskey="P">上一页</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.7f0839b552c99f62636632bfd44522e91b26dc54 文档</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Kinds of types</a></li> 
       </ul>
     </div>  
@@ -598,7 +598,7 @@ doesn’t see that the <code class="docutils literal notranslate"><span class="p
 </pre></div>
 </div>
 <p>However, using <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code></a> and a type variable with an upper bound (see
-<a class="reference internal" href="generics.html#type-variable-upper-bound"><span class="std std-ref">Type variables with upper bounds</span></a>) we can do better:</p>
+<a class="reference internal" href="generics.html#type-variable-upper-bound"><span class="std std-ref">具有上界的类型变量</span></a>) we can do better:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">U</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">User</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">new_user</span><span class="p">(</span><span class="n">user_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">U</span><span class="p">:</span>
@@ -650,7 +650,7 @@ so use <a class="reference external" href="https://docs.python.org/3/library/typ
 <span class="n">concat</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>    <span class="c1"># Error: cannot mix bytes and unicode</span>
 </pre></div>
 </div>
-<p>For more details, see <a class="reference internal" href="generics.html#type-variable-value-restriction"><span class="std std-ref">Type variables with value restriction</span></a>.</p>
+<p>For more details, see <a class="reference internal" href="generics.html#type-variable-value-restriction"><span class="std std-ref">具有值限制的类型变量</span></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">备注</p>
 <p>How <code class="docutils literal notranslate"><span class="pre">bytes</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, and <code class="docutils literal notranslate"><span class="pre">unicode</span></code> are handled between Python 2 and
@@ -777,7 +777,7 @@ generator, use the <a class="reference external" href="https://docs.python.org/3
         <li class="right" >
           <a href="type_inference_and_annotations.html" title="Type inference and type annotations"
              >上一页</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.7f0839b552c99f62636632bfd44522e91b26dc54 文档</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Kinds of types</a></li> 
       </ul>
     </div>
