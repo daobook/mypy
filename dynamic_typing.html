@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Dynamically typed code &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Type checking Python 2 code" href="python2.html" />
+    <link rel="prev" title="Protocols and structural subtyping" href="protocols.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="python2.html" title="Type checking Python 2 code"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="protocols.html" title="Protocols and structural subtyping"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Dynamically typed code</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="dynamically-typed-code">
+<span id="dynamic-typing"></span><h1>Dynamically typed code<a class="headerlink" href="#dynamically-typed-code" title="永久链接至标题">¶</a></h1>
+<p>As mentioned earlier, bodies of functions that don’t have any explicit
+types in their function annotation are dynamically typed (operations
+are checked at runtime). Code outside functions is statically typed by
+default, and types of variables are inferred. This does usually the
+right thing, but you can also make any variable dynamically typed by
+defining it explicitly with the type <code class="docutils literal notranslate"><span class="pre">Any</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="mi">1</span>         <span class="c1"># Statically typed (type int)</span>
+<span class="n">d</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="mi">1</span>    <span class="c1"># Dynamically typed (type Any)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>       <span class="c1"># Type check error</span>
+<span class="n">d</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>       <span class="c1"># OK</span>
+</pre></div>
+</div>
+<section id="operations-on-any-values">
+<h2>Operations on Any values<a class="headerlink" href="#operations-on-any-values" title="永久链接至标题">¶</a></h2>
+<p>You can do anything using a value with type <code class="docutils literal notranslate"><span class="pre">Any</span></code>, and type checker
+does not complain:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="c1"># All of these are valid!</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">foobar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;f&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">open</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>Values derived from an <code class="docutils literal notranslate"><span class="pre">Any</span></code> value also often have the type <code class="docutils literal notranslate"><span class="pre">Any</span></code>
+implicitly, as mypy can’t infer a more precise result type. For
+example, if you get the attribute of an <code class="docutils literal notranslate"><span class="pre">Any</span></code> value or call a
+<code class="docutils literal notranslate"><span class="pre">Any</span></code> value the result is <code class="docutils literal notranslate"><span class="pre">Any</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">foo</span><span class="p">()</span>  <span class="c1"># y has type Any</span>
+    <span class="n">y</span><span class="o">.</span><span class="n">bar</span><span class="p">()</span>      <span class="c1"># Okay as well!</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Any</span></code> types may propagate through your program, making type checking
+less effective, unless you are careful.</p>
+</section>
+<section id="any-vs-object">
+<h2>Any vs. object<a class="headerlink" href="#any-vs-object" title="永久链接至标题">¶</a></h2>
+<p>The type <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a> is another type that can have an instance of arbitrary
+type as a value. Unlike <code class="docutils literal notranslate"><span class="pre">Any</span></code>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a> is an ordinary static type (it
+is similar to <code class="docutils literal notranslate"><span class="pre">Object</span></code> in Java), and only operations valid for <em>all</em>
+types are accepted for <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a> values. These are all valid:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">o</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">o</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="s1">&#39;foo&#39;</span>
+</pre></div>
+</div>
+<p>These are, however, flagged as errors, since not all objects support these
+operations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">o</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">o</span><span class="o">.</span><span class="n">foo</span><span class="p">()</span>       <span class="c1"># Error!</span>
+    <span class="n">o</span> <span class="o">+</span> <span class="mi">2</span>         <span class="c1"># Error!</span>
+    <span class="nb">open</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>       <span class="c1"># Error!</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># type: int</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">o</span>         <span class="c1"># Error!</span>
+</pre></div>
+</div>
+<p>You can use different <a class="reference internal" href="type_narrowing.html#type-narrowing"><span class="std std-ref">type narrowing</span></a>
+techniques to narrow <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a> to a more specific
+type (subtype) such as <code class="docutils literal notranslate"><span class="pre">int</span></code>. Type narrowing is not needed with
+dynamically typed values (values with type <code class="docutils literal notranslate"><span class="pre">Any</span></code>).</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Dynamically typed code</a><ul>
+<li><a class="reference internal" href="#operations-on-any-values">Operations on Any values</a></li>
+<li><a class="reference internal" href="#any-vs-object">Any vs. object</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="protocols.html"
+                          title="上一章">Protocols and structural subtyping</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="python2.html"
+                          title="下一章">Type checking Python 2 code</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/dynamic_typing.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="python2.html" title="Type checking Python 2 code"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="protocols.html" title="Protocols and structural subtyping"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Dynamically typed code</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

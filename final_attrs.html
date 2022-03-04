@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Final names, methods and classes &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Metaclasses" href="metaclasses.html" />
+    <link rel="prev" title="Literal types and Enums" href="literal_types.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="metaclasses.html" title="Metaclasses"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="literal_types.html" title="Literal types and Enums"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Final names, methods and classes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="final-names-methods-and-classes">
+<span id="final-attrs"></span><h1>Final names, methods and classes<a class="headerlink" href="#final-names-methods-and-classes" title="永久链接至标题">¶</a></h1>
+<p>This section introduces these related features:</p>
+<ol class="arabic simple">
+<li><p><em>Final names</em> are variables or attributes that should not be reassigned after
+initialization. They are useful for declaring constants.</p></li>
+<li><p><em>Final methods</em> should not be overridden in a subclass.</p></li>
+<li><p><em>Final classes</em> should not be subclassed.</p></li>
+</ol>
+<p>All of these are only enforced by mypy, and only in annotated code.
+There is no runtime enforcement by the Python runtime.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The examples in this page import <code class="docutils literal notranslate"><span class="pre">Final</span></code> and <code class="docutils literal notranslate"><span class="pre">final</span></code> from the
+<code class="docutils literal notranslate"><span class="pre">typing</span></code> module. These types were added to <code class="docutils literal notranslate"><span class="pre">typing</span></code> in Python 3.8,
+but are also available for use in Python 2.7 and 3.4 - 3.7 via the
+<code class="docutils literal notranslate"><span class="pre">typing_extensions</span></code> package.</p>
+</div>
+<section id="final-names">
+<h2>Final names<a class="headerlink" href="#final-names" title="永久链接至标题">¶</a></h2>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">typing.Final</span></code> qualifier to indicate that
+a name or attribute should not be reassigned, redefined, or
+overridden.  This is often useful for module and class level constants
+as a way to prevent unintended modification.  Mypy will prevent
+further assignments to final names in type-checked code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Final</span>
+
+<span class="n">RATE</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mi">3000</span>
+
+<span class="k">class</span> <span class="nc">Base</span><span class="p">:</span>
+    <span class="n">DEFAULT_ID</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">RATE</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># Error: can&#39;t assign to final attribute</span>
+<span class="n">Base</span><span class="o">.</span><span class="n">DEFAULT_ID</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Error: can&#39;t override a final attribute</span>
+</pre></div>
+</div>
+<p>Another use case for final attributes is to protect certain attributes
+from being overridden in a subclass:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Final</span>
+
+<span class="k">class</span> <span class="nc">Window</span><span class="p">:</span>
+    <span class="n">BORDER_WIDTH</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mf">2.5</span>
+    <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">ListView</span><span class="p">(</span><span class="n">Window</span><span class="p">):</span>
+    <span class="n">BORDER_WIDTH</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Error: can&#39;t override a final attribute</span>
+</pre></div>
+</div>
+<p>You can use <a class="reference external" href="https://docs.python.org/3/library/functions.html#property" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;property</span></code></a> to make an attribute read-only, but unlike <code class="docutils literal notranslate"><span class="pre">Final</span></code>,
+it doesn’t work with module attributes, and it doesn’t prevent overriding in
+subclasses.</p>
+<section id="syntax-variants">
+<h3>Syntax variants<a class="headerlink" href="#syntax-variants" title="永久链接至标题">¶</a></h3>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">Final</span></code> in one of these forms:</p>
+<ul>
+<li><p>You can provide an explicit type using the syntax <code class="docutils literal notranslate"><span class="pre">Final[&lt;type&gt;]</span></code>. Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ID</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Here mypy will infer type <code class="docutils literal notranslate"><span class="pre">int</span></code> for <code class="docutils literal notranslate"><span class="pre">ID</span></code>.</p>
+</li>
+<li><p>You can omit the type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ID</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Here mypy will infer type <code class="docutils literal notranslate"><span class="pre">Literal[1]</span></code> for <code class="docutils literal notranslate"><span class="pre">ID</span></code>. Note that unlike for
+generic classes this is <em>not</em> the same as <code class="docutils literal notranslate"><span class="pre">Final[Any]</span></code>.</p>
+</li>
+<li><p>In class bodies and stub files you can omit the right hand side and just write
+<code class="docutils literal notranslate"><span class="pre">ID:</span> <span class="pre">Final[int]</span></code>.</p></li>
+<li><p>Finally, you can write <code class="docutils literal notranslate"><span class="pre">self.id:</span> <span class="pre">Final</span> <span class="pre">=</span> <span class="pre">1</span></code> (also optionally with
+a type in square brackets). This is allowed <em>only</em> in
+<a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__init__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__</span></code></a> methods, so that the final instance attribute is
+assigned only once when an instance is created.</p></li>
+</ul>
+</section>
+<section id="details-of-using-final">
+<h3>Details of using <code class="docutils literal notranslate"><span class="pre">Final</span></code><a class="headerlink" href="#details-of-using-final" title="永久链接至标题">¶</a></h3>
+<p>These are the two main rules for defining a final name:</p>
+<ul class="simple">
+<li><p>There can be <em>at most one</em> final declaration per module or class for
+a given attribute. There can’t be separate class-level and instance-level
+constants with the same name.</p></li>
+<li><p>There must be <em>exactly one</em> assignment to a final name.</p></li>
+</ul>
+<p>A final attribute declared in a class body without an initializer must
+be initialized in the <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__init__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__</span></code></a> method (you can skip the
+initializer in stub files):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ImmutablePoint</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">y</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>  <span class="c1"># Error: final attribute without an initializer</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Good</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Final</span></code> can only be used as the outermost type in assignments or variable
+annotations. Using it in any other position is an error. In particular,
+<code class="docutils literal notranslate"><span class="pre">Final</span></code> can’t be used in annotations for function arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Final</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Error!</span>
+
+<span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span>  <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Error!</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Final</span></code> and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">ClassVar</span></code></a> should not be used together. Mypy will infer
+the scope of a final declaration automatically depending on whether it was
+initialized in the class body or in <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__init__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__</span></code></a>.</p>
+<p>A final attribute can’t be overridden by a subclass (even with another
+explicit final declaration). Note however that a final attribute can
+override a read-only property:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Base</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ID</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">Derived</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">ID</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># OK</span>
+</pre></div>
+</div>
+<p>Declaring a name as final only guarantees that the name will not be re-bound
+to another value. It doesn’t make the value immutable. You can use immutable ABCs
+and containers to prevent mutating such values:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]</span>
+<span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>  <span class="c1"># OK</span>
+
+<span class="n">y</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]</span>
+<span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>  <span class="c1"># Error: Sequence is immutable</span>
+<span class="n">z</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>  <span class="c1"># Also an option</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="final-methods">
+<h2>Final methods<a class="headerlink" href="#final-methods" title="永久链接至标题">¶</a></h2>
+<p>Like with attributes, sometimes it is useful to protect a method from
+overriding. You can use the <code class="docutils literal notranslate"><span class="pre">typing.final</span></code> decorator for this purpose:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">final</span>
+
+<span class="k">class</span> <span class="nc">Base</span><span class="p">:</span>
+    <span class="nd">@final</span>
+    <span class="k">def</span> <span class="nf">common_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">Derived</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">common_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Error: cannot override a final method</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>This <code class="docutils literal notranslate"><span class="pre">&#64;final</span></code> decorator can be used with instance methods, class methods,
+static methods, and properties.</p>
+<p>For overloaded methods you should add <code class="docutils literal notranslate"><span class="pre">&#64;final</span></code> on the implementation
+to make it final (or on the first overload in stubs):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">overload</span>
+
+<span class="k">class</span> <span class="nc">Base</span><span class="p">:</span>
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@final</span>
+    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="final-classes">
+<h2>Final classes<a class="headerlink" href="#final-classes" title="永久链接至标题">¶</a></h2>
+<p>You can apply the <code class="docutils literal notranslate"><span class="pre">typing.final</span></code> decorator to a class to indicate
+to mypy that it should not be subclassed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">final</span>
+
+<span class="nd">@final</span>
+<span class="k">class</span> <span class="nc">Leaf</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">MyLeaf</span><span class="p">(</span><span class="n">Leaf</span><span class="p">):</span>  <span class="c1"># Error: Leaf can&#39;t be subclassed</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>The decorator acts as a declaration for mypy (and as documentation for
+humans), but it doesn’t actually prevent subclassing at runtime.</p>
+<p>Here are some situations where using a final class may be useful:</p>
+<ul class="simple">
+<li><p>A class wasn’t designed to be subclassed. Perhaps subclassing would not
+work as expected, or subclassing would be error-prone.</p></li>
+<li><p>Subclassing would make code harder to understand or maintain.
+For example, you may want to prevent unnecessarily tight coupling between
+base classes and subclasses.</p></li>
+<li><p>You want to retain the freedom to arbitrarily change the class implementation
+in the future, and these changes might break subclasses.</p></li>
+</ul>
+<p>An abstract class that defines at least one abstract method or
+property and has <code class="docutils literal notranslate"><span class="pre">&#64;final</span></code> decorator will generate an error from
+mypy, since those attributes could never be implemented.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">final</span>
+
+<span class="nd">@final</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>  <span class="c1"># error: Final class A has abstract attributes &quot;f&quot;</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Final names, methods and classes</a><ul>
+<li><a class="reference internal" href="#final-names">Final names</a><ul>
+<li><a class="reference internal" href="#syntax-variants">Syntax variants</a></li>
+<li><a class="reference internal" href="#details-of-using-final">Details of using <code class="docutils literal notranslate"><span class="pre">Final</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#final-methods">Final methods</a></li>
+<li><a class="reference internal" href="#final-classes">Final classes</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="literal_types.html"
+                          title="上一章">Literal types and Enums</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="metaclasses.html"
+                          title="下一章">Metaclasses</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/final_attrs.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="metaclasses.html" title="Metaclasses"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="literal_types.html" title="Literal types and Enums"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Final names, methods and classes</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

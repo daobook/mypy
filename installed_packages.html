@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Using installed packages &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Extending and integrating mypy" href="extending_mypy.html" />
+    <link rel="prev" title="Mypy daemon (mypy server)" href="mypy_daemon.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="extending_mypy.html" title="Extending and integrating mypy"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="mypy_daemon.html" title="Mypy daemon (mypy server)"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Using installed packages</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="using-installed-packages">
+<span id="installed-packages"></span><h1>Using installed packages<a class="headerlink" href="#using-installed-packages" title="永久链接至标题">¶</a></h1>
+<p>Packages installed with pip can declare that they support type
+checking. For example, the <a class="reference external" href="https://docs.aiohttp.org/en/stable/">aiohttp</a> package has built-in support
+for type checking.</p>
+<p>Packages can also provide stubs for a library. For example,
+<code class="docutils literal notranslate"><span class="pre">types-requests</span></code> is a stub-only package that provides stubs for the
+<a class="reference external" href="https://requests.readthedocs.io/en/master/">requests</a> package.
+Stub packages are usually published from <a class="reference external" href="https://github.com/python/typeshed">typeshed</a>, a shared repository for Python
+library stubs, and have a name of form <code class="docutils literal notranslate"><span class="pre">types-&lt;library&gt;</span></code>. Note that
+many stub packages are not maintained by the original maintainers of
+the package.</p>
+<p>The sections below explain how mypy can use these packages, and how
+you can create such packages.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0561"><strong>PEP 561</strong></a> specifies how a package can declare that it supports
+type checking.</p>
+</div>
+<section id="using-installed-packages-with-mypy-pep-561">
+<h2>Using installed packages with mypy (PEP 561)<a class="headerlink" href="#using-installed-packages-with-mypy-pep-561" title="永久链接至标题">¶</a></h2>
+<p>Typically mypy will automatically find and use installed packages that
+support type checking or provide stubs. This requires that you install
+the packages in the Python environment that you use to run mypy.  As
+many packages don’t support type checking yet, you may also have to
+install a separate stub package, usually named
+<code class="docutils literal notranslate"><span class="pre">types-&lt;library&gt;</span></code>. (See <a class="reference internal" href="running_mypy.html#fix-missing-imports"><span class="std std-ref">Missing imports</span></a> for how to deal
+with libraries that don’t support type checking and are also missing
+stubs.)</p>
+<p>If you have installed typed packages in another Python installation or
+environment, mypy won’t automatically find them. One option is to
+install another copy of those packages in the environment in which you
+use to run mypy. Alternatively, you can use the
+<a class="reference internal" href="command_line.html#cmdoption-mypy-python-executable"><code class="xref std std-option docutils literal notranslate"><span class="pre">--python-executable</span></code></a> flag to point
+to the target Python executable, and mypy will find packages installed
+for that Python executable.</p>
+<p>Note that mypy does not support some more advanced import features,
+such as zip imports and custom import hooks.</p>
+<p>If you don’t want to use installed packages that provide type
+information at all, use the <a class="reference internal" href="command_line.html#cmdoption-mypy-no-site-packages"><code class="xref std std-option docutils literal notranslate"><span class="pre">--no-site-packages</span></code></a> flag to disable searching for installed packages.</p>
+<p>Note that stub-only packages cannot be used with <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code>. If you
+want mypy to find the package, it must be installed. For a package
+<code class="docutils literal notranslate"><span class="pre">foo</span></code>, the name of the stub-only package (<code class="docutils literal notranslate"><span class="pre">foo-stubs</span></code>) is not a
+legal package name, so mypy will not find it, unless it is installed
+(see <span class="target" id="index-1"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0561#stub-only-packages"><strong>PEP 561: Stub-only Packages</strong></a> for
+more information).</p>
+</section>
+<section id="creating-pep-561-compatible-packages">
+<h2>Creating PEP 561 compatible packages<a class="headerlink" href="#creating-pep-561-compatible-packages" title="永久链接至标题">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>You can generally ignore this section unless you maintain a package on
+PyPI, or want to publish type information for an existing PyPI
+package.</p>
+</div>
+<p><span class="target" id="index-2"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0561"><strong>PEP 561</strong></a> describes three main ways to distribute type
+information:</p>
+<ol class="arabic simple">
+<li><p>A package has inline type annotations in the Python implementation.</p></li>
+<li><p>A package ships <a class="reference internal" href="stubs.html#stub-files"><span class="std std-ref">stub files</span></a> with type
+information alongside the Python implementation.</p></li>
+<li><p>A package ships type information for another package separately as
+stub files (also known as a “stub-only package”).</p></li>
+</ol>
+<p>If you want to create a stub-only package for an existing library, the
+simplest way is to contribute stubs to the <a class="reference external" href="https://github.com/python/typeshed">typeshed</a> repository, and a stub package
+will automatically be uploaded to PyPI.</p>
+<p>If you would like to publish a library package to a package repository
+yourself (e.g. on PyPI) for either internal or external use in type
+checking, packages that supply type information via type comments or
+annotations in the code should put a <code class="docutils literal notranslate"><span class="pre">py.typed</span></code> file in their
+package directory. For example, here is a typical directory structure:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>setup.py
+package_a/
+    __init__.py
+    lib.py
+    py.typed
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file could look like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+
+<span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SuperPackageA&quot;</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="s2">&quot;Me&quot;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.1&quot;</span><span class="p">,</span>
+    <span class="n">package_data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;package_a&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;py.typed&quot;</span><span class="p">]},</span>
+    <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;package_a&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>If you use <a class="reference external" href="https://setuptools.pypa.io/en/latest/index.html" title="(在 setuptools v60.9.3.post20220228.post-20220228)"><span class="xref std std-doc">setuptools</span></a>, you must pass the option <code class="docutils literal notranslate"><span class="pre">zip_safe=False</span></code> to
+<code class="docutils literal notranslate"><span class="pre">setup()</span></code>, or mypy will not be able to find the installed package.</p>
+</div>
+<p>Some packages have a mix of stub files and runtime files. These packages also
+require a <code class="docutils literal notranslate"><span class="pre">py.typed</span></code> file. An example can be seen below:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>setup.py
+package_b/
+    __init__.py
+    lib.py
+    lib.pyi
+    py.typed
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file might look like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+
+<span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SuperPackageB&quot;</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="s2">&quot;Me&quot;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.1&quot;</span><span class="p">,</span>
+    <span class="n">package_data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;package_b&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;py.typed&quot;</span><span class="p">,</span> <span class="s2">&quot;lib.pyi&quot;</span><span class="p">]},</span>
+    <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;package_b&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example, both <code class="docutils literal notranslate"><span class="pre">lib.py</span></code> and the <code class="docutils literal notranslate"><span class="pre">lib.pyi</span></code> stub file exist. At
+runtime, the Python interpreter will use <code class="docutils literal notranslate"><span class="pre">lib.py</span></code>, but mypy will use
+<code class="docutils literal notranslate"><span class="pre">lib.pyi</span></code> instead.</p>
+<p>If the package is stub-only (not imported at runtime), the package should have
+a prefix of the runtime package name and a suffix of <code class="docutils literal notranslate"><span class="pre">-stubs</span></code>.
+A <code class="docutils literal notranslate"><span class="pre">py.typed</span></code> file is not needed for stub-only packages. For example, if we
+had stubs for <code class="docutils literal notranslate"><span class="pre">package_c</span></code>, we might do the following:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>setup.py
+package_c-stubs/
+    __init__.pyi
+    lib.pyi
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> might look like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">distutils.core</span> <span class="kn">import</span> <span class="n">setup</span>
+
+<span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SuperPackageC&quot;</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="s2">&quot;Me&quot;</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.1&quot;</span><span class="p">,</span>
+    <span class="n">package_data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;package_c-stubs&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;__init__.pyi&quot;</span><span class="p">,</span> <span class="s2">&quot;lib.pyi&quot;</span><span class="p">]},</span>
+    <span class="n">packages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;package_c-stubs&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>If you have separate stubs for Python 2 and Python 3, you can place
+the Python 2 stubs in a directory with the suffix <code class="docutils literal notranslate"><span class="pre">-python2-stubs</span></code>.
+We recommend that Python 2 and Python 3 stubs are bundled together for
+simplicity, instead of distributing them separately.</p>
+<p>The instructions above are enough to ensure that the built wheels
+contain the appropriate files. However, to ensure inclusion inside the
+<code class="docutils literal notranslate"><span class="pre">sdist</span></code> (<code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code> archive), you may also need to modify the
+inclusion rules in your <code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>global-include *.pyi
+global-include *.typed
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Using installed packages</a><ul>
+<li><a class="reference internal" href="#using-installed-packages-with-mypy-pep-561">Using installed packages with mypy (PEP 561)</a></li>
+<li><a class="reference internal" href="#creating-pep-561-compatible-packages">Creating PEP 561 compatible packages</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="mypy_daemon.html"
+                          title="上一章">Mypy daemon (mypy server)</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="extending_mypy.html"
+                          title="下一章">Extending and integrating mypy</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/installed_packages.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="extending_mypy.html" title="Extending and integrating mypy"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="mypy_daemon.html" title="Mypy daemon (mypy server)"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Using installed packages</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

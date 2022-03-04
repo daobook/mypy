@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Built-in types &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Type inference and type annotations" href="type_inference_and_annotations.html" />
+    <link rel="prev" title="Type hints cheat sheet (Python 2)" href="cheat_sheet.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="type_inference_and_annotations.html" title="Type inference and type annotations"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="cheat_sheet.html" title="Type hints cheat sheet (Python 2)"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Built-in types</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="built-in-types">
+<h1>Built-in types<a class="headerlink" href="#built-in-types" title="永久链接至标题">¶</a></h1>
+<p>This chapter introduces some commonly used built-in types. We will
+cover many other kinds of types later.</p>
+<section id="simple-types">
+<h2>Simple types<a class="headerlink" href="#simple-types" title="永久链接至标题">¶</a></h2>
+<p>Here are examples of some common built-in types:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 72%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>integer</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p>floating point number</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p>boolean value (subclass of <code class="docutils literal notranslate"><span class="pre">int</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>string (unicode in Python 3)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code></p></td>
+<td><p>8-bit string</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p>an arbitrary object (<code class="docutils literal notranslate"><span class="pre">object</span></code> is the common base class)</p></td>
+</tr>
+</tbody>
+</table>
+<p>All built-in classes can be used as types.</p>
+</section>
+<section id="any-type">
+<h2>Any type<a class="headerlink" href="#any-type" title="永久链接至标题">¶</a></h2>
+<p>If you can’t find a good type for some value, you can always fall back
+to <code class="docutils literal notranslate"><span class="pre">Any</span></code>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 68%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Any</span></code></p></td>
+<td><p>dynamically typed value with an arbitrary type</p></td>
+</tr>
+</tbody>
+</table>
+<p>The type <code class="docutils literal notranslate"><span class="pre">Any</span></code> is defined in the <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module.
+See <a class="reference internal" href="dynamic_typing.html#dynamic-typing"><span class="std std-ref">Dynamically typed code</span></a> for more details.</p>
+</section>
+<section id="generic-types">
+<h2>Generic types<a class="headerlink" href="#generic-types" title="永久链接至标题">¶</a></h2>
+<p>In Python 3.9 and later, built-in collection type objects support
+indexing:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 74%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">list[str]</span></code></p></td>
+<td><p>list of <code class="docutils literal notranslate"><span class="pre">str</span></code> objects</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tuple[int,</span> <span class="pre">int]</span></code></p></td>
+<td><p>tuple of two <code class="docutils literal notranslate"><span class="pre">int</span></code> objects (<code class="docutils literal notranslate"><span class="pre">tuple[()]</span></code> is the empty tuple)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tuple[int,</span> <span class="pre">...]</span></code></p></td>
+<td><p>tuple of an arbitrary number of <code class="docutils literal notranslate"><span class="pre">int</span></code> objects</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">int]</span></code></p></td>
+<td><p>dictionary from <code class="docutils literal notranslate"><span class="pre">str</span></code> keys to <code class="docutils literal notranslate"><span class="pre">int</span></code> values</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Iterable[int]</span></code></p></td>
+<td><p>iterable object containing ints</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Sequence[bool]</span></code></p></td>
+<td><p>sequence of booleans (read-only)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">int]</span></code></p></td>
+<td><p>mapping from <code class="docutils literal notranslate"><span class="pre">str</span></code> keys to <code class="docutils literal notranslate"><span class="pre">int</span></code> values (read-only)</p></td>
+</tr>
+</tbody>
+</table>
+<p>The type <code class="docutils literal notranslate"><span class="pre">dict</span></code> is a <em>generic</em> class, signified by type arguments within
+<code class="docutils literal notranslate"><span class="pre">[...]</span></code>. For example, <code class="docutils literal notranslate"><span class="pre">dict[int,</span> <span class="pre">str]</span></code> is a dictionary from integers to
+strings and <code class="docutils literal notranslate"><span class="pre">dict[Any,</span> <span class="pre">Any]</span></code> is a dictionary of dynamically typed
+(arbitrary) values and keys. <code class="docutils literal notranslate"><span class="pre">list</span></code> is another generic class.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Iterable</span></code>, <code class="docutils literal notranslate"><span class="pre">Sequence</span></code>, and <code class="docutils literal notranslate"><span class="pre">Mapping</span></code> are generic types that correspond to
+Python protocols. For example, a <code class="docutils literal notranslate"><span class="pre">str</span></code> object or a <code class="docutils literal notranslate"><span class="pre">list[str]</span></code> object is
+valid when <code class="docutils literal notranslate"><span class="pre">Iterable[str]</span></code> or <code class="docutils literal notranslate"><span class="pre">Sequence[str]</span></code> is expected.
+You can import them from <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#module-collections.abc" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">collections.abc</span></code></a> instead of importing from
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> in Python 3.9.</p>
+<p>See <a class="reference internal" href="runtime_troubles.html#generic-builtins"><span class="std std-ref">Using generic builtins</span></a> for more details, including how you can
+use these in annotations also in Python 3.7 and 3.8.</p>
+<p>These legacy types defined in <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> are needed if you need to support
+Python 3.8 and earlier:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 74%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">List[str]</span></code></p></td>
+<td><p>list of <code class="docutils literal notranslate"><span class="pre">str</span></code> objects</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Tuple[int,</span> <span class="pre">int]</span></code></p></td>
+<td><p>tuple of two <code class="docutils literal notranslate"><span class="pre">int</span></code> objects (<code class="docutils literal notranslate"><span class="pre">Tuple[()]</span></code> is the empty tuple)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Tuple[int,</span> <span class="pre">...]</span></code></p></td>
+<td><p>tuple of an arbitrary number of <code class="docutils literal notranslate"><span class="pre">int</span></code> objects</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Dict[str,</span> <span class="pre">int]</span></code></p></td>
+<td><p>dictionary from <code class="docutils literal notranslate"><span class="pre">str</span></code> keys to <code class="docutils literal notranslate"><span class="pre">int</span></code> values</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Iterable[int]</span></code></p></td>
+<td><p>iterable object containing ints</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Sequence[bool]</span></code></p></td>
+<td><p>sequence of booleans (read-only)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">int]</span></code></p></td>
+<td><p>mapping from <code class="docutils literal notranslate"><span class="pre">str</span></code> keys to <code class="docutils literal notranslate"><span class="pre">int</span></code> values (read-only)</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">List</span></code> is an alias for the built-in type <code class="docutils literal notranslate"><span class="pre">list</span></code> that supports
+indexing (and similarly for <code class="docutils literal notranslate"><span class="pre">dict</span></code>/<code class="docutils literal notranslate"><span class="pre">Dict</span></code> and
+<code class="docutils literal notranslate"><span class="pre">tuple</span></code>/<code class="docutils literal notranslate"><span class="pre">Tuple</span></code>).</p>
+<p>Note that even though <code class="docutils literal notranslate"><span class="pre">Iterable</span></code>, <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> and <code class="docutils literal notranslate"><span class="pre">Mapping</span></code> look
+similar to abstract base classes defined in <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#module-collections.abc" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">collections.abc</span></code></a>
+(formerly <code class="docutils literal notranslate"><span class="pre">collections</span></code>), they are not identical, since the latter
+don’t support indexing prior to Python 3.9.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Built-in types</a><ul>
+<li><a class="reference internal" href="#simple-types">Simple types</a></li>
+<li><a class="reference internal" href="#any-type">Any type</a></li>
+<li><a class="reference internal" href="#generic-types">Generic types</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="cheat_sheet.html"
+                          title="上一章">Type hints cheat sheet (Python 2)</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="type_inference_and_annotations.html"
+                          title="下一章">Type inference and type annotations</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/builtin_types.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="type_inference_and_annotations.html" title="Type inference and type annotations"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="cheat_sheet.html" title="Type hints cheat sheet (Python 2)"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Built-in types</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

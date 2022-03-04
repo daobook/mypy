@@ -1,0 +1,532 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Additional features &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Frequently Asked Questions" href="faq.html" />
+    <link rel="prev" title="Error codes for optional checks" href="error_code_list2.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="faq.html" title="Frequently Asked Questions"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="error_code_list2.html" title="Error codes for optional checks"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Additional features</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="additional-features">
+<h1>Additional features<a class="headerlink" href="#additional-features" title="永久链接至标题">¶</a></h1>
+<p>This section discusses various features that did not fit in naturally in one
+of the previous sections.</p>
+<section id="dataclasses">
+<span id="dataclasses-support"></span><h2>Dataclasses<a class="headerlink" href="#dataclasses" title="永久链接至标题">¶</a></h2>
+<p>In Python 3.7, a new <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#module-dataclasses" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dataclasses</span></code></a> module has been added to the standard library.
+This module allows defining and customizing simple boilerplate-free classes.
+They can be defined using the <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;dataclasses.dataclass</span></code></a> decorator:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Application</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">plugins</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+<span class="n">test</span> <span class="o">=</span> <span class="n">Application</span><span class="p">(</span><span class="s2">&quot;Testing...&quot;</span><span class="p">)</span>  <span class="c1"># OK</span>
+<span class="n">bad</span> <span class="o">=</span> <span class="n">Application</span><span class="p">(</span><span class="s2">&quot;Testing...&quot;</span><span class="p">,</span> <span class="s2">&quot;with plugin&quot;</span><span class="p">)</span>  <span class="c1"># Error: list[str] expected</span>
+</pre></div>
+</div>
+<p>Mypy will detect special methods (such as <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__lt__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__lt__</span></code></a>) depending on the flags used to
+define dataclasses. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">OrderedPoint</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">UnorderedPoint</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="n">OrderedPoint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">OrderedPoint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># OK</span>
+<span class="n">UnorderedPoint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">UnorderedPoint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>  <span class="c1"># Error: Unsupported operand types</span>
+</pre></div>
+</div>
+<p>Dataclasses can be generic and can be used in any other way a normal
+class can be used:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">BoxedData</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">T</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="k">def</span> <span class="nf">unbox</span><span class="p">(</span><span class="n">bd</span><span class="p">:</span> <span class="n">BoxedData</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="n">val</span> <span class="o">=</span> <span class="n">unbox</span><span class="p">(</span><span class="n">BoxedData</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="s2">&quot;&lt;important&gt;&quot;</span><span class="p">))</span>  <span class="c1"># OK, inferred type is int</span>
+</pre></div>
+</div>
+<p>For more information see <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(在 Python v3.10)"><span class="xref std std-doc">official docs</span></a>
+and <span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0557"><strong>PEP 557</strong></a>.</p>
+<section id="caveats-known-issues">
+<h3>Caveats/Known Issues<a class="headerlink" href="#caveats-known-issues" title="永久链接至标题">¶</a></h3>
+<p>Some functions in the <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#module-dataclasses" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dataclasses</span></code></a> module, such as <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.replace" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">replace()</span></code></a> and <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.asdict" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asdict()</span></code></a>,
+have imprecise (too permissive) types. This will be fixed in future releases.</p>
+<p>Mypy does not yet recognize aliases of <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses.dataclass</span></code></a>, and will
+probably never recognize dynamically computed decorators. The following examples
+do <strong>not</strong> work:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="n">dataclass_alias</span> <span class="o">=</span> <span class="n">dataclass</span>
+<span class="k">def</span> <span class="nf">dataclass_wrapper</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+<span class="nd">@dataclass_alias</span>
+<span class="k">class</span> <span class="nc">AliasDecorated</span><span class="p">:</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Mypy doesn&#39;t recognize this as a dataclass because it is decorated by an</span>
+<span class="sd">  alias of `dataclass` rather than by `dataclass` itself.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">attribute</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="nd">@dataclass_wrapper</span>
+<span class="k">class</span> <span class="nc">DynamicallyDecorated</span><span class="p">:</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Mypy doesn&#39;t recognize this as a dataclass because it is decorated by a</span>
+<span class="sd">  function returning `dataclass` rather than by `dataclass` itself.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="n">attribute</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="n">AliasDecorated</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># error: Unexpected keyword argument</span>
+<span class="n">DynamicallyDecorated</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># error: Unexpected keyword argument</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-attrs-package">
+<span id="attrs-package"></span><h2>The attrs package<a class="headerlink" href="#the-attrs-package" title="永久链接至标题">¶</a></h2>
+<p><a class="reference external" href="https://www.attrs.org/en/stable/index.html" title="(在 attrs v21.4)"><span class="xref std std-doc">attrs</span></a> is a package that lets you define
+classes without writing boilerplate code. Mypy can detect uses of the
+package and will generate the necessary method definitions for decorated
+classes using the type annotations it finds.
+Type annotations can be added as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">attr</span>
+
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+    <span class="n">one</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>          <span class="c1"># Variable annotation (Python 3.6+)</span>
+    <span class="n">two</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">()</span>  <span class="c1"># type: int  # Type comment</span>
+    <span class="n">three</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>     <span class="c1"># type= argument</span>
+</pre></div>
+</div>
+<p>If you’re using <code class="docutils literal notranslate"><span class="pre">auto_attribs=True</span></code> you must use variable annotations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">attr</span>
+
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">auto_attribs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+    <span class="n">one</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">two</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="n">three</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Typeshed has a couple of “white lie” annotations to make type checking
+easier. <a class="reference external" href="https://www.attrs.org/en/stable/api.html#attr.ib" title="(在 attrs v21.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">attr.ib()</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">attr.Factory</span></code> actually return objects, but the
+annotation says these return the types that they expect to be assigned to.
+That enables this to work:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">attr</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">auto_attribs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+    <span class="n">one</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">two</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="n">bad</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">ib</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>   <span class="c1"># Error: can&#39;t assign int to str</span>
+</pre></div>
+</div>
+<section id="id1">
+<h3>Caveats/Known Issues<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h3>
+<ul>
+<li><p>The detection of attr classes and attributes works by function name only.
+This means that if you have your own helper functions that, for example,
+<code class="docutils literal notranslate"><span class="pre">return</span> <span class="pre">attr.ib()</span></code> mypy will not see them.</p></li>
+<li><p>All boolean arguments that mypy cares about must be literal <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>.
+e.g the following will not work:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">attr</span>
+<span class="n">YES</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="nd">@attr</span><span class="o">.</span><span class="n">s</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">YES</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</li>
+<li><p>Currently, <code class="docutils literal notranslate"><span class="pre">converter</span></code> only supports named functions.  If mypy finds something else it
+will complain about not understanding the argument and the type annotation in
+<a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__init__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__</span></code></a> will be replaced by <code class="docutils literal notranslate"><span class="pre">Any</span></code>.</p></li>
+<li><p><a class="reference external" href="https://www.attrs.org/en/stable/examples.html#examples-validators" title="(在 attrs v21.4)"><span class="xref std std-ref">Validator decorators</span></a>
+and <a class="reference external" href="http://www.attrs.org/en/stable/examples.html#defaults">default decorators</a>
+are not type-checked against the attribute they are setting/validating.</p></li>
+<li><p>Method definitions added by mypy currently overwrite any existing method
+definitions.</p></li>
+</ul>
+</section>
+</section>
+<section id="using-a-remote-cache-to-speed-up-mypy-runs">
+<span id="remote-cache"></span><h2>Using a remote cache to speed up mypy runs<a class="headerlink" href="#using-a-remote-cache-to-speed-up-mypy-runs" title="永久链接至标题">¶</a></h2>
+<p>Mypy performs type checking <em>incrementally</em>, reusing results from
+previous runs to speed up successive runs. If you are type checking a
+large codebase, mypy can still be sometimes slower than desirable. For
+example, if you create a new branch based on a much more recent commit
+than the target of the previous mypy run, mypy may have to
+process almost every file, as a large fraction of source files may
+have changed. This can also happen after you’ve rebased a local
+branch.</p>
+<p>Mypy supports using a <em>remote cache</em> to improve performance in cases
+such as the above.  In a large codebase, remote caching can sometimes
+speed up mypy runs by a factor of 10, or more.</p>
+<p>Mypy doesn’t include all components needed to set
+this up – generally you will have to perform some simple integration
+with your Continuous Integration (CI) or build system to configure
+mypy to use a remote cache. This discussion assumes you have a CI
+system set up for the mypy build you want to speed up, and that you
+are using a central git repository. Generalizing to different
+environments should not be difficult.</p>
+<p>Here are the main components needed:</p>
+<ul class="simple">
+<li><p>A shared repository for storing mypy cache files for all landed commits.</p></li>
+<li><p>CI build that uploads mypy incremental cache files to the shared repository for
+each commit for which the CI build runs.</p></li>
+<li><p>A wrapper script around mypy that developers use to run mypy with remote
+caching enabled.</p></li>
+</ul>
+<p>Below we discuss each of these components in some detail.</p>
+<section id="shared-repository-for-cache-files">
+<h3>Shared repository for cache files<a class="headerlink" href="#shared-repository-for-cache-files" title="永久链接至标题">¶</a></h3>
+<p>You need a repository that allows you to upload mypy cache files from
+your CI build and make the cache files available for download based on
+a commit id.  A simple approach would be to produce an archive of the
+<code class="docutils literal notranslate"><span class="pre">.mypy_cache</span></code> directory (which contains the mypy cache data) as a
+downloadable <em>build artifact</em> from your CI build (depending on the
+capabilities of your CI system).  Alternatively, you could upload the
+data to a web server or to S3, for example.</p>
+</section>
+<section id="continuous-integration-build">
+<h3>Continuous Integration build<a class="headerlink" href="#continuous-integration-build" title="永久链接至标题">¶</a></h3>
+<p>The CI build would run a regular mypy build and create an archive containing
+the <code class="docutils literal notranslate"><span class="pre">.mypy_cache</span></code> directory produced by the build. Finally, it will produce
+the cache as a build artifact or upload it to a repository where it is
+accessible by the mypy wrapper script.</p>
+<p>Your CI script might work like this:</p>
+<ul class="simple">
+<li><p>Run mypy normally. This will generate cache data under the
+<code class="docutils literal notranslate"><span class="pre">.mypy_cache</span></code> directory.</p></li>
+<li><p>Create a tarball from the <code class="docutils literal notranslate"><span class="pre">.mypy_cache</span></code> directory.</p></li>
+<li><p>Determine the current git master branch commit id (say, using
+<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">rev-parse</span> <span class="pre">HEAD</span></code>).</p></li>
+<li><p>Upload the tarball to the shared repository with a name derived from the
+commit id.</p></li>
+</ul>
+</section>
+<section id="mypy-wrapper-script">
+<h3>Mypy wrapper script<a class="headerlink" href="#mypy-wrapper-script" title="永久链接至标题">¶</a></h3>
+<p>The wrapper script is used by developers to run mypy locally during
+development instead of invoking mypy directly.  The wrapper first
+populates the local <code class="docutils literal notranslate"><span class="pre">.mypy_cache</span></code> directory from the shared
+repository and then runs a normal incremental build.</p>
+<p>The wrapper script needs some logic to determine the most recent
+central repository commit (by convention, the <code class="docutils literal notranslate"><span class="pre">origin/master</span></code> branch
+for git) the local development branch is based on. In a typical git
+setup you can do it like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">merge</span><span class="o">-</span><span class="n">base</span> <span class="n">HEAD</span> <span class="n">origin</span><span class="o">/</span><span class="n">master</span>
+</pre></div>
+</div>
+<p>The next step is to download the cache data (contents of the
+<code class="docutils literal notranslate"><span class="pre">.mypy_cache</span></code> directory) from the shared repository based on the
+commit id of the merge base produced by the git command above. The
+script will decompress the data so that mypy will start with a fresh
+<code class="docutils literal notranslate"><span class="pre">.mypy_cache</span></code>. Finally, the script runs mypy normally. And that’s all!</p>
+</section>
+<section id="caching-with-mypy-daemon">
+<h3>Caching with mypy daemon<a class="headerlink" href="#caching-with-mypy-daemon" title="永久链接至标题">¶</a></h3>
+<p>You can also use remote caching with the <a class="reference internal" href="mypy_daemon.html#mypy-daemon"><span class="std std-ref">mypy daemon</span></a>.
+The remote cache will significantly speed up the first <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">check</span></code>
+run after starting or restarting the daemon.</p>
+<p>The mypy daemon requires extra fine-grained dependency data in
+the cache files which aren’t included by default. To use caching with
+the mypy daemon, use the <a class="reference internal" href="command_line.html#cmdoption-mypy-cache-fine-grained"><code class="xref std std-option docutils literal notranslate"><span class="pre">--cache-fine-grained</span></code></a> option in your CI
+build:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy --cache-fine-grained &lt;args...&gt;
+</pre></div>
+</div>
+<p>This flag adds extra information for the daemon to the cache. In
+order to use this extra information, you will also need to use the
+<code class="docutils literal notranslate"><span class="pre">--use-fine-grained-cache</span></code> option with <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">start</span></code> or
+<code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">restart</span></code>. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ dmypy start -- --use-fine-grained-cache &lt;options...&gt;
+</pre></div>
+</div>
+<p>Now your first <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">check</span></code> run should be much faster, as it can use
+cache information to avoid processing the whole program.</p>
+</section>
+<section id="refinements">
+<h3>Refinements<a class="headerlink" href="#refinements" title="永久链接至标题">¶</a></h3>
+<p>There are several optional refinements that may improve things further,
+at least if your codebase is hundreds of thousands of lines or more:</p>
+<ul class="simple">
+<li><p>If the wrapper script determines that the merge base hasn’t changed
+from a previous run, there’s no need to download the cache data and
+it’s better to instead reuse the existing local cache data.</p></li>
+<li><p>If you use the mypy daemon, you may want to restart the daemon each time
+after the merge base or local branch has changed to avoid processing a
+potentially large number of changes in an incremental build, as this can
+be much slower than downloading cache data and restarting the daemon.</p></li>
+<li><p>If the current local branch is based on a very recent master commit,
+the remote cache data may not yet be available for that commit, as
+there will necessarily be some latency to build the cache files. It
+may be a good idea to look for cache data for, say, the 5 latest
+master commits and use the most recent data that is available.</p></li>
+<li><p>If the remote cache is not accessible for some reason (say, from a public
+network), the script can still fall back to a normal incremental build.</p></li>
+<li><p>You can have multiple local cache directories for different local branches
+using the <a class="reference internal" href="command_line.html#cmdoption-mypy-cache-dir"><code class="xref std std-option docutils literal notranslate"><span class="pre">--cache-dir</span></code></a> option. If the user switches to an existing
+branch where downloaded cache data is already available, you can continue
+to use the existing cache data instead of redownloading the data.</p></li>
+<li><p>You can set up your CI build to use a remote cache to speed up the
+CI build. This would be particularly useful if each CI build starts
+from a fresh state without access to cache files from previous
+builds. It’s still recommended to run a full, non-incremental
+mypy build to create the cache data, as repeatedly updating cache
+data incrementally could result in drift over a long time period (due
+to a mypy caching issue, perhaps).</p></li>
+</ul>
+</section>
+</section>
+<section id="extended-callable-types">
+<span id="extended-callable"></span><h2>Extended Callable types<a class="headerlink" href="#extended-callable-types" title="永久链接至标题">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>This feature is deprecated.  You can use
+<a class="reference internal" href="protocols.html#callback-protocols"><span class="std std-ref">callback protocols</span></a> as a replacement.</p>
+</div>
+<p>As an experimental mypy extension, you can specify <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a> types
+that support keyword arguments, optional arguments, and more.  When
+you specify the arguments of a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>, you can choose to supply just
+the type of a nameless positional argument, or an “argument specifier”
+representing a more complicated form of argument.  This allows one to
+more closely emulate the full range of possibilities given by the
+<code class="docutils literal notranslate"><span class="pre">def</span></code> statement in Python.</p>
+<p>As an example, here’s a complicated function definition and the
+corresponding <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">mypy_extensions</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Arg</span><span class="p">,</span> <span class="n">DefaultArg</span><span class="p">,</span> <span class="n">NamedArg</span><span class="p">,</span>
+                             <span class="n">DefaultNamedArg</span><span class="p">,</span> <span class="n">VarArg</span><span class="p">,</span> <span class="n">KwArg</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">__a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># This convention is for nameless arguments</span>
+         <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+         <span class="n">c</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+         <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+         <span class="n">d</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+         <span class="n">e</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="n">F</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">,</span>  <span class="c1"># Or Arg(int)</span>
+              <span class="n">Arg</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">),</span>
+              <span class="n">DefaultArg</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">),</span>
+              <span class="n">VarArg</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+              <span class="n">NamedArg</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">),</span>
+              <span class="n">DefaultNamedArg</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">),</span>
+              <span class="n">KwArg</span><span class="p">(</span><span class="nb">int</span><span class="p">)],</span>
+             <span class="nb">int</span><span class="p">]</span>
+
+<span class="n">f</span><span class="p">:</span> <span class="n">F</span> <span class="o">=</span> <span class="n">func</span>
+</pre></div>
+</div>
+<p>Argument specifiers are special function calls that can specify the
+following aspects of an argument:</p>
+<ul class="simple">
+<li><p>its type (the only thing that the basic format supports)</p></li>
+<li><p>its name (if it has one)</p></li>
+<li><p>whether it may be omitted</p></li>
+<li><p>whether it may or must be passed using a keyword</p></li>
+<li><p>whether it is a <code class="docutils literal notranslate"><span class="pre">*args</span></code> argument (representing the remaining
+positional arguments)</p></li>
+<li><p>whether it is a <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> argument (representing the remaining
+keyword arguments)</p></li>
+</ul>
+<p>The following functions are available in <code class="docutils literal notranslate"><span class="pre">mypy_extensions</span></code> for this
+purpose:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">Arg</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># A normal, mandatory, positional argument.</span>
+    <span class="c1"># If the name is specified it may be passed as a keyword.</span>
+
+<span class="k">def</span> <span class="nf">DefaultArg</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># An optional positional argument (i.e. with a default value).</span>
+    <span class="c1"># If the name is specified it may be passed as a keyword.</span>
+
+<span class="k">def</span> <span class="nf">NamedArg</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># A mandatory keyword-only argument.</span>
+
+<span class="k">def</span> <span class="nf">DefaultNamedArg</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># An optional keyword-only argument (i.e. with a default value).</span>
+
+<span class="k">def</span> <span class="nf">VarArg</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">Any</span><span class="p">):</span>
+    <span class="c1"># A *args-style variadic positional argument.</span>
+    <span class="c1"># A single VarArg() specifier represents all remaining</span>
+    <span class="c1"># positional arguments.</span>
+
+<span class="k">def</span> <span class="nf">KwArg</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">Any</span><span class="p">):</span>
+    <span class="c1"># A **kwargs-style variadic keyword argument.</span>
+    <span class="c1"># A single KwArg() specifier represents all remaining</span>
+    <span class="c1"># keyword arguments.</span>
+</pre></div>
+</div>
+<p>In all cases, the <code class="docutils literal notranslate"><span class="pre">type</span></code> argument defaults to <code class="docutils literal notranslate"><span class="pre">Any</span></code>, and if the
+<code class="docutils literal notranslate"><span class="pre">name</span></code> argument is omitted the argument has no name (the name is
+required for <code class="docutils literal notranslate"><span class="pre">NamedArg</span></code> and <code class="docutils literal notranslate"><span class="pre">DefaultNamedArg</span></code>).  A basic
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a> such as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MyFunc</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>is equivalent to the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MyFunc</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Arg</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">Arg</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span> <span class="n">Arg</span><span class="p">(</span><span class="nb">int</span><span class="p">)],</span> <span class="nb">float</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>A <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a> with unspecified argument types, such as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MyOtherFunc</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>is (roughly) equivalent to</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MyOtherFunc</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">VarArg</span><span class="p">(),</span> <span class="n">KwArg</span><span class="p">()],</span> <span class="nb">int</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Each of the functions above currently just returns its <code class="docutils literal notranslate"><span class="pre">type</span></code>
+argument at runtime, so the information contained in the argument
+specifiers is not available at runtime.  This limitation is
+necessary for backwards compatibility with the existing
+<code class="docutils literal notranslate"><span class="pre">typing.py</span></code> module as present in the Python 3.5+ standard library
+and distributed via PyPI.</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Additional features</a><ul>
+<li><a class="reference internal" href="#dataclasses">Dataclasses</a><ul>
+<li><a class="reference internal" href="#caveats-known-issues">Caveats/Known Issues</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-attrs-package">The attrs package</a><ul>
+<li><a class="reference internal" href="#id1">Caveats/Known Issues</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-a-remote-cache-to-speed-up-mypy-runs">Using a remote cache to speed up mypy runs</a><ul>
+<li><a class="reference internal" href="#shared-repository-for-cache-files">Shared repository for cache files</a></li>
+<li><a class="reference internal" href="#continuous-integration-build">Continuous Integration build</a></li>
+<li><a class="reference internal" href="#mypy-wrapper-script">Mypy wrapper script</a></li>
+<li><a class="reference internal" href="#caching-with-mypy-daemon">Caching with mypy daemon</a></li>
+<li><a class="reference internal" href="#refinements">Refinements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extended-callable-types">Extended Callable types</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="error_code_list2.html"
+                          title="上一章">Error codes for optional checks</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="faq.html"
+                          title="下一章">Frequently Asked Questions</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/additional_features.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="faq.html" title="Frequently Asked Questions"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="error_code_list2.html" title="Error codes for optional checks"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Additional features</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

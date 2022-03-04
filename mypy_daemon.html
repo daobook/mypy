@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Mypy daemon (mypy server) &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Using installed packages" href="installed_packages.html" />
+    <link rel="prev" title="Inline configuration" href="inline_config.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="installed_packages.html" title="Using installed packages"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="inline_config.html" title="Inline configuration"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Mypy daemon (mypy server)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="mypy-daemon-mypy-server">
+<span id="mypy-daemon"></span><h1>Mypy daemon (mypy server)<a class="headerlink" href="#mypy-daemon-mypy-server" title="永久链接至标题">¶</a></h1>
+<p>Instead of running mypy as a command-line tool, you can also run it as
+a long-running daemon (server) process and use a command-line client to
+send type-checking requests to the server.  This way mypy can perform type
+checking much faster, since program state cached from previous runs is kept
+in memory and doesn’t have to be read from the file system on each run.
+The server also uses finer-grained dependency tracking to reduce the amount
+of work that needs to be done.</p>
+<p>If you have a large codebase to check, running mypy using the mypy
+daemon can be <em>10 or more times faster</em> than the regular command-line
+<code class="docutils literal notranslate"><span class="pre">mypy</span></code> tool, especially if your workflow involves running mypy
+repeatedly after small edits – which is often a good idea, as this way
+you’ll find errors sooner.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The command-line interface of mypy daemon may change in future mypy
+releases.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Each mypy daemon process supports one user and one set of source files,
+and it can only process one type checking request at a time. You can
+run multiple mypy daemon processes to type check multiple repositories.</p>
+</div>
+<section id="basic-usage">
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="永久链接至标题">¶</a></h2>
+<p>The client utility <code class="docutils literal notranslate"><span class="pre">dmypy</span></code> is used to control the mypy daemon.
+Use <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">run</span> <span class="pre">--</span> <span class="pre">&lt;flags&gt;</span> <span class="pre">&lt;files&gt;</span></code> to type check a set of files
+(or directories). This will launch the daemon if it is not running.
+You can use almost arbitrary mypy flags after <code class="docutils literal notranslate"><span class="pre">--</span></code>.  The daemon
+will always run on the current host. Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dmypy</span> <span class="n">run</span> <span class="o">--</span> <span class="n">prog</span><span class="o">.</span><span class="n">py</span> <span class="n">pkg</span><span class="o">/*.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">run</span></code> will automatically restart the daemon if the
+configuration or mypy version changes.</p>
+<p>The initial run will process all the code and may take a while to
+finish, but subsequent runs will be quick, especially if you’ve only
+changed a few files. (You can use <a class="reference internal" href="additional_features.html#remote-cache"><span class="std std-ref">remote caching</span></a>
+to speed up the initial run. The speedup can be significant if
+you have a large codebase.)</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Mypy 0.780 added support for following imports in dmypy (enabled by
+default). This functionality is still experimental. You can use
+<code class="docutils literal notranslate"><span class="pre">--follow-imports=skip</span></code> or <code class="docutils literal notranslate"><span class="pre">--follow-imports=error</span></code> to fall
+back to the stable functionality.  See <a class="reference internal" href="running_mypy.html#follow-imports"><span class="std std-ref">Following imports</span></a> for
+details on how these work.</p>
+</div>
+</section>
+<section id="daemon-client-commands">
+<h2>Daemon client commands<a class="headerlink" href="#daemon-client-commands" title="永久链接至标题">¶</a></h2>
+<p>While <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">run</span></code> is sufficient for most uses, some workflows
+(ones using <a class="reference internal" href="additional_features.html#remote-cache"><span class="std std-ref">remote caching</span></a>, perhaps),
+require more precise control over the lifetime of the daemon process:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">stop</span></code> stops the daemon.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">start</span> <span class="pre">--</span> <span class="pre">&lt;flags&gt;</span></code> starts the daemon but does not check any files.
+You can use almost arbitrary mypy flags after <code class="docutils literal notranslate"><span class="pre">--</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">restart</span> <span class="pre">--</span> <span class="pre">&lt;flags&gt;</span></code> restarts the daemon. The flags are the same
+as with <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">start</span></code>. This is equivalent to a stop command followed
+by a start.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">run</span> <span class="pre">--timeout</span> <span class="pre">SECONDS</span> <span class="pre">--</span> <span class="pre">&lt;flags&gt;</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">start</span></code> or <code class="docutils literal notranslate"><span class="pre">restart</span></code>) to automatically
+shut down the daemon after inactivity. By default, the daemon runs
+until it’s explicitly stopped.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">check</span> <span class="pre">&lt;files&gt;</span></code> checks a set of files using an already
+running daemon.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">recheck</span></code> checks the same set of files as the most recent
+<code class="docutils literal notranslate"><span class="pre">check</span></code> or <code class="docutils literal notranslate"><span class="pre">recheck</span></code> command. (You can also use the <a class="reference internal" href="#cmdoption-dmypy-update"><code class="xref std std-option docutils literal notranslate"><span class="pre">--update</span></code></a>
+and <a class="reference internal" href="#cmdoption-dmypy-remove"><code class="xref std std-option docutils literal notranslate"><span class="pre">--remove</span></code></a> options to alter the set of files, and to define
+which files should be processed.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">status</span></code> checks whether a daemon is running. It prints a
+diagnostic and exits with <code class="docutils literal notranslate"><span class="pre">0</span></code> if there is a running daemon.</p></li>
+</ul>
+<p>Use <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">--help</span></code> for help on additional commands and command-line
+options not discussed here, and <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">&lt;command&gt;</span> <span class="pre">--help</span></code> for help on
+command-specific options.</p>
+</section>
+<section id="additional-daemon-flags">
+<h2>Additional daemon flags<a class="headerlink" href="#additional-daemon-flags" title="永久链接至标题">¶</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-status-file">
+<span class="sig-name descname"><span class="pre">--status-file</span></span><span class="sig-prename descclassname"> <span class="pre">FILE</span></span><a class="headerlink" href="#cmdoption-dmypy-status-file" title="永久链接至目标">¶</a></dt>
+<dd><p>Use <code class="docutils literal notranslate"><span class="pre">FILE</span></code> as the status file for storing daemon runtime state. This is
+normally a JSON file that contains information about daemon process and
+connection. The default path is <code class="docutils literal notranslate"><span class="pre">.dmypy.json</span></code> in the current working
+directory.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-log-file">
+<span class="sig-name descname"><span class="pre">--log-file</span></span><span class="sig-prename descclassname"> <span class="pre">FILE</span></span><a class="headerlink" href="#cmdoption-dmypy-log-file" title="永久链接至目标">¶</a></dt>
+<dd><p>Direct daemon stdout/stderr to <code class="docutils literal notranslate"><span class="pre">FILE</span></code>. This is useful for debugging daemon
+crashes, since the server traceback is not always printed by the client.
+This is available for the <code class="docutils literal notranslate"><span class="pre">start</span></code>, <code class="docutils literal notranslate"><span class="pre">restart</span></code>, and <code class="docutils literal notranslate"><span class="pre">run</span></code> commands.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-timeout">
+<span class="sig-name descname"><span class="pre">--timeout</span></span><span class="sig-prename descclassname"> <span class="pre">TIMEOUT</span></span><a class="headerlink" href="#cmdoption-dmypy-timeout" title="永久链接至目标">¶</a></dt>
+<dd><p>Automatically shut down server after <code class="docutils literal notranslate"><span class="pre">TIMEOUT</span></code> seconds of inactivity.
+This is available for the <code class="docutils literal notranslate"><span class="pre">start</span></code>, <code class="docutils literal notranslate"><span class="pre">restart</span></code>, and <code class="docutils literal notranslate"><span class="pre">run</span></code> commands.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-update">
+<span class="sig-name descname"><span class="pre">--update</span></span><span class="sig-prename descclassname"> <span class="pre">FILE</span></span><a class="headerlink" href="#cmdoption-dmypy-update" title="永久链接至目标">¶</a></dt>
+<dd><p>Re-check <code class="docutils literal notranslate"><span class="pre">FILE</span></code>, or add it to the set of files being
+checked (and check it). This option may be repeated, and it’s only available for
+the <code class="docutils literal notranslate"><span class="pre">recheck</span></code> command.  By default, mypy finds and checks all files changed
+since the previous run and files that depend on them.  However, if you use this option
+(and/or <a class="reference internal" href="#cmdoption-dmypy-remove"><code class="xref std std-option docutils literal notranslate"><span class="pre">--remove</span></code></a>), mypy assumes that only the explicitly
+specified files have changed. This is only useful to
+speed up mypy if you type check a very large number of files, and use an
+external, fast file system watcher, such as <a class="reference external" href="https://facebook.github.io/watchman/">watchman</a> or
+<a class="reference external" href="https://pypi.org/project/watchdog/">watchdog</a>, to determine which files got edited or deleted.
+<em>Note:</em> This option is never required and is only available for
+performance tuning.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-remove">
+<span class="sig-name descname"><span class="pre">--remove</span></span><span class="sig-prename descclassname"> <span class="pre">FILE</span></span><a class="headerlink" href="#cmdoption-dmypy-remove" title="永久链接至目标">¶</a></dt>
+<dd><p>Remove <code class="docutils literal notranslate"><span class="pre">FILE</span></code> from the set of files being checked. This option may be
+repeated. This is only available for the
+<code class="docutils literal notranslate"><span class="pre">recheck</span></code> command. See <a class="reference internal" href="#cmdoption-dmypy-update"><code class="xref std std-option docutils literal notranslate"><span class="pre">--update</span></code></a> above for when this may be useful.
+<em>Note:</em> This option is never required and is only available for performance
+tuning.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-fswatcher-dump-file">
+<span class="sig-name descname"><span class="pre">--fswatcher-dump-file</span></span><span class="sig-prename descclassname"> <span class="pre">FILE</span></span><a class="headerlink" href="#cmdoption-dmypy-fswatcher-dump-file" title="永久链接至目标">¶</a></dt>
+<dd><p>Collect information about the current internal file state. This is
+only available for the <code class="docutils literal notranslate"><span class="pre">status</span></code> command. This will dump JSON to
+<code class="docutils literal notranslate"><span class="pre">FILE</span></code> in the format <code class="docutils literal notranslate"><span class="pre">{path:</span> <span class="pre">[modification_time,</span> <span class="pre">size,</span>
+<span class="pre">content_hash]}</span></code>. This is useful for debugging the built-in file
+system watcher. <em>Note:</em> This is an internal flag and the format may
+change.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-perf-stats-file">
+<span class="sig-name descname"><span class="pre">--perf-stats-file</span></span><span class="sig-prename descclassname"> <span class="pre">FILE</span></span><a class="headerlink" href="#cmdoption-dmypy-perf-stats-file" title="永久链接至目标">¶</a></dt>
+<dd><p>Write performance profiling information to <code class="docutils literal notranslate"><span class="pre">FILE</span></code>. This is only available
+for the <code class="docutils literal notranslate"><span class="pre">check</span></code>, <code class="docutils literal notranslate"><span class="pre">recheck</span></code>, and <code class="docutils literal notranslate"><span class="pre">run</span></code> commands.</p>
+</dd></dl>
+
+</section>
+<section id="static-inference-of-annotations">
+<h2>Static inference of annotations<a class="headerlink" href="#static-inference-of-annotations" title="永久链接至标题">¶</a></h2>
+<p>The mypy daemon supports (as an experimental feature) statically inferring
+draft function and method type annotations. Use <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">suggest</span> <span class="pre">FUNCTION</span></code> to
+generate a draft signature in the format
+<code class="docutils literal notranslate"><span class="pre">(param_type_1,</span> <span class="pre">param_type_2,</span> <span class="pre">...)</span> <span class="pre">-&gt;</span> <span class="pre">ret_type</span></code> (types are included for all
+arguments, including keyword-only arguments, <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>).</p>
+<p>This is a low-level feature intended to be used by editor integrations,
+IDEs, and other tools (for example, the <a class="reference external" href="https://github.com/dropbox/mypy-PyCharm-plugin">mypy plugin for PyCharm</a>),
+to automatically add annotations to source files, or to propose function
+signatures.</p>
+<p>In this example, the function <code class="docutils literal notranslate"><span class="pre">format_id()</span></code> has no annotation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">format_id</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;User: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+
+<span class="n">root</span> <span class="o">=</span> <span class="n">format_id</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">suggest</span></code> uses call sites, return statements, and other heuristics (such as
+looking for signatures in base classes) to infer that <code class="docutils literal notranslate"><span class="pre">format_id()</span></code> accepts
+an <code class="docutils literal notranslate"><span class="pre">int</span></code> argument and returns a <code class="docutils literal notranslate"><span class="pre">str</span></code>. Use <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">suggest</span> <span class="pre">module.format_id</span></code> to
+print the suggested signature for the function.</p>
+<p>More generally, the target function may be specified in two ways:</p>
+<ul class="simple">
+<li><p>By its fully qualified name, i.e. <code class="docutils literal notranslate"><span class="pre">[package.]module.[class.]function</span></code>.</p></li>
+<li><p>By its location in a source file, i.e. <code class="docutils literal notranslate"><span class="pre">/path/to/file.py:line</span></code>. The path can be
+absolute or relative, and <code class="docutils literal notranslate"><span class="pre">line</span></code> can refer to any line number within
+the function body.</p></li>
+</ul>
+<p>This command can also be used to find a more precise alternative for an existing,
+imprecise annotation with some <code class="docutils literal notranslate"><span class="pre">Any</span></code> types.</p>
+<p>The following flags customize various aspects of the <code class="docutils literal notranslate"><span class="pre">dmypy</span> <span class="pre">suggest</span></code>
+command.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-json">
+<span class="sig-name descname"><span class="pre">--json</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-dmypy-json" title="永久链接至目标">¶</a></dt>
+<dd><p>Output the signature as JSON, so that <a class="reference external" href="https://github.com/dropbox/pyannotate">PyAnnotate</a> can read it and add
+the signature to the source file. Here is what the JSON looks like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s2">&quot;func_name&quot;</span><span class="p">:</span> <span class="s2">&quot;example.format_id&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;line&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/absolute/path/to/example.py&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;signature&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;arg_types&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">],</span> <span class="s2">&quot;return_type&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">}}]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-no-errors">
+<span class="sig-name descname"><span class="pre">--no-errors</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-dmypy-no-errors" title="永久链接至目标">¶</a></dt>
+<dd><p>Only produce suggestions that cause no errors in the checked code. By default,
+mypy will try to find the most precise type, even if it causes some type errors.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-no-any">
+<span class="sig-name descname"><span class="pre">--no-any</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-dmypy-no-any" title="永久链接至目标">¶</a></dt>
+<dd><p>Only produce suggestions that don’t contain <code class="docutils literal notranslate"><span class="pre">Any</span></code> types. By default mypy
+proposes the most precise signature found, even if it contains <code class="docutils literal notranslate"><span class="pre">Any</span></code> types.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-flex-any">
+<span class="sig-name descname"><span class="pre">--flex-any</span></span><span class="sig-prename descclassname"> <span class="pre">FRACTION</span></span><a class="headerlink" href="#cmdoption-dmypy-flex-any" title="永久链接至目标">¶</a></dt>
+<dd><p>Only allow some fraction of types in the suggested signature to be <code class="docutils literal notranslate"><span class="pre">Any</span></code> types.
+The fraction ranges from <code class="docutils literal notranslate"><span class="pre">0</span></code> (same as <code class="docutils literal notranslate"><span class="pre">--no-any</span></code>) to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-try-text">
+<span class="sig-name descname"><span class="pre">--try-text</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-dmypy-try-text" title="永久链接至目标">¶</a></dt>
+<dd><p>Try also using <code class="docutils literal notranslate"><span class="pre">unicode</span></code> wherever <code class="docutils literal notranslate"><span class="pre">str</span></code> is inferred. This flag may be useful
+for annotating Python 2/3 straddling code.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-callsites">
+<span class="sig-name descname"><span class="pre">--callsites</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-dmypy-callsites" title="永久链接至目标">¶</a></dt>
+<dd><p>Only find call sites for a given function instead of suggesting a type.
+This will produce a list with line numbers and types of actual
+arguments for each call: <code class="docutils literal notranslate"><span class="pre">/path/to/file.py:line:</span> <span class="pre">(arg_type_1,</span> <span class="pre">arg_type_2,</span> <span class="pre">...)</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-use-fixme">
+<span class="sig-name descname"><span class="pre">--use-fixme</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-dmypy-use-fixme" title="永久链接至目标">¶</a></dt>
+<dd><p>Use a dummy name instead of plain <code class="docutils literal notranslate"><span class="pre">Any</span></code> for types that cannot
+be inferred. This may be useful to emphasize to a user that a given type
+couldn’t be inferred and needs to be entered manually.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dmypy-max-guesses">
+<span class="sig-name descname"><span class="pre">--max-guesses</span></span><span class="sig-prename descclassname"> <span class="pre">NUMBER</span></span><a class="headerlink" href="#cmdoption-dmypy-max-guesses" title="永久链接至目标">¶</a></dt>
+<dd><p>Set the maximum number of types to try for a function (default: <code class="docutils literal notranslate"><span class="pre">64</span></code>).</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Mypy daemon (mypy server)</a><ul>
+<li><a class="reference internal" href="#basic-usage">Basic usage</a></li>
+<li><a class="reference internal" href="#daemon-client-commands">Daemon client commands</a></li>
+<li><a class="reference internal" href="#additional-daemon-flags">Additional daemon flags</a></li>
+<li><a class="reference internal" href="#static-inference-of-annotations">Static inference of annotations</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="inline_config.html"
+                          title="上一章">Inline configuration</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="installed_packages.html"
+                          title="下一章">Using installed packages</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mypy_daemon.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="installed_packages.html" title="Using installed packages"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="inline_config.html" title="Inline configuration"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Mypy daemon (mypy server)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

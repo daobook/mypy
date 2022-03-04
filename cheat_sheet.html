@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Type hints cheat sheet (Python 2) &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Built-in types" href="builtin_types.html" />
+    <link rel="prev" title="Type hints cheat sheet (Python 3)" href="cheat_sheet_py3.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="builtin_types.html" title="Built-in types"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="cheat_sheet_py3.html" title="Type hints cheat sheet (Python 3)"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Type hints cheat sheet (Python 2)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="type-hints-cheat-sheet-python-2">
+<span id="cheat-sheet-py2"></span><h1>Type hints cheat sheet (Python 2)<a class="headerlink" href="#type-hints-cheat-sheet-python-2" title="永久链接至标题">¶</a></h1>
+<p>This document is a quick cheat sheet showing how the <span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0484"><strong>PEP 484</strong></a> type
+language represents various common types in Python 2.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Technically many of the type annotations shown below are redundant,
+because mypy can derive them from the type of the expression.  So
+many of the examples have a dual purpose: show how to write the
+annotation, and show the inferred types.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>To check Python 2 code with mypy, you’ll need to install mypy with
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'mypy[python2]'</span></code>.</p>
+</div>
+<section id="built-in-types">
+<h2>Built-in types<a class="headerlink" href="#built-in-types" title="永久链接至标题">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="c1"># For simple built-in types, just use the name of the type</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># type: int</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># type: float</span>
+<span class="n">x</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># type: bool</span>
+<span class="n">x</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>  <span class="c1"># type: str</span>
+<span class="n">x</span> <span class="o">=</span> <span class="sa">u</span><span class="s2">&quot;test&quot;</span>  <span class="c1"># type: unicode</span>
+
+<span class="c1"># For collections, the name of the type is capitalized, and the</span>
+<span class="c1"># name of the type inside the collection is in brackets</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># type: List[int]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">}</span>  <span class="c1"># type: Set[int]</span>
+
+<span class="c1"># For mappings, we need the types of both keys and values</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;field&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">}</span>  <span class="c1"># type: Dict[str, float]</span>
+
+<span class="c1"># For tuples, we specify the types of all the elements</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">)</span>  <span class="c1"># type: Tuple[int, str, float]</span>
+
+<span class="c1"># For textual data, use Text</span>
+<span class="c1"># (&quot;Text&quot; means  &quot;unicode&quot; in Python 2 and &quot;str&quot; in Python 3)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="sa">u</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="sa">u</span><span class="s2">&quot;two&quot;</span><span class="p">]</span>  <span class="c1"># type: List[Text]</span>
+
+<span class="c1"># Use Optional[] for values that could be None</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">some_function</span><span class="p">()</span>  <span class="c1"># type: Optional[str]</span>
+<span class="c1"># Mypy understands a value can&#39;t be None in an if-statement</span>
+<span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span> <span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+<span class="c1"># If a value can never be None due to some invariants, use an assert</span>
+<span class="k">assert</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<span class="nb">print</span> <span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="永久链接至标题">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="c1"># This is how you annotate a function definition</span>
+<span class="k">def</span> <span class="nf">stringify</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="c1"># type: (int) -&gt; str</span>
+    <span class="sd">&quot;&quot;&quot;Your function docstring goes here after the type definition.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+
+<span class="c1"># This function has no parameters and also returns nothing. Annotations</span>
+<span class="c1"># can also be placed on the same line as their function headers.</span>
+<span class="k">def</span> <span class="nf">greet_world</span><span class="p">():</span> <span class="c1"># type: () -&gt; None</span>
+    <span class="nb">print</span> <span class="s2">&quot;Hello, world!&quot;</span>
+
+<span class="c1"># And here&#39;s how you specify multiple arguments</span>
+<span class="k">def</span> <span class="nf">plus</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span> <span class="n">num2</span><span class="p">):</span>
+    <span class="c1"># type: (int, int) -&gt; int</span>
+    <span class="k">return</span> <span class="n">num1</span> <span class="o">+</span> <span class="n">num2</span>
+
+<span class="c1"># Add type annotations for arguments with default values as though they</span>
+<span class="c1"># had no defaults</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">num1</span><span class="p">,</span> <span class="n">my_float</span><span class="o">=</span><span class="mf">3.5</span><span class="p">):</span>
+    <span class="c1"># type: (int, float) -&gt; float</span>
+    <span class="k">return</span> <span class="n">num1</span> <span class="o">+</span> <span class="n">my_float</span>
+
+<span class="c1"># An argument can be declared positional-only by giving it a name</span>
+<span class="c1"># starting with two underscores</span>
+<span class="k">def</span> <span class="nf">quux</span><span class="p">(</span><span class="n">__x</span><span class="p">):</span>
+    <span class="c1"># type: (int) -&gt; None</span>
+    <span class="k">pass</span>
+
+<span class="n">quux</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Fine</span>
+<span class="n">quux</span><span class="p">(</span><span class="n">__x</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Error</span>
+
+<span class="c1"># This is how you annotate a callable (function) value</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">f</span>  <span class="c1"># type: Callable[[int, float], float]</span>
+
+<span class="c1"># A generator function that yields ints is secretly just a function that</span>
+<span class="c1"># returns an iterator of ints, so that&#39;s how we annotate it</span>
+<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="c1"># type: (int) -&gt; Iterator[int]</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">i</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="c1"># There&#39;s an alternative syntax for functions with many arguments</span>
+<span class="k">def</span> <span class="nf">send_email</span><span class="p">(</span><span class="n">address</span><span class="p">,</span>     <span class="c1"># type: Union[str, List[str]]</span>
+               <span class="n">sender</span><span class="p">,</span>      <span class="c1"># type: str</span>
+               <span class="n">cc</span><span class="p">,</span>          <span class="c1"># type: Optional[List[str]]</span>
+               <span class="n">bcc</span><span class="p">,</span>         <span class="c1"># type: Optional[List[str]]</span>
+               <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+               <span class="n">body</span><span class="o">=</span><span class="kc">None</span>    <span class="c1"># type: List[str]</span>
+               <span class="p">):</span>
+    <span class="c1"># type: (...) -&gt; bool</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="when-you-re-puzzled-or-when-things-are-complicated">
+<h2>When you’re puzzled or when things are complicated<a class="headerlink" href="#when-you-re-puzzled-or-when-things-are-complicated" title="永久链接至标题">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="c1"># To find out what type mypy infers for an expression anywhere in</span>
+<span class="c1"># your program, wrap it in reveal_type().  Mypy will print an error</span>
+<span class="c1"># message with the type; remove it again before running the code.</span>
+<span class="n">reveal_type</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># -&gt; Revealed type is &quot;builtins.int&quot;</span>
+
+<span class="c1"># Use Union when something could be one of a few types</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;fun&quot;</span><span class="p">]</span>  <span class="c1"># type: List[Union[int, str]]</span>
+
+<span class="c1"># Use Any if you don&#39;t know the type of something or it&#39;s too</span>
+<span class="c1"># dynamic to write a type for</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">mystery_function</span><span class="p">()</span>  <span class="c1"># type: Any</span>
+
+<span class="c1"># If you initialize a variable with an empty container or &quot;None&quot;</span>
+<span class="c1"># you may have to help mypy a bit by providing a type annotation</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[str]</span>
+<span class="n">x</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[str]</span>
+
+<span class="c1"># This makes each positional arg and each keyword arg a &quot;str&quot;</span>
+<span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># type: (*str, **str) -&gt; str</span>
+    <span class="n">request</span> <span class="o">=</span> <span class="n">make_request</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_api_query</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+<span class="c1"># Use a &quot;type: ignore&quot; comment to suppress errors on a given line,</span>
+<span class="c1"># when your code confuses mypy or runs into an outright bug in mypy.</span>
+<span class="c1"># Good practice is to comment every &quot;ignore&quot; with a bug link</span>
+<span class="c1"># (in mypy, typeshed, or your own code) or an explanation of the issue.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">confusing_function</span><span class="p">()</span> <span class="c1"># type: ignore # https://github.com/python/mypy/issues/1167</span>
+
+<span class="c1"># &quot;cast&quot; is a helper function that lets you override the inferred</span>
+<span class="c1"># type of an expression. It&#39;s only for mypy -- there&#39;s no runtime check.</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">a</span><span class="p">)</span>  <span class="c1"># Passes fine</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">a</span><span class="p">)</span>  <span class="c1"># Passes fine (no runtime check)</span>
+<span class="n">reveal_type</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>  <span class="c1"># -&gt; Revealed type is &quot;builtins.list[builtins.str]&quot;</span>
+<span class="nb">print</span> <span class="n">c</span>  <span class="c1"># -&gt; [4]; the object is not cast</span>
+
+<span class="c1"># If you want dynamic attributes on your class, have it override &quot;__setattr__&quot;</span>
+<span class="c1"># or &quot;__getattr__&quot; in a stub or in your source code.</span>
+<span class="c1">#</span>
+<span class="c1"># &quot;__setattr__&quot; allows for dynamic assignment to names</span>
+<span class="c1"># &quot;__getattr__&quot; allows for dynamic access to names</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+    <span class="c1"># This will allow assignment to any A.x, if x is the same type as &quot;value&quot;</span>
+    <span class="c1"># (use &quot;value: Any&quot; to allow arbitrary types)</span>
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># type: (str, int) -&gt; None</span>
+        <span class="o">...</span>
+
+<span class="n">a</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="mi">42</span>  <span class="c1"># Works</span>
+<span class="n">a</span><span class="o">.</span><span class="n">bar</span> <span class="o">=</span> <span class="s1">&#39;Ex-parrot&#39;</span>  <span class="c1"># Fails type checking</span>
+</pre></div>
+</div>
+</section>
+<section id="standard-duck-types">
+<h2>Standard “duck types”<a class="headerlink" href="#standard-duck-types" title="永久链接至标题">¶</a></h2>
+<p>In typical Python code, many functions that can take a list or a dict
+as an argument only need their argument to be somehow “list-like” or
+“dict-like”.  A specific meaning of “list-like” or “dict-like” (or
+something-else-like) is called a “duck type”, and several duck types
+that are common in idiomatic Python are standardized.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Iterable</span>
+
+<span class="c1"># Use Iterable for generic iterables (anything usable in &quot;for&quot;),</span>
+<span class="c1"># and Sequence where a sequence (supporting &quot;len&quot; and &quot;__getitem__&quot;) is</span>
+<span class="c1"># required</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">iterable_of_ints</span><span class="p">):</span>
+    <span class="c1"># type: (Iterable[int]) -&gt; List[str]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">iterator_of_ints</span><span class="p">]</span>
+
+<span class="n">f</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="c1"># Mapping describes a dict-like object (with &quot;__getitem__&quot;) that we won&#39;t</span>
+<span class="c1"># mutate, and MutableMapping one (with &quot;__setitem__&quot;) that we might</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">my_dict</span><span class="p">):</span>
+    <span class="c1"># type: (Mapping[int, str]) -&gt; List[int]</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">my_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<span class="n">f</span><span class="p">({</span><span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;no&#39;</span><span class="p">})</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">my_mapping</span><span class="p">):</span>
+    <span class="c1"># type: (MutableMapping[int, str]) -&gt; Set[str]</span>
+    <span class="n">my_mapping</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;maybe&#39;</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">my_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+<span class="n">f</span><span class="p">({</span><span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;no&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="永久链接至标题">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="c1"># For instance methods, omit type for &quot;self&quot;</span>
+    <span class="k">def</span> <span class="nf">my_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">str1</span><span class="p">):</span>
+        <span class="c1"># type: (int, str) -&gt; str</span>
+        <span class="k">return</span> <span class="n">num</span> <span class="o">*</span> <span class="n">str1</span>
+
+    <span class="c1"># The &quot;__init__&quot; method doesn&#39;t return anything, so it gets return</span>
+    <span class="c1"># type &quot;None&quot; just like any other method that doesn&#39;t return anything</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; None</span>
+        <span class="k">pass</span>
+
+<span class="c1"># User-defined classes are valid as types in annotations</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>  <span class="c1"># type: MyClass</span>
+</pre></div>
+</div>
+</section>
+<section id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="永久链接至标题">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Match</span><span class="p">,</span> <span class="n">AnyStr</span><span class="p">,</span> <span class="n">IO</span>
+
+<span class="c1"># &quot;typing.Match&quot; describes regex matches from the re module</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[0-9]+&#39;</span><span class="p">,</span> <span class="s2">&quot;15&quot;</span><span class="p">)</span>  <span class="c1"># type: Match[str]</span>
+
+<span class="c1"># Use IO[] for functions that should accept or return any</span>
+<span class="c1"># object that comes from an open() call (IO[] does not</span>
+<span class="c1"># distinguish between reading, writing or other modes)</span>
+<span class="k">def</span> <span class="nf">get_sys_IO</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">):</span>
+    <span class="c1"># type: (str) -&gt; IO[str]</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;w&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+</pre></div>
+</div>
+</section>
+<section id="decorators">
+<h2>Decorators<a class="headerlink" href="#decorators" title="永久链接至标题">¶</a></h2>
+<p>Decorator functions can be expressed via generics. See
+<a class="reference internal" href="generics.html#declaring-decorators"><span class="std std-ref">Declaring decorators</span></a> for the more details.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="n">F</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">bare_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>  <span class="c1"># type: (F) -&gt; F</span>
+    <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">decorator_args</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>  <span class="c1"># type: (str) -&gt; Callable[[F], F]</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Type hints cheat sheet (Python 2)</a><ul>
+<li><a class="reference internal" href="#built-in-types">Built-in types</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#when-you-re-puzzled-or-when-things-are-complicated">When you’re puzzled or when things are complicated</a></li>
+<li><a class="reference internal" href="#standard-duck-types">Standard “duck types”</a></li>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
+<li><a class="reference internal" href="#decorators">Decorators</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="cheat_sheet_py3.html"
+                          title="上一章">Type hints cheat sheet (Python 3)</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="builtin_types.html"
+                          title="下一章">Built-in types</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cheat_sheet.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="builtin_types.html" title="Built-in types"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="cheat_sheet_py3.html" title="Type hints cheat sheet (Python 3)"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Type hints cheat sheet (Python 2)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,847 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Common issues and solutions &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Supported Python features" href="supported_python_features.html" />
+    <link rel="prev" title="Automatic stub testing (stubtest)" href="stubtest.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="supported_python_features.html" title="Supported Python features"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="stubtest.html" title="Automatic stub testing (stubtest)"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Common issues and solutions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="common-issues-and-solutions">
+<span id="common-issues"></span><h1>Common issues and solutions<a class="headerlink" href="#common-issues-and-solutions" title="永久链接至标题">¶</a></h1>
+<p>This section has examples of cases when you need to update your code
+to use static typing, and ideas for working around issues if mypy
+doesn’t work as expected. Statically typed code is often identical to
+normal Python code (except for type annotations), but sometimes you need
+to do things slightly differently.</p>
+<section id="can-t-install-mypy-using-pip">
+<h2>Can’t install mypy using pip<a class="headerlink" href="#can-t-install-mypy-using-pip" title="永久链接至标题">¶</a></h2>
+<p>If installation fails, you’ve probably hit one of these issues:</p>
+<ul class="simple">
+<li><p>Mypy needs Python 3.6 or later to run.</p></li>
+<li><p>You may have to run pip like this:
+<code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">mypy</span></code>.</p></li>
+</ul>
+</section>
+<section id="no-errors-reported-for-obviously-wrong-code">
+<span id="annotations-needed"></span><h2>No errors reported for obviously wrong code<a class="headerlink" href="#no-errors-reported-for-obviously-wrong-code" title="永久链接至标题">¶</a></h2>
+<p>There are several common reasons why obviously wrong code is not
+flagged as an error.</p>
+<p><strong>The function containing the error is not annotated.</strong> Functions that
+do not have any annotations (neither for any argument nor for the
+return type) are not type-checked, and even the most blatant type
+errors (e.g. <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">+</span> <span class="pre">'a'</span></code>) pass silently.  The solution is to add
+annotations. Where that isn’t possible, functions without annotations
+can be checked using <a class="reference internal" href="command_line.html#cmdoption-mypy-check-untyped-defs"><code class="xref std std-option docutils literal notranslate"><span class="pre">--check-untyped-defs</span></code></a>.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>  <span class="c1"># No error!</span>
+</pre></div>
+</div>
+<p>This gives no error even though <code class="docutils literal notranslate"><span class="pre">a.split()</span></code> is “obviously” a list
+(the author probably meant <code class="docutils literal notranslate"><span class="pre">a.strip()</span></code>).  The error is reported
+once you add annotations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+<span class="c1"># error: Unsupported operand types for + (&quot;str&quot; and List[str])</span>
+</pre></div>
+</div>
+<p>If you don’t know what types to add, you can use <code class="docutils literal notranslate"><span class="pre">Any</span></code>, but beware:</p>
+<p><strong>One of the values involved has type ‘Any’.</strong> Extending the above
+example, if we were to leave out the annotation for <code class="docutils literal notranslate"><span class="pre">a</span></code>, we’d get
+no error:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>  <span class="c1"># No error!</span>
+</pre></div>
+</div>
+<p>The reason is that if the type of <code class="docutils literal notranslate"><span class="pre">a</span></code> is unknown, the type of
+<code class="docutils literal notranslate"><span class="pre">a.split()</span></code> is also unknown, so it is inferred as having type
+<code class="docutils literal notranslate"><span class="pre">Any</span></code>, and it is no error to add a string to an <code class="docutils literal notranslate"><span class="pre">Any</span></code>.</p>
+<p>If you’re having trouble debugging such situations,
+<a class="reference internal" href="#reveal-type"><span class="std std-ref">reveal_type()</span></a> might come in handy.</p>
+<p>Note that sometimes library stubs have imprecise type information,
+e.g. the <a class="reference external" href="https://docs.python.org/3/library/functions.html#pow" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pow()</span></code></a> builtin returns <code class="docutils literal notranslate"><span class="pre">Any</span></code> (see <a class="reference external" href="https://github.com/python/typeshed/issues/285">typeshed issue 285</a> for the reason).</p>
+<p><a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__init__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__</span></code></a> <strong>method has no annotated
+arguments or return type annotation.</strong> <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__init__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__</span></code></a>
+is considered fully-annotated <strong>if at least one argument is annotated</strong>,
+while mypy will infer the return type as <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+The implication is that, for a <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__init__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__</span></code></a> method
+that has no argument, you’ll have to explicitly annotate the return type
+as <code class="docutils literal notranslate"><span class="pre">None</span></code> to type-check this <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__init__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__</span></code></a> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+<span class="k">class</span> <span class="nc">A</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span> <span class="c1"># Return type inferred as None, considered as typed method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># error: Argument 1 to &quot;foo&quot; has incompatible type &quot;int&quot;; expected &quot;str&quot;</span>
+
+<span class="k">class</span> <span class="nc">B</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># No argument is annotated, considered as untyped method</span>
+        <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># No error!</span>
+
+<span class="k">class</span> <span class="nc">C</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Must specify return type to type-check</span>
+        <span class="n">foo</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># error: Argument 1 to &quot;foo&quot; has incompatible type &quot;int&quot;; expected &quot;str&quot;</span>
+</pre></div>
+</div>
+<p><strong>Some imports may be silently ignored</strong>.  Another source of
+unexpected <code class="docutils literal notranslate"><span class="pre">Any</span></code> values are the <a class="reference internal" href="command_line.html#cmdoption-mypy-ignore-missing-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--ignore-missing-imports</span></code></a> and <a class="reference internal" href="command_line.html#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports=skip</span></code></a> flags.  When you use <a class="reference internal" href="command_line.html#cmdoption-mypy-ignore-missing-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--ignore-missing-imports</span></code></a>,
+any imported module that cannot be found is silently replaced with
+<code class="docutils literal notranslate"><span class="pre">Any</span></code>.  When using <a class="reference internal" href="command_line.html#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports=skip</span></code></a> the same is true for
+modules for which a <code class="docutils literal notranslate"><span class="pre">.py</span></code> file is found but that are not specified
+on the command line.  (If a <code class="docutils literal notranslate"><span class="pre">.pyi</span></code> stub is found it is always
+processed normally, regardless of the value of
+<a class="reference internal" href="command_line.html#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports</span></code></a>.)  To help debug the former situation (no
+module found at all) leave out <a class="reference internal" href="command_line.html#cmdoption-mypy-ignore-missing-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--ignore-missing-imports</span></code></a>; to get
+clarity about the latter use <a class="reference internal" href="command_line.html#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports=error</span></code></a>.  You can
+read up about these and other useful flags in <a class="reference internal" href="command_line.html#command-line"><span class="std std-ref">The mypy command line</span></a>.</p>
+<p><strong>A function annotated as returning a non-optional type returns ‘None’
+and mypy doesn’t complain</strong>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># No error!</span>
+</pre></div>
+</div>
+<p>You may have disabled strict optional checking (see
+<a class="reference internal" href="kinds_of_types.html#no-strict-optional"><span class="std std-ref">Disabling strict optional checking</span></a> for more).</p>
+</section>
+<section id="spurious-errors-and-locally-silencing-the-checker">
+<span id="silencing-checker"></span><h2>Spurious errors and locally silencing the checker<a class="headerlink" href="#spurious-errors-and-locally-silencing-the-checker" title="永久链接至标题">¶</a></h2>
+<p>You can use a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comment to silence the type checker
+on a particular line. For example, let’s say our code is using
+the C extension module <code class="docutils literal notranslate"><span class="pre">frobnicate</span></code>, and there’s no stub available.
+Mypy will complain about this, as it has no information about the
+module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">frobnicate</span>  <span class="c1"># Error: No module &quot;frobnicate&quot;</span>
+<span class="n">frobnicate</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can add a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comment to tell mypy to ignore this
+error:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">frobnicate</span>  <span class="c1"># type: ignore</span>
+<span class="n">frobnicate</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>  <span class="c1"># Okay!</span>
+</pre></div>
+</div>
+<p>The second line is now fine, since the ignore comment causes the name
+<code class="docutils literal notranslate"><span class="pre">frobnicate</span></code> to get an implicit <code class="docutils literal notranslate"><span class="pre">Any</span></code> type.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>You can use the form <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore[&lt;code&gt;]</span></code> to only ignore
+specific errors on the line. This way you are less likely to
+silence unexpected errors that are not safe to ignore, and this
+will also document what the purpose of the comment is.  See
+<a class="reference internal" href="error_codes.html#error-codes"><span class="std std-ref">Error codes</span></a> for more information.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comment will only assign the implicit <code class="docutils literal notranslate"><span class="pre">Any</span></code>
+type if mypy cannot find information about that particular module. So,
+if we did have a stub available for <code class="docutils literal notranslate"><span class="pre">frobnicate</span></code> then mypy would
+ignore the <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comment and typecheck the stub as usual.</p>
+</div>
+<p>Another option is to explicitly annotate values with type <code class="docutils literal notranslate"><span class="pre">Any</span></code> –
+mypy will let you perform arbitrary operations on <code class="docutils literal notranslate"><span class="pre">Any</span></code>
+values. Sometimes there is no more precise type you can use for a
+particular value, especially if you use dynamic Python features
+such as <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__getattr__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__getattr__</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Wrapper</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, you can create a stub file (<code class="docutils literal notranslate"><span class="pre">.pyi</span></code>) for a file that
+generates spurious errors. Mypy will only look at the stub file
+and ignore the implementation, since stub files take precedence
+over <code class="docutils literal notranslate"><span class="pre">.py</span></code> files.</p>
+</section>
+<section id="ignoring-a-whole-file">
+<h2>Ignoring a whole file<a class="headerlink" href="#ignoring-a-whole-file" title="永久链接至标题">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comment at the top of a module (before any statements,
+including imports or docstrings) has the effect of ignoring the <em>entire</em> module.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># type: ignore</span>
+
+<span class="kn">import</span> <span class="nn">foo</span>
+
+<span class="n">foo</span><span class="o">.</span><span class="n">bar</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="unexpected-errors-about-none-and-or-optional-types">
+<h2>Unexpected errors about ‘None’ and/or ‘Optional’ types<a class="headerlink" href="#unexpected-errors-about-none-and-or-optional-types" title="永久链接至标题">¶</a></h2>
+<p>Starting from mypy 0.600, mypy uses
+<a class="reference internal" href="kinds_of_types.html#strict-optional"><span class="std std-ref">strict optional checking</span></a> by default,
+and the <code class="docutils literal notranslate"><span class="pre">None</span></code> value is not compatible with non-optional types.
+It’s easy to switch back to the older behavior where <code class="docutils literal notranslate"><span class="pre">None</span></code> was
+compatible with arbitrary types (see <a class="reference internal" href="kinds_of_types.html#no-strict-optional"><span class="std std-ref">Disabling strict optional checking</span></a>).
+You can also fall back to this behavior if strict optional
+checking would require a large number of <code class="docutils literal notranslate"><span class="pre">assert</span> <span class="pre">foo</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">None</span></code>
+checks to be inserted, and you want to minimize the number
+of code changes required to get a clean mypy run.</p>
+</section>
+<section id="issues-with-code-at-runtime">
+<h2>Issues with code at runtime<a class="headerlink" href="#issues-with-code-at-runtime" title="永久链接至标题">¶</a></h2>
+<p>Idiomatic use of type annotations can sometimes run up against what a given
+version of Python considers legal code. These can result in some of the
+following errors when trying to run your code:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ImportError</span></code> from circular imports</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NameError:</span> <span class="pre">name</span> <span class="pre">&quot;X&quot;</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">defined</span></code> from forward references</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">'type'</span> <span class="pre">object</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">subscriptable</span></code> from types that are not generic at runtime</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ImportError</span></code> or <code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError</span></code> from use of stub definitions not available at runtime</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">unsupported</span> <span class="pre">operand</span> <span class="pre">type(s)</span> <span class="pre">for</span> <span class="pre">|:</span> <span class="pre">'type'</span> <span class="pre">and</span> <span class="pre">'type'</span></code> from use of new syntax</p></li>
+</ul>
+<p>For dealing with these, see <a class="reference internal" href="runtime_troubles.html#runtime-troubles"><span class="std std-ref">Annotation issues at runtime</span></a>.</p>
+</section>
+<section id="mypy-runs-are-slow">
+<h2>Mypy runs are slow<a class="headerlink" href="#mypy-runs-are-slow" title="永久链接至标题">¶</a></h2>
+<p>If your mypy runs feel slow, you should probably use the <a class="reference internal" href="mypy_daemon.html#mypy-daemon"><span class="std std-ref">mypy
+daemon</span></a>, which can speed up incremental mypy runtimes by
+a factor of 10 or more. <a class="reference internal" href="additional_features.html#remote-cache"><span class="std std-ref">Remote caching</span></a> can
+make cold mypy runs several times faster.</p>
+</section>
+<section id="types-of-empty-collections">
+<h2>Types of empty collections<a class="headerlink" href="#types-of-empty-collections" title="永久链接至标题">¶</a></h2>
+<p>You often need to specify the type when you assign an empty list or
+dict to a new variable, as mentioned earlier:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>Without the annotation mypy can’t always figure out the
+precise type of <code class="docutils literal notranslate"><span class="pre">a</span></code>.</p>
+<p>You can use a simple empty list literal in a dynamically typed function (as the
+type of <code class="docutils literal notranslate"><span class="pre">a</span></code> would be implicitly <code class="docutils literal notranslate"><span class="pre">Any</span></code> and need not be inferred), if type
+of the variable has been declared or inferred before, or if you perform a simple
+modification operation in the same scope (such as <code class="docutils literal notranslate"><span class="pre">append</span></code> for a list):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Okay because followed by append, inferred type List[int]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, in more complex cases an explicit type annotation can be
+required (mypy will tell you this). Often the annotation can
+make your code easier to understand, so it doesn’t only help mypy but
+everybody who is reading the code!</p>
+</section>
+<section id="redefinitions-with-incompatible-types">
+<h2>Redefinitions with incompatible types<a class="headerlink" href="#redefinitions-with-incompatible-types" title="永久链接至标题">¶</a></h2>
+<p>Each name within a function only has a single ‘declared’ type. You can
+reuse for loop indices etc., but if you want to use a variable with
+multiple types within a single function, you may need to declare it
+with the <code class="docutils literal notranslate"><span class="pre">Any</span></code> type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="o">...</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>        <span class="c1"># Type error: n has type int</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>This limitation could be lifted in a future mypy
+release.</p>
+</div>
+<p>Note that you can redefine a variable with a more <em>precise</em> or a more
+concrete type. For example, you can redefine a sequence (which does
+not support <code class="docutils literal notranslate"><span class="pre">sort()</span></code>) as a list and sort it in-place:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># Type of x is Sequence[int] here; we don&#39;t know the concrete type.</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="c1"># Type of x is List[int] here.</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>  <span class="c1"># Okay!</span>
+</pre></div>
+</div>
+</section>
+<section id="invariance-vs-covariance">
+<span id="variance"></span><h2>Invariance vs covariance<a class="headerlink" href="#invariance-vs-covariance" title="永久链接至标题">¶</a></h2>
+<p>Most mutable generic collections are invariant, and mypy considers all
+user-defined generic classes invariant by default
+(see <a class="reference internal" href="generics.html#variance-of-generics"><span class="std std-ref">Variance of generic types</span></a> for motivation). This could lead to some
+unexpected errors when combined with type inference. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">A</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">class</span> <span class="nc">B</span><span class="p">(</span><span class="n">A</span><span class="p">):</span> <span class="o">...</span>
+
+<span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="n">A</span><span class="p">(),</span> <span class="n">A</span><span class="p">()]</span>  <span class="c1"># Inferred type is List[A]</span>
+<span class="n">new_lst</span> <span class="o">=</span> <span class="p">[</span><span class="n">B</span><span class="p">(),</span> <span class="n">B</span><span class="p">()]</span>  <span class="c1"># inferred type is List[B]</span>
+<span class="n">lst</span> <span class="o">=</span> <span class="n">new_lst</span>  <span class="c1"># mypy will complain about this, because List is invariant</span>
+</pre></div>
+</div>
+<p>Possible strategies in such situations are:</p>
+<ul>
+<li><p>Use an explicit type annotation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">new_lst</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">B</span><span class="p">(),</span> <span class="n">B</span><span class="p">()]</span>
+<span class="n">lst</span> <span class="o">=</span> <span class="n">new_lst</span>  <span class="c1"># OK</span>
+</pre></div>
+</div>
+</li>
+<li><p>Make a copy of the right hand side:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lst</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">new_lst</span><span class="p">)</span> <span class="c1"># Also OK</span>
+</pre></div>
+</div>
+</li>
+<li><p>Use immutable collections as annotations whenever possible:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f_bad</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">f_bad</span><span class="p">(</span><span class="n">new_lst</span><span class="p">)</span> <span class="c1"># Fails</span>
+
+<span class="k">def</span> <span class="nf">f_good</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">f_good</span><span class="p">(</span><span class="n">new_lst</span><span class="p">)</span> <span class="c1"># OK</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="declaring-a-supertype-as-variable-type">
+<h2>Declaring a supertype as variable type<a class="headerlink" href="#declaring-a-supertype-as-variable-type" title="永久链接至标题">¶</a></h2>
+<p>Sometimes the inferred type is a subtype (subclass) of the desired
+type. The type inference uses the first assignment to infer the type
+of a name (assume here that <code class="docutils literal notranslate"><span class="pre">Shape</span></code> is the base class of both
+<code class="docutils literal notranslate"><span class="pre">Circle</span></code> and <code class="docutils literal notranslate"><span class="pre">Triangle</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">shape</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">()</span>    <span class="c1"># Infer shape to be Circle</span>
+<span class="o">...</span>
+<span class="n">shape</span> <span class="o">=</span> <span class="n">Triangle</span><span class="p">()</span>  <span class="c1"># Type error: Triangle is not a Circle</span>
+</pre></div>
+</div>
+<p>You can just give an explicit type for the variable in cases such the
+above example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">shape</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">()</span> <span class="c1"># type: Shape   # The variable s can be any Shape,</span>
+                                 <span class="c1"># not just Circle</span>
+<span class="o">...</span>
+<span class="n">shape</span> <span class="o">=</span> <span class="n">Triangle</span><span class="p">()</span>               <span class="c1"># OK</span>
+</pre></div>
+</div>
+</section>
+<section id="complex-type-tests">
+<h2>Complex type tests<a class="headerlink" href="#complex-type-tests" title="永久链接至标题">¶</a></h2>
+<p>Mypy can usually infer the types correctly when using <a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance</span></code></a>,
+<a class="reference external" href="https://docs.python.org/3/library/functions.html#issubclass" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">issubclass</span></code></a>,
+or <code class="docutils literal notranslate"><span class="pre">type(obj)</span> <span class="pre">is</span> <span class="pre">some_class</span></code> type tests,
+and even <a class="reference internal" href="type_narrowing.html#type-guards"><span class="std std-ref">user-defined type guards</span></a>,
+but for other kinds of checks you may need to add an
+explicit type cast:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="k">def</span> <span class="nf">find_first_str</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">)),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No str found&#39;</span><span class="p">)</span>
+
+    <span class="n">found</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>  <span class="c1"># Has type &quot;object&quot;, despite the fact that we know it is &quot;str&quot;</span>
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">found</span><span class="p">)</span>  <span class="c1"># We need an explicit cast to make mypy happy</span>
+</pre></div>
+</div>
+<p>Alternatively, you can use an <code class="docutils literal notranslate"><span class="pre">assert</span></code> statement together with some
+of the supported type inference techniques:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">find_first_str</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">)),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No str found&#39;</span><span class="p">)</span>
+
+    <span class="n">found</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>  <span class="c1"># Has type &quot;object&quot;, despite the fact that we know it is &quot;str&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">found</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>  <span class="c1"># Now, &quot;found&quot; will be narrowed to &quot;str&quot;</span>
+    <span class="k">return</span> <span class="n">found</span>  <span class="c1"># No need for the explicit &quot;cast()&quot; anymore</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Note that the <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a> type used in the above example is similar
+to <code class="docutils literal notranslate"><span class="pre">Object</span></code> in Java: it only supports operations defined for <em>all</em>
+objects, such as equality and <a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a>. The type <code class="docutils literal notranslate"><span class="pre">Any</span></code>,
+in contrast, supports all operations, even if they may fail at
+runtime. The cast above would have been unnecessary if the type of
+<code class="docutils literal notranslate"><span class="pre">o</span></code> was <code class="docutils literal notranslate"><span class="pre">Any</span></code>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>You can read more about type narrowing techniques <a class="reference internal" href="type_narrowing.html#type-narrowing"><span class="std std-ref">here</span></a>.</p>
+</div>
+<p>Type inference in Mypy is designed to work well in common cases, to be
+predictable and to let the type checker give useful error
+messages. More powerful type inference strategies often have complex
+and difficult-to-predict failure modes and could result in very
+confusing error messages. The tradeoff is that you as a programmer
+sometimes have to give the type checker a little help.</p>
+</section>
+<section id="python-version-and-system-platform-checks">
+<span id="version-and-platform-checks"></span><h2>Python version and system platform checks<a class="headerlink" href="#python-version-and-system-platform-checks" title="永久链接至标题">¶</a></h2>
+<p>Mypy supports the ability to perform Python version checks and platform
+checks (e.g. Windows vs Posix), ignoring code paths that won’t be run on
+the targeted Python version or platform. This allows you to more effectively
+typecheck code that supports multiple versions of Python or multiple operating
+systems.</p>
+<p>More specifically, mypy will understand the use of <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.version_info" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.version_info</span></code></a> and
+<a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.platform" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.platform</span></code></a> checks within <code class="docutils literal notranslate"><span class="pre">if/elif/else</span></code> statements. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># Distinguishing between different versions of Python:</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
+    <span class="c1"># Python 3.8+ specific definitions and imports</span>
+<span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="c1"># Python 3 specific definitions and imports</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Python 2 specific definitions and imports</span>
+
+<span class="c1"># Distinguishing between different operating systems:</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;linux&quot;</span><span class="p">):</span>
+    <span class="c1"># Linux-specific code</span>
+<span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+    <span class="c1"># Mac-specific code</span>
+<span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+    <span class="c1"># Windows-specific code</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Other systems</span>
+</pre></div>
+</div>
+<p>As a special case, you can also use one of these checks in a top-level
+(unindented) <code class="docutils literal notranslate"><span class="pre">assert</span></code>; this makes mypy skip the rest of the file.
+Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">assert</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">!=</span> <span class="s1">&#39;win32&#39;</span>
+
+<span class="c1"># The rest of this file doesn&#39;t apply to Windows.</span>
+</pre></div>
+</div>
+<p>Some other expressions exhibit similar behavior; in particular,
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TYPE_CHECKING" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">TYPE_CHECKING</span></code></a>, variables named <code class="docutils literal notranslate"><span class="pre">MYPY</span></code>, and any variable
+whose name is passed to <a class="reference internal" href="command_line.html#cmdoption-mypy-always-true"><code class="xref std std-option docutils literal notranslate"><span class="pre">--always-true</span></code></a> or <a class="reference internal" href="command_line.html#cmdoption-mypy-always-false"><code class="xref std std-option docutils literal notranslate"><span class="pre">--always-false</span></code></a>.
+(However, <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">False</span></code> are not treated specially!)</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Mypy currently does not support more complex checks, and does not assign
+any special meaning when assigning a <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.version_info" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.version_info</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.platform" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.platform</span></code></a>
+check to a variable. This may change in future versions of mypy.</p>
+</div>
+<p>By default, mypy will use your current version of Python and your current
+operating system as default values for <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.version_info" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.version_info</span></code></a> and
+<a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.platform" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.platform</span></code></a>.</p>
+<p>To target a different Python version, use the <a class="reference internal" href="command_line.html#cmdoption-mypy-python-version"><code class="xref std std-option docutils literal notranslate"><span class="pre">--python-version</span> <span class="pre">X.Y</span></code></a> flag.
+For example, to verify your code typechecks if were run using Python 2, pass
+in <a class="reference internal" href="command_line.html#cmdoption-mypy-python-version"><code class="xref std std-option docutils literal notranslate"><span class="pre">--python-version</span> <span class="pre">2.7</span></code></a> from the command line. Note that you do not need
+to have Python 2.7 installed to perform this check.</p>
+<p>To target a different operating system, use the <a class="reference internal" href="command_line.html#cmdoption-mypy-platform"><code class="xref std std-option docutils literal notranslate"><span class="pre">--platform</span> <span class="pre">PLATFORM</span></code></a> flag.
+For example, to verify your code typechecks if it were run in Windows, pass
+in <a class="reference internal" href="command_line.html#cmdoption-mypy-platform"><code class="xref std std-option docutils literal notranslate"><span class="pre">--platform</span> <span class="pre">win32</span></code></a>. See the documentation for <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.platform" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.platform</span></code></a>
+for examples of valid platform parameters.</p>
+</section>
+<section id="displaying-the-type-of-an-expression">
+<span id="reveal-type"></span><h2>Displaying the type of an expression<a class="headerlink" href="#displaying-the-type-of-an-expression" title="永久链接至标题">¶</a></h2>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">reveal_type(expr)</span></code> to ask mypy to display the inferred
+static type of an expression. This can be useful when you don’t quite
+understand how mypy handles a particular piece of code. Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reveal_type</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">))</span>  <span class="c1"># Revealed type is &quot;Tuple[builtins.int, builtins.str]&quot;</span>
+</pre></div>
+</div>
+<p>You can also use <code class="docutils literal notranslate"><span class="pre">reveal_locals()</span></code> at any line in a file
+to see the types of all local variables at once. Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">b</span> <span class="o">=</span> <span class="s1">&#39;one&#39;</span>
+<span class="n">reveal_locals</span><span class="p">()</span>
+<span class="c1"># Revealed local types are:</span>
+<span class="c1">#     a: builtins.int</span>
+<span class="c1">#     b: builtins.str</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p><code class="docutils literal notranslate"><span class="pre">reveal_type</span></code> and <code class="docutils literal notranslate"><span class="pre">reveal_locals</span></code> are only understood by mypy and
+don’t exist in Python. If you try to run your program, you’ll have to
+remove any <code class="docutils literal notranslate"><span class="pre">reveal_type</span></code> and <code class="docutils literal notranslate"><span class="pre">reveal_locals</span></code> calls before you can
+run your code. Both are always available and you don’t need to import
+them.</p>
+</div>
+</section>
+<section id="silencing-linters">
+<span id="id1"></span><h2>Silencing linters<a class="headerlink" href="#silencing-linters" title="永久链接至标题">¶</a></h2>
+<p>In some cases, linters will complain about unused imports or code. In
+these cases, you can silence them with a comment after type comments, or on
+the same line as the import:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># to silence complaints about unused imports</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>  <span class="c1"># noqa</span>
+<span class="n">a</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: List[int]</span>
+</pre></div>
+</div>
+<p>To silence the linter on the same line as a type comment
+put the linter comment <em>after</em> the type comment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">some_complex_thing</span><span class="p">()</span>  <span class="c1"># type: ignore  # noqa</span>
+</pre></div>
+</div>
+</section>
+<section id="covariant-subtyping-of-mutable-protocol-members-is-rejected">
+<h2>Covariant subtyping of mutable protocol members is rejected<a class="headerlink" href="#covariant-subtyping-of-mutable-protocol-members-is-rejected" title="永久链接至标题">¶</a></h2>
+<p>Mypy rejects this because this is potentially unsafe.
+Consider this example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Protocol</span>
+
+<span class="k">class</span> <span class="nc">P</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">float</span>
+
+<span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="n">arg</span><span class="p">:</span> <span class="n">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">arg</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">3.14</span>
+
+<span class="k">class</span> <span class="nc">C</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">C</span><span class="p">()</span>
+<span class="n">fun</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>  <span class="c1"># This is not safe</span>
+<span class="n">c</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span>  <span class="c1"># Since this will fail!</span>
+</pre></div>
+</div>
+<p>To work around this problem consider whether “mutating” is actually part
+of a protocol. If not, then one can use a <a class="reference external" href="https://docs.python.org/3/library/functions.html#property" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;property</span></code></a> in
+the protocol definition:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Protocol</span>
+
+<span class="k">class</span> <span class="nc">P</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+       <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="n">arg</span><span class="p">:</span> <span class="n">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">C</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">fun</span><span class="p">(</span><span class="n">C</span><span class="p">())</span>  <span class="c1"># OK</span>
+</pre></div>
+</div>
+</section>
+<section id="dealing-with-conflicting-names">
+<h2>Dealing with conflicting names<a class="headerlink" href="#dealing-with-conflicting-names" title="永久链接至标题">¶</a></h2>
+<p>Suppose you have a class with a method whose name is the same as an
+imported (or built-in) type, and you want to use the type in another
+method signature.  E.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Message</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>  <span class="c1"># error: Invalid type &quot;mod.Message.bytes&quot;</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>The third line elicits an error because mypy sees the argument type
+<code class="docutils literal notranslate"><span class="pre">bytes</span></code> as a reference to the method by that name.  Other than
+renaming the method, a work-around is to use an alias:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bytes_</span> <span class="o">=</span> <span class="nb">bytes</span>
+<span class="k">class</span> <span class="nc">Message</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">bytes_</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="using-a-development-mypy-build">
+<h2>Using a development mypy build<a class="headerlink" href="#using-a-development-mypy-build" title="永久链接至标题">¶</a></h2>
+<p>You can install the latest development version of mypy from source. Clone the
+<a class="reference external" href="https://github.com/python/mypy">mypy repository on GitHub</a>, and then run
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> locally:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/python/mypy.git
+cd mypy
+sudo python3 -m pip install --upgrade .
+</pre></div>
+</div>
+</section>
+<section id="variables-vs-type-aliases">
+<h2>Variables vs type aliases<a class="headerlink" href="#variables-vs-type-aliases" title="永久链接至标题">¶</a></h2>
+<p>Mypy has both <em>type aliases</em> and variables with types like <code class="docutils literal notranslate"><span class="pre">Type[...]</span></code>. These are
+subtly different, and it’s important to understand how they differ to avoid pitfalls.</p>
+<ol class="arabic">
+<li><p>A variable with type <code class="docutils literal notranslate"><span class="pre">Type[...]</span></code> is defined using an assignment with an
+explicit type annotation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">A</span><span class="p">:</span> <span class="o">...</span>
+<span class="n">tp</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span>
+</pre></div>
+</div>
+</li>
+<li><p>You can define a type alias using an assignment without an explicit type annotation
+at the top level of a module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">A</span><span class="p">:</span> <span class="o">...</span>
+<span class="n">Alias</span> <span class="o">=</span> <span class="n">A</span>
+</pre></div>
+</div>
+<p>You can also use <code class="docutils literal notranslate"><span class="pre">TypeAlias</span></code> (<span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0613"><strong>PEP 613</strong></a>) to define an <em>explicit type alias</em>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeAlias</span>  <span class="c1"># &quot;from typing_extensions&quot; in Python 3.9 and earlier</span>
+
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span> <span class="o">...</span>
+<span class="n">Alias</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">A</span>
+</pre></div>
+</div>
+<p>You should always use <code class="docutils literal notranslate"><span class="pre">TypeAlias</span></code> to define a type alias in a class body or
+inside a function.</p>
+</li>
+</ol>
+<p>The main difference is that the target of an alias is precisely known statically, and this
+means that they can be used in type annotations and other <em>type contexts</em>. Type aliases
+can’t be defined conditionally (unless using
+<a class="reference internal" href="#version-and-platform-checks"><span class="std std-ref">supported Python version and platform checks</span></a>):</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">A</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">class</span> <span class="nc">B</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">if</span> <span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+    <span class="n">Alias</span> <span class="o">=</span> <span class="n">A</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># error: Cannot assign multiple types to name &quot;Alias&quot; without an</span>
+    <span class="c1"># explicit &quot;Type[...]&quot; annotation</span>
+    <span class="n">Alias</span> <span class="o">=</span> <span class="n">B</span>
+
+<span class="n">tp</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>  <span class="c1"># &quot;tp&quot; is a variable with a type object value</span>
+<span class="k">if</span> <span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+    <span class="n">tp</span> <span class="o">=</span> <span class="n">A</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">tp</span> <span class="o">=</span> <span class="n">B</span>  <span class="c1"># This is OK</span>
+
+<span class="k">def</span> <span class="nf">fun1</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Alias</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>  <span class="c1"># OK</span>
+<span class="k">def</span> <span class="nf">fun2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">tp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>  <span class="c1"># Error: &quot;tp&quot; is not valid as a type</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="incompatible-overrides">
+<h2>Incompatible overrides<a class="headerlink" href="#incompatible-overrides" title="永久链接至标题">¶</a></h2>
+<p>It’s unsafe to override a method with a more specific argument type,
+as it violates the <a class="reference external" href="https://stackoverflow.com/questions/56860/what-is-an-example-of-the-liskov-substitution-principle">Liskov substitution principle</a>.
+For return types, it’s unsafe to override a method with a more general
+return type.</p>
+<p>Other incompatible signature changes in method overrides, such as
+adding an extra required parameter, or removing an optional parameter,
+will also generate errors. The signature of a method in a subclass
+should accept all valid calls to the base class method. Mypy
+treats a subclass as a subtype of the base class. An instance of a
+subclass is valid everywhere where an instance of the base class is
+valid.</p>
+<p>This example demonstrates both safe and unsafe overrides:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span>
+
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">GeneralizedArgument</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="c1"># A more general argument type is okay</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>  <span class="c1"># OK</span>
+        <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">NarrowerArgument</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="c1"># A more specific argument type isn&#39;t accepted</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>  <span class="c1"># Error</span>
+        <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">NarrowerReturn</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="c1"># A more specific return type is fine</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>  <span class="c1"># OK</span>
+        <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">GeneralizedReturn</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="c1"># A more general return type is an error</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>  <span class="c1"># Error</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore[override]</span></code> to silence the error. Add it
+to the line that generates the error, if you decide that type safety is
+not necessary:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">NarrowerArgument</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>  <span class="c1"># type: ignore[override]</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="unreachable-code">
+<span id="unreachable"></span><h2>Unreachable code<a class="headerlink" href="#unreachable-code" title="永久链接至标题">¶</a></h2>
+<p>Mypy may consider some code as <em>unreachable</em>, even if it might not be
+immediately obvious why.  It’s important to note that mypy will <em>not</em>
+type check such code. Consider this example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="n">bar</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+<span class="k">def</span> <span class="nf">bar</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">foo</span><span class="p">:</span> <span class="n">Foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+    <span class="k">return</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="s1">&#39;abc&#39;</span>  <span class="c1"># Unreachable -- no error</span>
+</pre></div>
+</div>
+<p>It’s easy to see that any statement after <code class="docutils literal notranslate"><span class="pre">return</span></code> is unreachable,
+and hence mypy will not complain about the mis-typed code below
+it. For a more subtle example, consider this code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="n">bar</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+<span class="k">def</span> <span class="nf">bar</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">foo</span><span class="p">:</span> <span class="n">Foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">foo</span><span class="o">.</span><span class="n">bar</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="s1">&#39;abc&#39;</span>  <span class="c1"># Unreachable -- no error</span>
+</pre></div>
+</div>
+<p>Again, mypy will not report any errors. The type of <code class="docutils literal notranslate"><span class="pre">foo.bar</span></code> is
+<code class="docutils literal notranslate"><span class="pre">str</span></code>, and mypy reasons that it can never be <code class="docutils literal notranslate"><span class="pre">None</span></code>.  Hence the
+<code class="docutils literal notranslate"><span class="pre">assert</span></code> statement will always fail and the statement below will
+never be executed.  (Note that in Python, <code class="docutils literal notranslate"><span class="pre">None</span></code> is not an empty
+reference but an object of type <code class="docutils literal notranslate"><span class="pre">None</span></code>.)</p>
+<p>In this example mypy will go on to check the last line and report an
+error, since mypy thinks that the condition could be either True or
+False:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="n">bar</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+<span class="k">def</span> <span class="nf">bar</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">foo</span><span class="p">:</span> <span class="n">Foo</span> <span class="o">=</span> <span class="n">Foo</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">foo</span><span class="o">.</span><span class="n">bar</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="s1">&#39;abc&#39;</span>  <span class="c1"># Reachable -- error</span>
+</pre></div>
+</div>
+<p>If you use the <a class="reference internal" href="command_line.html#cmdoption-mypy-warn-unreachable"><code class="xref std std-option docutils literal notranslate"><span class="pre">--warn-unreachable</span></code></a> flag, mypy will generate
+an error about each unreachable code block.</p>
+</section>
+<section id="narrowing-and-inner-functions">
+<h2>Narrowing and inner functions<a class="headerlink" href="#narrowing-and-inner-functions" title="永久链接至标题">¶</a></h2>
+<p>Because closures in Python are late-binding (<a class="reference external" href="https://docs.python-guide.org/writing/gotchas/#late-binding-closures">https://docs.python-guide.org/writing/gotchas/#late-binding-closures</a>),
+mypy will not narrow the type of a captured variable in an inner function.
+This is best understood via an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># mypy correctly deduces x must be an int here</span>
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># but (correctly) complains about this line</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># because x could later be assigned None</span>
+    <span class="k">return</span> <span class="n">inner</span>
+
+<span class="n">inner</span> <span class="o">=</span> <span class="n">foo</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">inner</span><span class="p">()</span>  <span class="c1"># this will raise an error when called</span>
+</pre></div>
+</div>
+<p>To get this code to type check, you could assign <code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">x</span></code> after <code class="docutils literal notranslate"><span class="pre">x</span></code> has been
+narrowed, and use <code class="docutils literal notranslate"><span class="pre">y</span></code> in the inner function, or add an assert in the inner
+function.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Common issues and solutions</a><ul>
+<li><a class="reference internal" href="#can-t-install-mypy-using-pip">Can’t install mypy using pip</a></li>
+<li><a class="reference internal" href="#no-errors-reported-for-obviously-wrong-code">No errors reported for obviously wrong code</a></li>
+<li><a class="reference internal" href="#spurious-errors-and-locally-silencing-the-checker">Spurious errors and locally silencing the checker</a></li>
+<li><a class="reference internal" href="#ignoring-a-whole-file">Ignoring a whole file</a></li>
+<li><a class="reference internal" href="#unexpected-errors-about-none-and-or-optional-types">Unexpected errors about ‘None’ and/or ‘Optional’ types</a></li>
+<li><a class="reference internal" href="#issues-with-code-at-runtime">Issues with code at runtime</a></li>
+<li><a class="reference internal" href="#mypy-runs-are-slow">Mypy runs are slow</a></li>
+<li><a class="reference internal" href="#types-of-empty-collections">Types of empty collections</a></li>
+<li><a class="reference internal" href="#redefinitions-with-incompatible-types">Redefinitions with incompatible types</a></li>
+<li><a class="reference internal" href="#invariance-vs-covariance">Invariance vs covariance</a></li>
+<li><a class="reference internal" href="#declaring-a-supertype-as-variable-type">Declaring a supertype as variable type</a></li>
+<li><a class="reference internal" href="#complex-type-tests">Complex type tests</a></li>
+<li><a class="reference internal" href="#python-version-and-system-platform-checks">Python version and system platform checks</a></li>
+<li><a class="reference internal" href="#displaying-the-type-of-an-expression">Displaying the type of an expression</a></li>
+<li><a class="reference internal" href="#silencing-linters">Silencing linters</a></li>
+<li><a class="reference internal" href="#covariant-subtyping-of-mutable-protocol-members-is-rejected">Covariant subtyping of mutable protocol members is rejected</a></li>
+<li><a class="reference internal" href="#dealing-with-conflicting-names">Dealing with conflicting names</a></li>
+<li><a class="reference internal" href="#using-a-development-mypy-build">Using a development mypy build</a></li>
+<li><a class="reference internal" href="#variables-vs-type-aliases">Variables vs type aliases</a></li>
+<li><a class="reference internal" href="#incompatible-overrides">Incompatible overrides</a></li>
+<li><a class="reference internal" href="#unreachable-code">Unreachable code</a></li>
+<li><a class="reference internal" href="#narrowing-and-inner-functions">Narrowing and inner functions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="stubtest.html"
+                          title="上一章">Automatic stub testing (stubtest)</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="supported_python_features.html"
+                          title="下一章">Supported Python features</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/common_issues.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="supported_python_features.html" title="Supported Python features"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="stubtest.html" title="Automatic stub testing (stubtest)"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Common issues and solutions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

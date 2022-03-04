@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Error codes &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Error codes enabled by default" href="error_code_list.html" />
+    <link rel="prev" title="Supported Python features" href="supported_python_features.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="error_code_list.html" title="Error codes enabled by default"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="supported_python_features.html" title="Supported Python features"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Error codes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="error-codes">
+<span id="id1"></span><h1>Error codes<a class="headerlink" href="#error-codes" title="永久链接至标题">¶</a></h1>
+<p>Mypy can optionally display an error code such as <code class="docutils literal notranslate"><span class="pre">[attr-defined]</span></code>
+after each error message. Error codes serve two purposes:</p>
+<ol class="arabic simple">
+<li><p>It’s possible to silence specific error codes on a line using <code class="docutils literal notranslate"><span class="pre">#</span>
+<span class="pre">type:</span> <span class="pre">ignore[code]</span></code>. This way you won’t accidentally ignore other,
+potentially more serious errors.</p></li>
+<li><p>The error code can be used to find documentation about the error.
+The next two topics (<a class="reference internal" href="error_code_list.html#error-code-list"><span class="std std-ref">Error codes enabled by default</span></a> and
+<a class="reference internal" href="error_code_list2.html#error-codes-optional"><span class="std std-ref">Error codes for optional checks</span></a>) document the various error codes
+mypy can report.</p></li>
+</ol>
+<p>Most error codes are shared between multiple related error messages.
+Error codes may change in future mypy releases.</p>
+<section id="displaying-error-codes">
+<h2>Displaying error codes<a class="headerlink" href="#displaying-error-codes" title="永久链接至标题">¶</a></h2>
+<p>Error codes are not displayed by default.  Use <a class="reference internal" href="command_line.html#cmdoption-mypy-show-error-codes"><code class="xref std std-option docutils literal notranslate"><span class="pre">--show-error-codes</span></code></a>
+or config <cite>show_error_codes = True</cite> to display error codes. Error codes are shown inside square brackets:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ mypy --show-error-codes prog.py
+prog.py:1: error: &quot;str&quot; has no attribute &quot;trim&quot;  [attr-defined]
+</pre></div>
+</div>
+<p>It’s also possible to require error codes for <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore</span></code> comments.
+See <a class="reference internal" href="error_code_list2.html#ignore-without-code"><span class="std std-ref">ignore-without-code</span></a> for more information.</p>
+</section>
+<section id="silencing-errors-based-on-error-codes">
+<span id="silence-error-codes"></span><h2>Silencing errors based on error codes<a class="headerlink" href="#silencing-errors-based-on-error-codes" title="永久链接至标题">¶</a></h2>
+<p>You can use a special comment <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore[code,</span> <span class="pre">...]</span></code> to only
+ignore errors with a specific error code (or codes) on a particular
+line.  This can be used even if you have not configured mypy to show
+error codes. Currently it’s only possible to disable arbitrary error
+codes on individual lines using this comment.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>There are command-line flags and config file settings for enabling
+certain optional error codes, such as <a class="reference internal" href="command_line.html#cmdoption-mypy-disallow-untyped-defs"><code class="xref std std-option docutils literal notranslate"><span class="pre">--disallow-untyped-defs</span></code></a>,
+which enables the <code class="docutils literal notranslate"><span class="pre">no-untyped-def</span></code> error code.</p>
+</div>
+<p>This example shows how to ignore an error about an imported name mypy
+thinks is undefined:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &#39;foo&#39; is defined in &#39;foolib&#39;, even though mypy can&#39;t see the</span>
+<span class="c1"># definition.</span>
+<span class="kn">from</span> <span class="nn">foolib</span> <span class="kn">import</span> <span class="n">foo</span>  <span class="c1"># type: ignore[attr-defined]</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Error codes</a><ul>
+<li><a class="reference internal" href="#displaying-error-codes">Displaying error codes</a></li>
+<li><a class="reference internal" href="#silencing-errors-based-on-error-codes">Silencing errors based on error codes</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="supported_python_features.html"
+                          title="上一章">Supported Python features</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="error_code_list.html"
+                          title="下一章">Error codes enabled by default</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/error_codes.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="error_code_list.html" title="Error codes enabled by default"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="supported_python_features.html" title="Supported Python features"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Error codes</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

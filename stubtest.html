@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Automatic stub testing (stubtest) &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Common issues and solutions" href="common_issues.html" />
+    <link rel="prev" title="Automatic stub generation (stubgen)" href="stubgen.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="common_issues.html" title="Common issues and solutions"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="stubgen.html" title="Automatic stub generation (stubgen)"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Automatic stub testing (stubtest)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="automatic-stub-testing-stubtest">
+<span id="stubtest"></span><h1>Automatic stub testing (stubtest)<a class="headerlink" href="#automatic-stub-testing-stubtest" title="永久链接至标题">¶</a></h1>
+<p>Stub files are files containing type annotations. See
+<a class="reference external" href="https://www.python.org/dev/peps/pep-0484/#stub-files">PEP 484</a>
+for more motivation and details.</p>
+<p>A common problem with stub files is that they tend to diverge from the
+actual implementation. Mypy includes the <code class="docutils literal notranslate"><span class="pre">stubtest</span></code> tool that can
+automatically check for discrepancies between the stubs and the
+implementation at runtime.</p>
+<section id="what-stubtest-does-and-does-not-do">
+<h2>What stubtest does and does not do<a class="headerlink" href="#what-stubtest-does-and-does-not-do" title="永久链接至标题">¶</a></h2>
+<p>Stubtest will import your code and introspect your code objects at runtime, for
+example, by using the capabilities of the <a class="reference external" href="https://docs.python.org/3/library/inspect.html#module-inspect" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">inspect</span></code></a> module. Stubtest
+will then analyse the stub files, and compare the two, pointing out things that
+differ between stubs and the implementation at runtime.</p>
+<p>It’s important to be aware of the limitations of this comparison. Stubtest will
+not make any attempt to statically analyse your actual code and relies only on
+dynamic runtime introspection (in particular, this approach means stubtest works
+well with extension modules). However, this means that stubtest has limited
+visibility; for instance, it cannot tell if a return type of a function is
+accurately typed in the stubs.</p>
+<p>For clarity, here are some additional things stubtest can’t do:</p>
+<ul class="simple">
+<li><p>Type check your code – use <code class="docutils literal notranslate"><span class="pre">mypy</span></code> instead</p></li>
+<li><p>Generate stubs – use <code class="docutils literal notranslate"><span class="pre">stubgen</span></code> or <code class="docutils literal notranslate"><span class="pre">pyright</span> <span class="pre">--createstub</span></code> instead</p></li>
+<li><p>Generate stubs based on running your application or test suite – use <code class="docutils literal notranslate"><span class="pre">monkeytype</span></code> instead</p></li>
+<li><p>Apply stubs to code to produce inline types – use <code class="docutils literal notranslate"><span class="pre">retype</span></code> or <code class="docutils literal notranslate"><span class="pre">libcst</span></code> instead</p></li>
+</ul>
+<p>In summary, stubtest works very well for ensuring basic consistency between
+stubs and implementation or to check for stub completeness. It’s used to
+test Python’s official collection of library stubs,
+<a class="reference external" href="https://github.com/python/typeshed">typeshed</a>.</p>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="永久链接至标题">¶</a></h2>
+<p>Here’s a quick example of what stubtest can do:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ python3 -m pip install mypy
+
+$ cat library.py
+<span class="nv">x</span> <span class="o">=</span> <span class="s2">&quot;hello, stubtest&quot;</span>
+
+def foo<span class="o">(</span><span class="nv">x</span><span class="o">=</span>None<span class="o">)</span>:
+    print<span class="o">(</span>x<span class="o">)</span>
+
+$ cat library.pyi
+x: int
+
+def foo<span class="o">(</span>x: int<span class="o">)</span> -&gt; None: ...
+
+$ python3 -m mypy.stubtest library
+error: library.foo is inconsistent, runtime argument <span class="s2">&quot;x&quot;</span> has a default value but stub argument does not
+Stub: at line <span class="m">3</span>
+def <span class="o">(</span>x: builtins.int<span class="o">)</span>
+Runtime: at line <span class="m">3</span> <span class="k">in</span> file ~/library.py
+def <span class="o">(</span><span class="nv">x</span><span class="o">=</span>None<span class="o">)</span>
+
+error: library.x variable differs from runtime <span class="nb">type</span> Literal<span class="o">[</span><span class="s1">&#39;hello, stubtest&#39;</span><span class="o">]</span>
+Stub: at line <span class="m">1</span>
+builtins.int
+Runtime:
+hello, stubtest
+</pre></div>
+</div>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="永久链接至标题">¶</a></h2>
+<p>Running stubtest can be as simple as <code class="docutils literal notranslate"><span class="pre">stubtest</span> <span class="pre">module_to_check</span></code>.
+Run <a class="reference internal" href="#cmdoption-stubtest-help"><code class="xref std std-option docutils literal notranslate"><span class="pre">stubtest</span> <span class="pre">--help</span></code></a> for a quick summary of options.</p>
+<p>Subtest must be able to import the code to be checked, so make sure that mypy
+is installed in the same environment as the library to be tested. In some
+cases, setting <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> can help stubtest find the code to import.</p>
+<p>Similarly, stubtest must be able to find the stubs to be checked. Stubtest
+respects the <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> environment variable.</p>
+<p>If you wish to ignore some of stubtest’s complaints, stubtest supports a
+pretty handy allowlist system.</p>
+<p>The rest of this section documents the command line interface of stubtest.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubtest-concise">
+<span class="sig-name descname"><span class="pre">--concise</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubtest-concise" title="永久链接至目标">¶</a></dt>
+<dd><p>Makes stubtest’s output more concise, one line per error</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubtest-ignore-missing-stub">
+<span class="sig-name descname"><span class="pre">--ignore-missing-stub</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubtest-ignore-missing-stub" title="永久链接至目标">¶</a></dt>
+<dd><p>Ignore errors for stub missing things that are present at runtime</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubtest-ignore-positional-only">
+<span class="sig-name descname"><span class="pre">--ignore-positional-only</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubtest-ignore-positional-only" title="永久链接至目标">¶</a></dt>
+<dd><p>Ignore errors for whether an argument should or shouldn’t be positional-only</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubtest-allowlist">
+<span class="sig-name descname"><span class="pre">--allowlist</span></span><span class="sig-prename descclassname"> <span class="pre">FILE</span></span><a class="headerlink" href="#cmdoption-stubtest-allowlist" title="永久链接至目标">¶</a></dt>
+<dd><p>Use file as an allowlist. Can be passed multiple times to combine multiple
+allowlists. Allowlists can be created with –generate-allowlist. Allowlists
+support regular expressions.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubtest-generate-allowlist">
+<span class="sig-name descname"><span class="pre">--generate-allowlist</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubtest-generate-allowlist" title="永久链接至目标">¶</a></dt>
+<dd><p>Print an allowlist (to stdout) to be used with –allowlist</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubtest-ignore-unused-allowlist">
+<span class="sig-name descname"><span class="pre">--ignore-unused-allowlist</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubtest-ignore-unused-allowlist" title="永久链接至目标">¶</a></dt>
+<dd><p>Ignore unused allowlist entries</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubtest-mypy-config-file">
+<span class="sig-name descname"><span class="pre">--mypy-config-file</span></span><span class="sig-prename descclassname"> <span class="pre">FILE</span></span><a class="headerlink" href="#cmdoption-stubtest-mypy-config-file" title="永久链接至目标">¶</a></dt>
+<dd><p>Use specified mypy config file to determine mypy plugins and mypy path</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubtest-custom-typeshed-dir">
+<span class="sig-name descname"><span class="pre">--custom-typeshed-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-stubtest-custom-typeshed-dir" title="永久链接至目标">¶</a></dt>
+<dd><p>Use the custom typeshed in DIR</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubtest-check-typeshed">
+<span class="sig-name descname"><span class="pre">--check-typeshed</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubtest-check-typeshed" title="永久链接至目标">¶</a></dt>
+<dd><p>Check all stdlib modules in typeshed</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubtest-help">
+<span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubtest-help" title="永久链接至目标">¶</a></dt>
+<dd><p>Show a help message :-)</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Automatic stub testing (stubtest)</a><ul>
+<li><a class="reference internal" href="#what-stubtest-does-and-does-not-do">What stubtest does and does not do</a></li>
+<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="stubgen.html"
+                          title="上一章">Automatic stub generation (stubgen)</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="common_issues.html"
+                          title="下一章">Common issues and solutions</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/stubtest.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="common_issues.html" title="Common issues and solutions"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="stubgen.html" title="Automatic stub generation (stubgen)"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Automatic stub testing (stubtest)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

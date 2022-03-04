@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Type checking Python 2 code &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Type narrowing" href="type_narrowing.html" />
+    <link rel="prev" title="Dynamically typed code" href="dynamic_typing.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="type_narrowing.html" title="Type narrowing"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="dynamic_typing.html" title="Dynamically typed code"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Type checking Python 2 code</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="type-checking-python-2-code">
+<span id="python2"></span><h1>Type checking Python 2 code<a class="headerlink" href="#type-checking-python-2-code" title="永久链接至标题">¶</a></h1>
+<p>For code that needs to be Python 2.7 compatible, function type
+annotations are given in comments, since the function annotation
+syntax was introduced in Python 3. The comment-based syntax is
+specified in <span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0484"><strong>PEP 484</strong></a>.</p>
+<p>Mypy requires typed-ast in order to check Python 2 code. You can install it
+using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'mypy[python2]'</span></code>.</p>
+<p>Run mypy in Python 2 mode by using the <a class="reference internal" href="command_line.html#cmdoption-mypy-2"><code class="xref std std-option docutils literal notranslate"><span class="pre">--py2</span></code></a> option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy --py2 program.py
+</pre></div>
+</div>
+<p>To run your program, you must have the <code class="docutils literal notranslate"><span class="pre">typing</span></code> module in your
+Python 2 module search path. Use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">typing</span></code> to install the
+module. This also works for Python 3 versions prior to 3.5 that don’t
+include <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> in the standard library.</p>
+<p>The example below illustrates the Python 2 function type annotation
+syntax. This syntax is also valid in Python 3 mode:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="k">def</span> <span class="nf">hello</span><span class="p">():</span> <span class="c1"># type: () -&gt; None</span>
+    <span class="nb">print</span> <span class="s1">&#39;hello&#39;</span>
+
+<span class="k">class</span> <span class="nc">Example</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># type: (List[str], int, *str, **bool) -&gt; int</span>
+        <span class="sd">&quot;&quot;&quot;Docstring comes after type comment.&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>It’s worth going through these details carefully to avoid surprises:</p>
+<ul class="simple">
+<li><p>You don’t provide an annotation for the <code class="docutils literal notranslate"><span class="pre">self</span></code> / <code class="docutils literal notranslate"><span class="pre">cls</span></code> variable of
+methods.</p></li>
+<li><p>Docstring always comes <em>after</em> the type comment.</p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> the type should be prefixed with
+<code class="docutils literal notranslate"><span class="pre">*</span></code> or <code class="docutils literal notranslate"><span class="pre">**</span></code>, respectively (except when using the multi-line
+annotation syntax described below). Again, the above example
+illustrates this.</p></li>
+<li><p>Things like <code class="docutils literal notranslate"><span class="pre">Any</span></code> must be imported from <code class="docutils literal notranslate"><span class="pre">typing</span></code>, even if they
+are only used in comments.</p></li>
+<li><p>In Python 2 mode <code class="docutils literal notranslate"><span class="pre">str</span></code> is implicitly promoted to <code class="docutils literal notranslate"><span class="pre">unicode</span></code>, similar
+to how <code class="docutils literal notranslate"><span class="pre">int</span></code> is compatible with <code class="docutils literal notranslate"><span class="pre">float</span></code>. This is unlike <code class="docutils literal notranslate"><span class="pre">bytes</span></code> and
+<code class="docutils literal notranslate"><span class="pre">str</span></code> in Python 3, which are incompatible. <code class="docutils literal notranslate"><span class="pre">bytes</span></code> in Python 2 is
+equivalent to <code class="docutils literal notranslate"><span class="pre">str</span></code>. (This might change in the future.)</p></li>
+</ul>
+<section id="multi-line-python-2-function-annotations">
+<span id="multi-line-annotation"></span><h2>Multi-line Python 2 function annotations<a class="headerlink" href="#multi-line-python-2-function-annotations" title="永久链接至标题">¶</a></h2>
+<p>Mypy also supports a multi-line comment annotation syntax. You
+can provide a separate annotation for each argument using the variable
+annotation syntax. When using the single-line annotation syntax
+described above, functions with long argument lists tend to result in
+overly long type comments and it’s often tricky to see which argument
+type corresponds to which argument. The alternative, multi-line
+annotation syntax makes long annotations easier to read and write.</p>
+<p>Here is an example (from <span class="target" id="index-1"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0484"><strong>PEP 484</strong></a>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">send_email</span><span class="p">(</span><span class="n">address</span><span class="p">,</span>     <span class="c1"># type: Union[str, List[str]]</span>
+               <span class="n">sender</span><span class="p">,</span>      <span class="c1"># type: str</span>
+               <span class="n">cc</span><span class="p">,</span>          <span class="c1"># type: Optional[List[str]]</span>
+               <span class="n">bcc</span><span class="p">,</span>         <span class="c1"># type: Optional[List[str]]</span>
+               <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+               <span class="n">body</span><span class="o">=</span><span class="kc">None</span>    <span class="c1"># type: List[str]</span>
+               <span class="p">):</span>
+    <span class="c1"># type: (...) -&gt; bool</span>
+    <span class="sd">&quot;&quot;&quot;Send an email message.  Return True if successful.&quot;&quot;&quot;</span>
+    <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>You write a separate annotation for each function argument on the same
+line as the argument. Each annotation must be on a separate line. If
+you leave out an annotation for an argument, it defaults to
+<code class="docutils literal notranslate"><span class="pre">Any</span></code>. You provide a return type annotation in the body of the
+function using the form <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">(...)</span> <span class="pre">-&gt;</span> <span class="pre">rt</span></code>, where <code class="docutils literal notranslate"><span class="pre">rt</span></code> is the
+return type. Note that the  return type annotation contains literal
+three dots.</p>
+<p>When using multi-line comments, you do not need to prefix the
+types of your <code class="docutils literal notranslate"><span class="pre">*arg</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwarg</span></code> parameters with <code class="docutils literal notranslate"><span class="pre">*</span></code> or <code class="docutils literal notranslate"><span class="pre">**</span></code>.
+For example, here is how you would annotate the first example using
+multi-line comments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="k">class</span> <span class="nc">Example</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">lst</span><span class="p">,</span>      <span class="c1"># type: List[str]</span>
+               <span class="n">opt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>    <span class="c1"># type: int</span>
+               <span class="o">*</span><span class="n">args</span><span class="p">,</span>    <span class="c1"># type: str</span>
+               <span class="o">**</span><span class="n">kwargs</span>  <span class="c1"># type: bool</span>
+               <span class="p">):</span>
+        <span class="c1"># type: (...) -&gt; int</span>
+        <span class="sd">&quot;&quot;&quot;Docstring comes after type comment.&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="additional-notes">
+<h2>Additional notes<a class="headerlink" href="#additional-notes" title="永久链接至标题">¶</a></h2>
+<ul class="simple">
+<li><p>You should include types for arguments with default values in the
+annotation. The <code class="docutils literal notranslate"><span class="pre">opt</span></code> argument of <code class="docutils literal notranslate"><span class="pre">method</span></code> in the example at the
+beginning of this section is an example of this.</p></li>
+<li><p>The annotation can be on the same line as the function header or on
+the following line.</p></li>
+<li><p>Variables use a comment-based type syntax (explained in
+<a class="reference internal" href="type_inference_and_annotations.html#explicit-var-types"><span class="std std-ref">Explicit types for variables</span></a>).</p></li>
+<li><p>You don’t need to use string literal escapes for forward references
+within comments (string literal escapes are explained later).</p></li>
+<li><p>Mypy uses a separate set of library stub files in <a class="reference external" href="https://github.com/python/typeshed">typeshed</a> for Python 2. Library support
+may vary between Python 2 and Python 3.</p></li>
+</ul>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Type checking Python 2 code</a><ul>
+<li><a class="reference internal" href="#multi-line-python-2-function-annotations">Multi-line Python 2 function annotations</a></li>
+<li><a class="reference internal" href="#additional-notes">Additional notes</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="dynamic_typing.html"
+                          title="上一章">Dynamically typed code</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="type_narrowing.html"
+                          title="下一章">Type narrowing</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/python2.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="type_narrowing.html" title="Type narrowing"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="dynamic_typing.html" title="Dynamically typed code"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Type checking Python 2 code</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

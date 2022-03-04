@@ -1,0 +1,741 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Error codes enabled by default &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Error codes for optional checks" href="error_code_list2.html" />
+    <link rel="prev" title="Error codes" href="error_codes.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="error_code_list2.html" title="Error codes for optional checks"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="error_codes.html" title="Error codes"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Error codes enabled by default</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="error-codes-enabled-by-default">
+<span id="error-code-list"></span><h1>Error codes enabled by default<a class="headerlink" href="#error-codes-enabled-by-default" title="永久链接至标题">¶</a></h1>
+<p>This section documents various errors codes that mypy can generate
+with default options. See <a class="reference internal" href="error_codes.html#error-codes"><span class="std std-ref">Error codes</span></a> for general documentation
+about error codes. <a class="reference internal" href="error_code_list2.html#error-codes-optional"><span class="std std-ref">Error codes for optional checks</span></a> documents additional
+error codes that you can enable.</p>
+<section id="check-that-attribute-exists-attr-defined">
+<h2>Check that attribute exists [attr-defined]<a class="headerlink" href="#check-that-attribute-exists-attr-defined" title="永久链接至标题">¶</a></h2>
+<p>Mypy checks that an attribute is defined in the target class or module
+when using the dot operator. This applies to both getting and setting
+an attribute. New attributes are defined by assignments in the class
+body, or assignments to <code class="docutils literal notranslate"><span class="pre">self.x</span></code> in methods. These assignments don’t
+generate <code class="docutils literal notranslate"><span class="pre">attr-defined</span></code> errors.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Resource</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># OK</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>  <span class="c1"># Error: &quot;Resource&quot; has no attribute &quot;id&quot;  [attr-defined]</span>
+<span class="n">r</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Error: &quot;Resource&quot; has no attribute &quot;id&quot;  [attr-defined]</span>
+</pre></div>
+</div>
+<p>This error code is also generated if an imported name is not defined
+in the module in a <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">...</span> <span class="pre">import</span></code> statement (as long as the
+target module can be found):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error: Module &quot;os&quot; has no attribute &quot;non_existent&quot;  [attr-defined]</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">non_existent</span>
+</pre></div>
+</div>
+<p>A reference to a missing attribute is given the <code class="docutils literal notranslate"><span class="pre">Any</span></code> type. In the
+above example, the type of <code class="docutils literal notranslate"><span class="pre">non_existent</span></code> will be <code class="docutils literal notranslate"><span class="pre">Any</span></code>, which can
+be important if you silence the error.</p>
+</section>
+<section id="check-that-attribute-exists-in-each-union-item-union-attr">
+<h2>Check that attribute exists in each union item [union-attr]<a class="headerlink" href="#check-that-attribute-exists-in-each-union-item-union-attr" title="永久链接至标题">¶</a></h2>
+<p>If you access the attribute of a value with a union type, mypy checks
+that the attribute is defined for <em>every</em> type in that
+union. Otherwise the operation can fail at runtime. This also applies
+to optional types.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="k">class</span> <span class="nc">Cat</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">miaow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">Dog</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">follow_me</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">animal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Cat</span><span class="p">,</span> <span class="n">Dog</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># OK: &#39;sleep&#39; is defined for both Cat and Dog</span>
+    <span class="n">animal</span><span class="o">.</span><span class="n">sleep</span><span class="p">()</span>
+    <span class="c1"># Error: Item &quot;Cat&quot; of &quot;Union[Cat, Dog]&quot; has no attribute &quot;follow_me&quot;  [union-attr]</span>
+    <span class="n">animal</span><span class="o">.</span><span class="n">follow_me</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can often work around these errors by using <code class="docutils literal notranslate"><span class="pre">assert</span> <span class="pre">isinstance(obj,</span> <span class="pre">ClassName)</span></code>
+or <code class="docutils literal notranslate"><span class="pre">assert</span> <span class="pre">obj</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">None</span></code> to tell mypy that you know that the type is more specific
+than what mypy thinks.</p>
+</section>
+<section id="check-that-name-is-defined-name-defined">
+<h2>Check that name is defined [name-defined]<a class="headerlink" href="#check-that-name-is-defined-name-defined" title="永久链接至标题">¶</a></h2>
+<p>Mypy expects that all references to names have a corresponding
+definition in an active scope, such as an assignment, function
+definition or an import. This can catch missing definitions, missing
+imports, and typos.</p>
+<p>This example accidentally calls <code class="docutils literal notranslate"><span class="pre">sort()</span></code> instead of <a class="reference external" href="https://docs.python.org/3/library/functions.html#sorted" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">sorted()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">sort</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>  <span class="c1"># Error: Name &quot;sort&quot; is not defined  [name-defined]</span>
+</pre></div>
+</div>
+</section>
+<section id="check-arguments-in-calls-call-arg">
+<h2>Check arguments in calls [call-arg]<a class="headerlink" href="#check-arguments-in-calls-call-arg" title="永久链接至标题">¶</a></h2>
+<p>Mypy expects that the number and names of arguments match the called function.
+Note that argument type checks have a separate error code <code class="docutils literal notranslate"><span class="pre">arg-type</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
+
+<span class="k">def</span> <span class="nf">greet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+<span class="n">greet</span><span class="p">(</span><span class="s1">&#39;jack&#39;</span><span class="p">)</span>  <span class="c1"># OK</span>
+<span class="n">greet</span><span class="p">(</span><span class="s1">&#39;jill&#39;</span><span class="p">,</span> <span class="s1">&#39;jack&#39;</span><span class="p">)</span>  <span class="c1"># Error: Too many arguments for &quot;greet&quot;  [call-arg]</span>
+</pre></div>
+</div>
+</section>
+<section id="check-argument-types-arg-type">
+<h2>Check argument types [arg-type]<a class="headerlink" href="#check-argument-types-arg-type" title="永久链接至标题">¶</a></h2>
+<p>Mypy checks that argument types in a call match the declared argument
+types in the signature of the called function (if one exists).</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span> <span class="k">else</span> <span class="mi">0</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c1"># Error: Argument 1 to &quot;first&quot; has incompatible type &quot;tuple[int, int]&quot;;</span>
+<span class="c1">#        expected &quot;list[int]&quot;  [arg-type]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">first</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="check-calls-to-overloaded-functions-call-overload">
+<h2>Check calls to overloaded functions [call-overload]<a class="headerlink" href="#check-calls-to-overloaded-functions-call-overload" title="永久链接至标题">¶</a></h2>
+<p>When you call an overloaded function, mypy checks that at least one of
+the signatures of the overload items match the argument types in the
+call.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">inc_maybe</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">inc_maybe</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">inc_maybe</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+     <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+         <span class="k">return</span> <span class="kc">None</span>
+     <span class="k">else</span><span class="p">:</span>
+         <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">inc_maybe</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># OK</span>
+<span class="n">inc_maybe</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># OK</span>
+
+<span class="c1"># Error: No overload variant of &quot;inc_maybe&quot; matches argument type &quot;float&quot;  [call-overload]</span>
+<span class="n">inc_maybe</span><span class="p">(</span><span class="mf">1.2</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="check-validity-of-types-valid-type">
+<h2>Check validity of types [valid-type]<a class="headerlink" href="#check-validity-of-types-valid-type" title="永久链接至标题">¶</a></h2>
+<p>Mypy checks that each type annotation and any expression that
+represents a type is a valid type. Examples of valid types include
+classes, union types, callable types, type aliases, and literal types.
+Examples of invalid types include bare integer literals, functions,
+variables, and modules.</p>
+<p>This example incorrectly uses the function <code class="docutils literal notranslate"><span class="pre">log</span></code> as a type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;log:&#39;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="c1"># Error: Function &quot;t.log&quot; is not valid as a type  [valid-type]</span>
+<span class="k">def</span> <span class="nf">log_all</span><span class="p">(</span><span class="n">objs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">f</span><span class="p">:</span> <span class="n">log</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can use <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a> as the type for callable objects:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+
+<span class="c1"># OK</span>
+<span class="k">def</span> <span class="nf">log_all</span><span class="p">(</span><span class="n">objs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">object</span><span class="p">],</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="require-annotation-if-variable-type-is-unclear-var-annotated">
+<h2>Require annotation if variable type is unclear [var-annotated]<a class="headerlink" href="#require-annotation-if-variable-type-is-unclear-var-annotated" title="永久链接至标题">¶</a></h2>
+<p>In some cases mypy can’t infer the type of a variable without an
+explicit annotation. Mypy treats this as an error. This typically
+happens when you initialize a variable with an empty collection or
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.  If mypy can’t infer the collection item type, mypy replaces
+any parts of the type it couldn’t infer with <code class="docutils literal notranslate"><span class="pre">Any</span></code> and generates an
+error.</p>
+<p>Example with an error:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Bundle</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Error: Need type annotation for &quot;items&quot;</span>
+        <span class="c1">#        (hint: &quot;items: list[&lt;type&gt;] = ...&quot;)  [var-annotated]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">reveal_type</span><span class="p">(</span><span class="n">Bundle</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>  <span class="c1"># list[Any]</span>
+</pre></div>
+</div>
+<p>To address this, we add an explicit annotation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="k">class</span> <span class="nc">Bundle</span><span class="p">:</span>
+     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+         <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># OK</span>
+
+<span class="n">reveal_type</span><span class="p">(</span><span class="n">Bundle</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>  <span class="c1"># list[str]</span>
+</pre></div>
+</div>
+</section>
+<section id="check-validity-of-overrides-override">
+<h2>Check validity of overrides [override]<a class="headerlink" href="#check-validity-of-overrides-override" title="永久链接至标题">¶</a></h2>
+<p>Mypy checks that an overridden method or attribute is compatible with
+the base class.  A method in a subclass must accept all arguments
+that the base class method accepts, and the return type must conform
+to the return type in the base class (Liskov substitution principle).</p>
+<p>Argument types can be more general is a subclass (i.e., they can vary
+contravariantly).  The return type can be narrowed in a subclass
+(i.e., it can vary covariantly).  It’s okay to define additional
+arguments in a subclass method, as long all extra arguments have default
+values or can be left out (<code class="docutils literal notranslate"><span class="pre">*args</span></code>, for example).</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="k">class</span> <span class="nc">Base</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">arg</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">Derived</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">arg</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>  <span class="c1"># OK</span>
+        <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">DerivedBad</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="c1"># Error: Argument 1 of &quot;method&quot; is incompatible with &quot;Base&quot;  [override]</span>
+    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">arg</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="check-that-function-returns-a-value-return">
+<h2>Check that function returns a value [return]<a class="headerlink" href="#check-that-function-returns-a-value-return" title="永久链接至标题">¶</a></h2>
+<p>If a function has a non-<code class="docutils literal notranslate"><span class="pre">None</span></code> return type, mypy expects that the
+function always explicitly returns a value (or raises an exception).
+The function should not fall off the end of the function, since this
+is often a bug.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error: Missing return statement  [return]</span>
+<span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Error: Missing return statement  [return]</span>
+<span class="k">def</span> <span class="nf">pred1</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span>
+
+<span class="c1"># OK</span>
+<span class="k">def</span> <span class="nf">pred2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;not defined for zero&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="check-that-return-value-is-compatible-return-value">
+<h2>Check that return value is compatible [return-value]<a class="headerlink" href="#check-that-return-value-is-compatible-return-value" title="永久链接至标题">¶</a></h2>
+<p>Mypy checks that the returned value is compatible with the type
+signature of the function.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># Error: Incompatible return value type (got &quot;int&quot;, expected &quot;str&quot;)  [return-value]</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</section>
+<section id="check-types-in-assignment-statement-assignment">
+<h2>Check types in assignment statement [assignment]<a class="headerlink" href="#check-types-in-assignment-statement-assignment" title="永久链接至标题">¶</a></h2>
+<p>Mypy checks that the assigned expression is compatible with the
+assignment target (or targets).</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Resource</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+<span class="n">r</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="s1">&#39;A&#39;</span><span class="p">)</span>
+
+<span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;B&#39;</span>  <span class="c1"># OK</span>
+
+<span class="c1"># Error: Incompatible types in assignment (expression has type &quot;int&quot;,</span>
+<span class="c1">#        variable has type &quot;str&quot;)  [assignment]</span>
+<span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="mi">5</span>
+</pre></div>
+</div>
+</section>
+<section id="check-type-variable-values-type-var">
+<h2>Check type variable values [type-var]<a class="headerlink" href="#check-type-variable-values-type-var" title="永久链接至标题">¶</a></h2>
+<p>Mypy checks that value of a type variable is compatible with a value
+restriction or the upper bound type.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span>
+
+<span class="n">T1</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T1&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">T1</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">T1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T1</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+
+<span class="n">add</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">)</span>  <span class="c1"># OK</span>
+
+<span class="c1"># Error: Value of type variable &quot;T1&quot; of &quot;add&quot; cannot be &quot;str&quot;  [type-var]</span>
+<span class="n">add</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="check-uses-of-various-operators-operator">
+<h2>Check uses of various operators [operator]<a class="headerlink" href="#check-uses-of-various-operators-operator" title="永久链接至标题">¶</a></h2>
+<p>Mypy checks that operands support a binary or unary operation, such as
+<code class="docutils literal notranslate"><span class="pre">+</span></code> or <code class="docutils literal notranslate"><span class="pre">~</span></code>. Indexing operations are so common that they have their
+own error code <code class="docutils literal notranslate"><span class="pre">index</span></code> (see below).</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error: Unsupported operand types for + (&quot;int&quot; and &quot;str&quot;)  [operator]</span>
+<span class="mi">1</span> <span class="o">+</span> <span class="s1">&#39;x&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="check-indexing-operations-index">
+<h2>Check indexing operations [index]<a class="headerlink" href="#check-indexing-operations-index" title="永久链接至标题">¶</a></h2>
+<p>Mypy checks that the indexed value in indexing operation such as
+<code class="docutils literal notranslate"><span class="pre">x[y]</span></code> supports indexing, and that the index expression has a valid
+type.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+
+<span class="n">a</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>  <span class="c1"># OK</span>
+
+<span class="c1"># Error: Invalid index type &quot;int&quot; for &quot;dict[str, int]&quot;; expected type &quot;str&quot;  [index]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="c1"># Error: Invalid index type &quot;bytes&quot; for &quot;dict[str, int]&quot;; expected type &quot;str&quot;  [index]</span>
+<span class="n">a</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+</pre></div>
+</div>
+</section>
+<section id="check-list-items-list-item">
+<h2>Check list items [list-item]<a class="headerlink" href="#check-list-items-list-item" title="永久链接至标题">¶</a></h2>
+<p>When constructing a list using <code class="docutils literal notranslate"><span class="pre">[item,</span> <span class="pre">...]</span></code>, mypy checks that each item
+is compatible with the list type that is inferred from the surrounding
+context.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error: List item 0 has incompatible type &quot;int&quot;; expected &quot;str&quot;  [list-item]</span>
+<span class="n">a</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="check-dict-items-dict-item">
+<h2>Check dict items [dict-item]<a class="headerlink" href="#check-dict-items-dict-item" title="永久链接至标题">¶</a></h2>
+<p>When constructing a dictionary using <code class="docutils literal notranslate"><span class="pre">{key:</span> <span class="pre">value,</span> <span class="pre">...}</span></code> or <code class="docutils literal notranslate"><span class="pre">dict(key=value,</span> <span class="pre">...)</span></code>,
+mypy checks that each key and value is compatible with the dictionary type that is
+inferred from the surrounding context.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error: Dict entry 0 has incompatible type &quot;str&quot;: &quot;str&quot;; expected &quot;str&quot;: &quot;int&quot;  [dict-item]</span>
+<span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="check-typeddict-items-typeddict-item">
+<h2>Check TypedDict items [typeddict-item]<a class="headerlink" href="#check-typeddict-items-typeddict-item" title="永久链接至标题">¶</a></h2>
+<p>When constructing a <code class="docutils literal notranslate"><span class="pre">TypedDict</span></code> object, mypy checks that each key and value is compatible
+with the <code class="docutils literal notranslate"><span class="pre">TypedDict</span></code> type that is inferred from the surrounding context.</p>
+<p>When getting a <code class="docutils literal notranslate"><span class="pre">TypedDict</span></code> item, mypy checks that the key
+exists. When assigning to a <code class="docutils literal notranslate"><span class="pre">TypedDict</span></code>, mypy checks that both the
+key and the value are valid.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">TypedDict</span>
+
+<span class="k">class</span> <span class="nc">Point</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="c1"># Error: Incompatible types (expression has type &quot;float&quot;,</span>
+<span class="c1">#        TypedDict item &quot;x&quot; has type &quot;int&quot;)  [typeddict-item]</span>
+<span class="n">p</span><span class="p">:</span> <span class="n">Point</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="check-that-type-of-target-is-known-has-type">
+<h2>Check that type of target is known [has-type]<a class="headerlink" href="#check-that-type-of-target-is-known-has-type" title="永久链接至标题">¶</a></h2>
+<p>Mypy sometimes generates an error when it hasn’t inferred any type for
+a variable being referenced. This can happen for references to
+variables that are initialized later in the source file, and for
+references across modules that form an import cycle. When this
+happens, the reference gets an implicit <code class="docutils literal notranslate"><span class="pre">Any</span></code> type.</p>
+<p>In this example the definitions of <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are circular:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Problem</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">set_x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Error: Cannot determine type of &quot;y&quot;  [has-type]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+
+    <span class="k">def</span> <span class="nf">set_y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+</pre></div>
+</div>
+<p>To work around this error, you can add an explicit type annotation to
+the target variable or attribute. Sometimes you can also reorganize
+the code so that the definition of the variable is placed earlier than
+the reference to the variable in a source file. Untangling cyclic
+imports may also help.</p>
+<p>We add an explicit annotation to the <code class="docutils literal notranslate"><span class="pre">y</span></code> attribute to work around
+the issue:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Problem</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">set_x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>  <span class="c1"># OK</span>
+
+    <span class="k">def</span> <span class="nf">set_y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>  <span class="c1"># Added annotation here</span>
+</pre></div>
+</div>
+</section>
+<section id="check-that-import-target-can-be-found-import">
+<h2>Check that import target can be found [import]<a class="headerlink" href="#check-that-import-target-can-be-found-import" title="永久链接至标题">¶</a></h2>
+<p>Mypy generates an error if it can’t find the source code or a stub file
+for an imported module.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error: Cannot find implementation or library stub for module named &#39;acme&#39;  [import]</span>
+<span class="kn">import</span> <span class="nn">acme</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="running_mypy.html#ignore-missing-imports"><span class="std std-ref">Missing imports</span></a> for how to work around these errors.</p>
+</section>
+<section id="check-that-each-name-is-defined-once-no-redef">
+<h2>Check that each name is defined once [no-redef]<a class="headerlink" href="#check-that-each-name-is-defined-once-no-redef" title="永久链接至标题">¶</a></h2>
+<p>Mypy may generate an error if you have multiple definitions for a name
+in the same namespace.  The reason is that this is often an error, as
+the second definition may overwrite the first one. Also, mypy often
+can’t be able to determine whether references point to the first or
+the second definition, which would compromise type checking.</p>
+<p>If you silence this error, all references to the defined name refer to
+the <em>first</em> definition.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">A</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span>  <span class="c1"># Error: Name &quot;A&quot; already defined on line 1  [no-redef]</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="c1"># Error: Argument 1 to &quot;A&quot; has incompatible type &quot;str&quot;; expected &quot;int&quot;</span>
+<span class="c1">#        (the first definition wins!)</span>
+<span class="n">A</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="check-that-called-function-returns-a-value-func-returns-value">
+<h2>Check that called function returns a value [func-returns-value]<a class="headerlink" href="#check-that-called-function-returns-a-value-func-returns-value" title="永久链接至标题">¶</a></h2>
+<p>Mypy reports an error if you call a function with a <code class="docutils literal notranslate"><span class="pre">None</span></code>
+return type and don’t ignore the return value, as this is
+usually (but not always) a programming error.</p>
+<p>In this example, the <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">f()</span></code> check is always false since <code class="docutils literal notranslate"><span class="pre">f</span></code>
+returns <code class="docutils literal notranslate"><span class="pre">None</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="c1"># OK: we don&#39;t do anything with the return value</span>
+<span class="n">f</span><span class="p">()</span>
+
+<span class="c1"># Error: &quot;f&quot; does not return a value  [func-returns-value]</span>
+<span class="k">if</span> <span class="n">f</span><span class="p">():</span>
+     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;not false&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="check-instantiation-of-abstract-classes-abstract">
+<h2>Check instantiation of abstract classes [abstract]<a class="headerlink" href="#check-instantiation-of-abstract-classes-abstract" title="永久链接至标题">¶</a></h2>
+<p>Mypy generates an error if you try to instantiate an abstract base
+class (ABC). An abstract base class is a class with at least one
+abstract method or attribute. (See also <a class="reference external" href="https://docs.python.org/3/library/abc.html#module-abc" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">abc</span></code></a> module documentation)</p>
+<p>Sometimes a class is made accidentally abstract, often due to an
+unimplemented abstract method. In a case like this you need to provide
+an implementation for the method to make the class concrete
+(non-abstract).</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="k">class</span> <span class="nc">Persistent</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">Thing</span><span class="p">(</span><span class="n">Persistent</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="o">...</span>
+
+    <span class="o">...</span>  <span class="c1"># No &quot;save&quot; method</span>
+
+<span class="c1"># Error: Cannot instantiate abstract class &quot;Thing&quot; with abstract attribute &quot;save&quot;  [abstract]</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Thing</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="check-the-target-of-newtype-valid-newtype">
+<h2>Check the target of NewType [valid-newtype]<a class="headerlink" href="#check-the-target-of-newtype-valid-newtype" title="永久链接至标题">¶</a></h2>
+<p>The target of a <code class="xref py py-func docutils literal notranslate"><span class="pre">NewType</span></code> definition must be a class type. It can’t
+be a union type, <code class="docutils literal notranslate"><span class="pre">Any</span></code>, or various other special types.</p>
+<p>You can also get this error if the target has been imported from a
+module whose source mypy cannot find, since any such definitions are
+treated by mypy as values with <code class="docutils literal notranslate"><span class="pre">Any</span></code> types. Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NewType</span>
+
+<span class="c1"># The source for &quot;acme&quot; is not available for mypy</span>
+<span class="kn">from</span> <span class="nn">acme</span> <span class="kn">import</span> <span class="n">Entity</span>  <span class="c1"># type: ignore</span>
+
+<span class="c1"># Error: Argument 2 to NewType(...) must be subclassable (got &quot;Any&quot;)  [valid-newtype]</span>
+<span class="n">UserEntity</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s1">&#39;UserEntity&#39;</span><span class="p">,</span> <span class="n">Entity</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To work around the issue, you can either give mypy access to the sources
+for <code class="docutils literal notranslate"><span class="pre">acme</span></code> or create a stub file for the module.  See <a class="reference internal" href="running_mypy.html#ignore-missing-imports"><span class="std std-ref">Missing imports</span></a>
+for more information.</p>
+</section>
+<section id="check-the-return-type-of-exit-exit-return">
+<h2>Check the return type of __exit__ [exit-return]<a class="headerlink" href="#check-the-return-type-of-exit-exit-return" title="永久链接至标题">¶</a></h2>
+<p>If mypy can determine that <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__exit__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__exit__</span></code></a> always returns <code class="docutils literal notranslate"><span class="pre">False</span></code>, mypy
+checks that the return type is <em>not</em> <code class="docutils literal notranslate"><span class="pre">bool</span></code>.  The boolean value of
+the return type affects which lines mypy thinks are reachable after a
+<code class="docutils literal notranslate"><span class="pre">with</span></code> statement, since any <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__exit__" title="(在 Python v3.10)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__exit__</span></code></a> method that can return
+<code class="docutils literal notranslate"><span class="pre">True</span></code> may swallow exceptions. An imprecise return type can result
+in mysterious errors reported near <code class="docutils literal notranslate"><span class="pre">with</span></code> statements.</p>
+<p>To fix this, use either <code class="docutils literal notranslate"><span class="pre">typing_extensions.Literal[False]</span></code> or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> as the return type. Returning <code class="docutils literal notranslate"><span class="pre">None</span></code> is equivalent to
+returning <code class="docutils literal notranslate"><span class="pre">False</span></code> in this context, since both are treated as false
+values.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyContext</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># Error</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>This produces the following output from mypy:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>example.py:3: error: &quot;bool&quot; is invalid as return type for &quot;__exit__&quot; that always returns False
+example.py:3: note: Use &quot;typing_extensions.Literal[False]&quot; as the return type or change it to
+    &quot;None&quot;
+example.py:3: note: If return type of &quot;__exit__&quot; implies that it may return True, the context
+    manager may swallow exceptions
+</pre></div>
+</div>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">Literal[False]</span></code> to fix the error:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="k">class</span> <span class="nc">MyContext</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]:</span>  <span class="c1"># OK</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>You can also use <code class="docutils literal notranslate"><span class="pre">None</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyContext</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Also OK</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exit&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="check-that-naming-is-consistent-name-match">
+<h2>Check that naming is consistent [name-match]<a class="headerlink" href="#check-that-naming-is-consistent-name-match" title="永久链接至标题">¶</a></h2>
+<p>The definition of a named tuple or a TypedDict must be named
+consistently when using the call-based syntax. Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NamedTuple</span>
+
+<span class="c1"># Error: First argument to namedtuple() should be &quot;Point2D&quot;, not &quot;Point&quot;</span>
+<span class="n">Point2D</span> <span class="o">=</span> <span class="n">NamedTuple</span><span class="p">(</span><span class="s2">&quot;Point&quot;</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)])</span>
+</pre></div>
+</div>
+</section>
+<section id="check-that-overloaded-functions-have-an-implementation-no-overload-impl">
+<h2>Check that overloaded functions have an implementation [no-overload-impl]<a class="headerlink" href="#check-that-overloaded-functions-have-an-implementation-no-overload-impl" title="永久链接至标题">¶</a></h2>
+<p>Overloaded functions outside of stub files must be followed by a non overloaded
+implementation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">overload</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="c1"># presence of required function below is checked</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">pass</span>  <span class="c1"># actual implementation</span>
+</pre></div>
+</div>
+</section>
+<section id="report-syntax-errors-syntax">
+<h2>Report syntax errors [syntax]<a class="headerlink" href="#report-syntax-errors-syntax" title="永久链接至标题">¶</a></h2>
+<p>If the code being checked is not syntactically valid, mypy issues a
+syntax error. Most, but not all, syntax errors are <em>blocking errors</em>:
+they can’t be ignored with a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comment.</p>
+</section>
+<section id="miscellaneous-checks-misc">
+<h2>Miscellaneous checks [misc]<a class="headerlink" href="#miscellaneous-checks-misc" title="永久链接至标题">¶</a></h2>
+<p>Mypy performs numerous other, less commonly failing checks that don’t
+have specific error codes. These use the <code class="docutils literal notranslate"><span class="pre">misc</span></code> error code. Other
+than being used for multiple unrelated errors, the <code class="docutils literal notranslate"><span class="pre">misc</span></code> error code
+is not special. For example, you can ignore all errors in this
+category by using <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore[misc]</span></code> comment. Since these errors
+are not expected to be common, it’s unlikely that you’ll see two
+<em>different</em> errors with the <code class="docutils literal notranslate"><span class="pre">misc</span></code> code on a single line – though
+this can certainly happen once in a while.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Future mypy versions will likely add new error codes for some errors
+that currently use the <code class="docutils literal notranslate"><span class="pre">misc</span></code> error code.</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Error codes enabled by default</a><ul>
+<li><a class="reference internal" href="#check-that-attribute-exists-attr-defined">Check that attribute exists [attr-defined]</a></li>
+<li><a class="reference internal" href="#check-that-attribute-exists-in-each-union-item-union-attr">Check that attribute exists in each union item [union-attr]</a></li>
+<li><a class="reference internal" href="#check-that-name-is-defined-name-defined">Check that name is defined [name-defined]</a></li>
+<li><a class="reference internal" href="#check-arguments-in-calls-call-arg">Check arguments in calls [call-arg]</a></li>
+<li><a class="reference internal" href="#check-argument-types-arg-type">Check argument types [arg-type]</a></li>
+<li><a class="reference internal" href="#check-calls-to-overloaded-functions-call-overload">Check calls to overloaded functions [call-overload]</a></li>
+<li><a class="reference internal" href="#check-validity-of-types-valid-type">Check validity of types [valid-type]</a></li>
+<li><a class="reference internal" href="#require-annotation-if-variable-type-is-unclear-var-annotated">Require annotation if variable type is unclear [var-annotated]</a></li>
+<li><a class="reference internal" href="#check-validity-of-overrides-override">Check validity of overrides [override]</a></li>
+<li><a class="reference internal" href="#check-that-function-returns-a-value-return">Check that function returns a value [return]</a></li>
+<li><a class="reference internal" href="#check-that-return-value-is-compatible-return-value">Check that return value is compatible [return-value]</a></li>
+<li><a class="reference internal" href="#check-types-in-assignment-statement-assignment">Check types in assignment statement [assignment]</a></li>
+<li><a class="reference internal" href="#check-type-variable-values-type-var">Check type variable values [type-var]</a></li>
+<li><a class="reference internal" href="#check-uses-of-various-operators-operator">Check uses of various operators [operator]</a></li>
+<li><a class="reference internal" href="#check-indexing-operations-index">Check indexing operations [index]</a></li>
+<li><a class="reference internal" href="#check-list-items-list-item">Check list items [list-item]</a></li>
+<li><a class="reference internal" href="#check-dict-items-dict-item">Check dict items [dict-item]</a></li>
+<li><a class="reference internal" href="#check-typeddict-items-typeddict-item">Check TypedDict items [typeddict-item]</a></li>
+<li><a class="reference internal" href="#check-that-type-of-target-is-known-has-type">Check that type of target is known [has-type]</a></li>
+<li><a class="reference internal" href="#check-that-import-target-can-be-found-import">Check that import target can be found [import]</a></li>
+<li><a class="reference internal" href="#check-that-each-name-is-defined-once-no-redef">Check that each name is defined once [no-redef]</a></li>
+<li><a class="reference internal" href="#check-that-called-function-returns-a-value-func-returns-value">Check that called function returns a value [func-returns-value]</a></li>
+<li><a class="reference internal" href="#check-instantiation-of-abstract-classes-abstract">Check instantiation of abstract classes [abstract]</a></li>
+<li><a class="reference internal" href="#check-the-target-of-newtype-valid-newtype">Check the target of NewType [valid-newtype]</a></li>
+<li><a class="reference internal" href="#check-the-return-type-of-exit-exit-return">Check the return type of __exit__ [exit-return]</a></li>
+<li><a class="reference internal" href="#check-that-naming-is-consistent-name-match">Check that naming is consistent [name-match]</a></li>
+<li><a class="reference internal" href="#check-that-overloaded-functions-have-an-implementation-no-overload-impl">Check that overloaded functions have an implementation [no-overload-impl]</a></li>
+<li><a class="reference internal" href="#report-syntax-errors-syntax">Report syntax errors [syntax]</a></li>
+<li><a class="reference internal" href="#miscellaneous-checks-misc">Miscellaneous checks [misc]</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="error_codes.html"
+                          title="上一章">Error codes</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="error_code_list2.html"
+                          title="下一章">Error codes for optional checks</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/error_code_list.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="error_code_list2.html" title="Error codes for optional checks"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="error_codes.html" title="Error codes"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Error codes enabled by default</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

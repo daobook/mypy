@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Annotation issues at runtime &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Protocols and structural subtyping" href="protocols.html" />
+    <link rel="prev" title="Class basics" href="class_basics.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="protocols.html" title="Protocols and structural subtyping"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="class_basics.html" title="Class basics"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Annotation issues at runtime</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="annotation-issues-at-runtime">
+<span id="runtime-troubles"></span><h1>Annotation issues at runtime<a class="headerlink" href="#annotation-issues-at-runtime" title="永久链接至标题">¶</a></h1>
+<p>Idiomatic use of type annotations can sometimes run up against what a given
+version of Python considers legal code. This section describes these scenarios
+and explains how to get your code running again. Generally speaking, we have
+three tools at our disposal:</p>
+<ul class="simple">
+<li><p>For Python 3.7 through 3.9, use of <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">annotations</span></code>
+(<span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0563"><strong>PEP 563</strong></a>), made the default in Python 3.11 and later</p></li>
+<li><p>Use of string literal types or type comments</p></li>
+<li><p>Use of <code class="docutils literal notranslate"><span class="pre">typing.TYPE_CHECKING</span></code></p></li>
+</ul>
+<p>We provide a description of these before moving onto discussion of specific
+problems you may encounter.</p>
+<section id="string-literal-types">
+<span id="id1"></span><h2>String literal types<a class="headerlink" href="#string-literal-types" title="永久链接至标题">¶</a></h2>
+<p>Type comments can’t cause runtime errors because comments are not evaluated by
+Python. In a similar way, using string literal types sidesteps the problem of
+annotations that would cause runtime errors.</p>
+<p>Any type can be entered as a string literal, and you can combine
+string-literal types with non-string-literal types freely:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>  <span class="c1"># OK</span>
+<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>      <span class="c1"># OK, though not useful</span>
+
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
+</div>
+<p>String literal types are never needed in <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span></code> comments and <a class="reference internal" href="stubs.html#stub-files"><span class="std std-ref">stub files</span></a>.</p>
+<p>String literal types must be defined (or imported) later <em>in the same module</em>.
+They cannot be used to leave cross-module references unresolved.  (For dealing
+with import cycles, see <a class="reference internal" href="#import-cycles"><span class="std std-ref">Import cycles</span></a>.)</p>
+</section>
+<section id="future-annotations-import-pep-563">
+<span id="future-annotations"></span><h2>Future annotations import (PEP 563)<a class="headerlink" href="#future-annotations-import-pep-563" title="永久链接至标题">¶</a></h2>
+<p>Many of the issues described here are caused by Python trying to evaluate
+annotations. From Python 3.11 on, Python will no longer attempt to evaluate
+function and variable annotations. This behaviour is made available in Python
+3.7 and later through the use of <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">annotations</span></code>.</p>
+<p>This can be thought of as automatic string literal-ification of all function and
+variable annotations. Note that function and variable annotations are still
+required to be valid Python syntax. For more details, see <span class="target" id="index-1"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0563"><strong>PEP 563</strong></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Even with the <code class="docutils literal notranslate"><span class="pre">__future__</span></code> import, there are some scenarios that could
+still require string literals or result in errors, typically involving use
+of forward references or generics in:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="kinds_of_types.html#type-aliases"><span class="std std-ref">type aliases</span></a>;</p></li>
+<li><p><a class="reference internal" href="type_narrowing.html#type-narrowing"><span class="std std-ref">type narrowing</span></a>;</p></li>
+<li><p>type definitions (see <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>, <code class="xref py py-func docutils literal notranslate"><span class="pre">NewType()</span></code>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>);</p></li>
+<li><p>base classes.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># base class example</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">(</span><span class="nb">tuple</span><span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">]):</span> <span class="o">...</span> <span class="c1"># String literal types needed here</span>
+<span class="k">class</span> <span class="nc">B</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">class</span> <span class="nc">C</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Some libraries may have use cases for dynamic evaluation of annotations, for
+instance, through use of <code class="docutils literal notranslate"><span class="pre">typing.get_type_hints</span></code> or <code class="docutils literal notranslate"><span class="pre">eval</span></code>. If your
+annotation would raise an error when evaluated (say by using <span class="target" id="index-2"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0604"><strong>PEP 604</strong></a>
+syntax with Python 3.9), you may need to be careful when using such
+libraries.</p>
+</div>
+</section>
+<section id="typing-type-checking">
+<span id="id2"></span><h2>typing.TYPE_CHECKING<a class="headerlink" href="#typing-type-checking" title="永久链接至标题">¶</a></h2>
+<p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module defines a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TYPE_CHECKING" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">TYPE_CHECKING</span></code></a> constant
+that is <code class="docutils literal notranslate"><span class="pre">False</span></code> at runtime but treated as <code class="docutils literal notranslate"><span class="pre">True</span></code> while type checking.</p>
+<p>Since code inside <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">TYPE_CHECKING:</span></code> is not executed at runtime, it provides
+a convenient way to tell mypy something without the code being evaluated at
+runtime. This is most useful for resolving <a class="reference internal" href="#import-cycles"><span class="std std-ref">import cycles</span></a>.</p>
+</section>
+<section id="class-name-forward-references">
+<h2>Class name forward references<a class="headerlink" href="#class-name-forward-references" title="永久链接至标题">¶</a></h2>
+<p>Python does not allow references to a class object before the class is
+defined (aka forward reference). Thus this code does not work as expected:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>  <span class="c1"># NameError: name &quot;A&quot; is not defined</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Starting from Python 3.7, you can add <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">annotations</span></code> to
+resolve this, as discussed earlier:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>  <span class="c1"># OK</span>
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>For Python 3.6 and below, you can enter the type as a string literal or type comment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>  <span class="c1"># OK</span>
+
+<span class="c1"># Also OK</span>
+<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>  <span class="c1"># type: (A) -&gt; None</span>
+    <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">A</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Of course, instead of using future annotations import or string literal types,
+you could move the function definition after the class definition. This is not
+always desirable or even possible, though.</p>
+</section>
+<section id="import-cycles">
+<span id="id3"></span><h2>Import cycles<a class="headerlink" href="#import-cycles" title="永久链接至标题">¶</a></h2>
+<p>An import cycle occurs where module A imports module B and module B
+imports module A (perhaps indirectly, e.g. <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">-&gt;</span> <span class="pre">B</span> <span class="pre">-&gt;</span> <span class="pre">C</span> <span class="pre">-&gt;</span> <span class="pre">A</span></code>).
+Sometimes in order to add type annotations you have to add extra
+imports to a module and those imports cause cycles that didn’t exist
+before. This can lead to errors at runtime like:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ImportError: cannot import name &#39;b&#39; from partially initialized module &#39;A&#39; (most likely due to a circular import)
+</pre></div>
+</div>
+<p>If those cycles do become a problem when running your program, there’s a trick:
+if the import is only needed for type annotations and you’re using a) the
+<a class="reference internal" href="#future-annotations"><span class="std std-ref">future annotations import</span></a>, or b) string literals or type
+comments for the relevant annotations, you can write the imports inside <code class="docutils literal notranslate"><span class="pre">if</span>
+<span class="pre">TYPE_CHECKING:</span></code> so that they are not executed at runtime. Example:</p>
+<p>File <code class="docutils literal notranslate"><span class="pre">foo.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">bar</span>
+
+<span class="k">def</span> <span class="nf">listify</span><span class="p">(</span><span class="n">arg</span><span class="p">:</span> <span class="s1">&#39;bar.BarClass&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;list[bar.BarClass]&#39;</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">arg</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>File <code class="docutils literal notranslate"><span class="pre">bar.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">listify</span>
+
+<span class="k">class</span> <span class="nc">BarClass</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">listifyme</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;list[BarClass]&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">listify</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="using-classes-that-are-generic-in-stubs-but-not-at-runtime">
+<span id="not-generic-runtime"></span><h2>Using classes that are generic in stubs but not at runtime<a class="headerlink" href="#using-classes-that-are-generic-in-stubs-but-not-at-runtime" title="永久链接至标题">¶</a></h2>
+<p>Some classes are declared as <a class="reference internal" href="generics.html#generic-classes"><span class="std std-ref">generic</span></a> in stubs, but not
+at runtime.</p>
+<p>In Python 3.8 and earlier, there are several examples within the standard library,
+for instance, <a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">os.PathLike</span></code></a> and <a class="reference external" href="https://docs.python.org/3/library/queue.html#queue.Queue" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">queue.Queue</span></code></a>. Subscripting
+such a class will result in a runtime error:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+
+<span class="k">class</span> <span class="nc">Tasks</span><span class="p">(</span><span class="n">Queue</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>  <span class="c1"># TypeError: &#39;type&#39; object is not subscriptable</span>
+    <span class="o">...</span>
+
+<span class="n">results</span><span class="p">:</span> <span class="n">Queue</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>  <span class="c1"># TypeError: &#39;type&#39; object is not subscriptable</span>
+</pre></div>
+</div>
+<p>To avoid errors from use of these generics in annotations, just use the
+<a class="reference internal" href="#future-annotations"><span class="std std-ref">future annotations import</span></a> (or string literals or type
+comments for Python 3.6 and below).</p>
+<p>To avoid errors when inheriting from these classes, things are a little more
+complicated and you need to use <a class="reference internal" href="#typing-type-checking"><span class="std std-ref">typing.TYPE_CHECKING</span></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="n">BaseQueue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>  <span class="c1"># this is only processed by mypy</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">BaseQueue</span> <span class="o">=</span> <span class="n">Queue</span>  <span class="c1"># this is not seen by mypy but will be executed at runtime</span>
+
+<span class="k">class</span> <span class="nc">Tasks</span><span class="p">(</span><span class="n">BaseQueue</span><span class="p">):</span>  <span class="c1"># OK</span>
+    <span class="o">...</span>
+
+<span class="n">task_queue</span><span class="p">:</span> <span class="n">Tasks</span>
+<span class="n">reveal_type</span><span class="p">(</span><span class="n">task_queue</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>  <span class="c1"># Reveals str</span>
+</pre></div>
+</div>
+<p>If your subclass is also generic, you can use the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Generic</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+
+<span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">_MyQueueBase</span><span class="p">(</span><span class="n">Queue</span><span class="p">[</span><span class="n">_T</span><span class="p">]):</span> <span class="k">pass</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">class</span> <span class="nc">_MyQueueBase</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">_T</span><span class="p">],</span> <span class="n">Queue</span><span class="p">):</span> <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">MyQueue</span><span class="p">(</span><span class="n">_MyQueueBase</span><span class="p">[</span><span class="n">_T</span><span class="p">]):</span> <span class="k">pass</span>
+
+<span class="n">task_queue</span><span class="p">:</span> <span class="n">MyQueue</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="n">reveal_type</span><span class="p">(</span><span class="n">task_queue</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>  <span class="c1"># Reveals str</span>
+</pre></div>
+</div>
+<p>In Python 3.9, we can just inherit directly from <code class="docutils literal notranslate"><span class="pre">Queue[str]</span></code> or <code class="docutils literal notranslate"><span class="pre">Queue[T]</span></code>
+since its <a class="reference external" href="https://docs.python.org/3/library/queue.html#queue.Queue" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">queue.Queue</span></code></a> implements <code class="xref py py-meth docutils literal notranslate"><span class="pre">__class_getitem__()</span></code>, so
+the class object can be subscripted at runtime without issue.</p>
+</section>
+<section id="using-types-defined-in-stubs-but-not-at-runtime">
+<h2>Using types defined in stubs but not at runtime<a class="headerlink" href="#using-types-defined-in-stubs-but-not-at-runtime" title="永久链接至标题">¶</a></h2>
+<p>Sometimes stubs that you’re using may define types you wish to re-use that do
+not exist at runtime. Importing these types naively will cause your code to fail
+at runtime with <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> or <code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError</span></code>. Similar to previous
+sections, these can be dealt with by using <a class="reference internal" href="#typing-type-checking"><span class="std std-ref">typing.TYPE_CHECKING</span></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">_typeshed</span> <span class="kn">import</span> <span class="n">SupportsLessThan</span>
+</pre></div>
+</div>
+</section>
+<section id="using-generic-builtins">
+<span id="generic-builtins"></span><h2>Using generic builtins<a class="headerlink" href="#using-generic-builtins" title="永久链接至标题">¶</a></h2>
+<p>Starting with Python 3.9 (<span class="target" id="index-3"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0585"><strong>PEP 585</strong></a>), the type objects of many collections in
+the standard library support subscription at runtime. This means that you no
+longer have to import the equivalents from <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a>; you can simply use
+the built-in collections or those from <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#module-collections.abc" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">collections.abc</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
+<span class="n">x</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="n">y</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="n">z</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>There is limited support for using this syntax in Python 3.7 and later as well.
+If you use <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">annotations</span></code>, mypy will understand this
+syntax in annotations. However, since this will not be supported by the Python
+interpreter at runtime, make sure you’re aware of the caveats mentioned in the
+notes at <a class="reference internal" href="#future-annotations"><span class="std std-ref">future annotations import</span></a>.</p>
+</section>
+<section id="using-x-y-syntax-for-unions">
+<h2>Using X | Y syntax for Unions<a class="headerlink" href="#using-x-y-syntax-for-unions" title="永久链接至标题">¶</a></h2>
+<p>Starting with Python 3.10 (<span class="target" id="index-4"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0604"><strong>PEP 604</strong></a>), you can spell union types as <code class="docutils literal notranslate"><span class="pre">x:</span> <span class="pre">int</span> <span class="pre">|</span>
+<span class="pre">str</span></code>, instead of <code class="docutils literal notranslate"><span class="pre">x:</span> <span class="pre">typing.Union[int,</span> <span class="pre">str]</span></code>.</p>
+<p>There is limited support for using this syntax in Python 3.7 and later as well.
+If you use <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">annotations</span></code>, mypy will understand this
+syntax in annotations, string literal types, type comments and stub files.
+However, since this will not be supported by the Python interpreter at runtime
+(if evaluated, <code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">|</span> <span class="pre">str</span></code> will raise <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">unsupported</span> <span class="pre">operand</span> <span class="pre">type(s)</span>
+<span class="pre">for</span> <span class="pre">|:</span> <span class="pre">'type'</span> <span class="pre">and</span> <span class="pre">'type'</span></code>), make sure you’re aware of the caveats mentioned in
+the notes at <a class="reference internal" href="#future-annotations"><span class="std std-ref">future annotations import</span></a>.</p>
+</section>
+<section id="using-new-additions-to-the-typing-module">
+<h2>Using new additions to the typing module<a class="headerlink" href="#using-new-additions-to-the-typing-module" title="永久链接至标题">¶</a></h2>
+<p>You may find yourself wanting to use features added to the <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a>
+module in earlier versions of Python than the addition, for example, using any
+of <code class="docutils literal notranslate"><span class="pre">Literal</span></code>, <code class="docutils literal notranslate"><span class="pre">Protocol</span></code>, <code class="docutils literal notranslate"><span class="pre">TypedDict</span></code> with Python 3.6.</p>
+<p>The easiest way to do this is to install and use the <code class="docutils literal notranslate"><span class="pre">typing_extensions</span></code>
+package from PyPI for the relevant imports, for example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
+<span class="n">x</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>If you don’t want to rely on <code class="docutils literal notranslate"><span class="pre">typing_extensions</span></code> being installed on newer
+Pythons, you could alternatively use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="n">x</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This plays nicely well with following <span class="target" id="index-5"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0508"><strong>PEP 508</strong></a> dependency specification:
+<code class="docutils literal notranslate"><span class="pre">typing_extensions;</span> <span class="pre">python_version&lt;&quot;3.8&quot;</span></code></p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Annotation issues at runtime</a><ul>
+<li><a class="reference internal" href="#string-literal-types">String literal types</a></li>
+<li><a class="reference internal" href="#future-annotations-import-pep-563">Future annotations import (PEP 563)</a></li>
+<li><a class="reference internal" href="#typing-type-checking">typing.TYPE_CHECKING</a></li>
+<li><a class="reference internal" href="#class-name-forward-references">Class name forward references</a></li>
+<li><a class="reference internal" href="#import-cycles">Import cycles</a></li>
+<li><a class="reference internal" href="#using-classes-that-are-generic-in-stubs-but-not-at-runtime">Using classes that are generic in stubs but not at runtime</a></li>
+<li><a class="reference internal" href="#using-types-defined-in-stubs-but-not-at-runtime">Using types defined in stubs but not at runtime</a></li>
+<li><a class="reference internal" href="#using-generic-builtins">Using generic builtins</a></li>
+<li><a class="reference internal" href="#using-x-y-syntax-for-unions">Using X | Y syntax for Unions</a></li>
+<li><a class="reference internal" href="#using-new-additions-to-the-typing-module">Using new additions to the typing module</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="class_basics.html"
+                          title="上一章">Class basics</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="protocols.html"
+                          title="下一章">Protocols and structural subtyping</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/runtime_troubles.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="protocols.html" title="Protocols and structural subtyping"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="class_basics.html" title="Class basics"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Annotation issues at runtime</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

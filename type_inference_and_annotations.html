@@ -1,0 +1,354 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Type inference and type annotations &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Kinds of types" href="kinds_of_types.html" />
+    <link rel="prev" title="Built-in types" href="builtin_types.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="kinds_of_types.html" title="Kinds of types"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="builtin_types.html" title="Built-in types"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Type inference and type annotations</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="type-inference-and-type-annotations">
+<h1>Type inference and type annotations<a class="headerlink" href="#type-inference-and-type-annotations" title="永久链接至标题">¶</a></h1>
+<section id="type-inference">
+<h2>Type inference<a class="headerlink" href="#type-inference" title="永久链接至标题">¶</a></h2>
+<p>Mypy considers the initial assignment as the definition of a variable.
+If you do not explicitly
+specify the type of the variable, mypy infers the type based on the
+static type of the value expression:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>           <span class="c1"># Infer type &quot;int&quot; for i</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>      <span class="c1"># Infer type &quot;list[int]&quot; for l</span>
+</pre></div>
+</div>
+<p>Type inference is not used in dynamically typed functions (those
+without a function type annotation) — every local variable type defaults
+to <code class="docutils literal notranslate"><span class="pre">Any</span></code> in such functions. <code class="docutils literal notranslate"><span class="pre">Any</span></code> is discussed later in more detail.</p>
+</section>
+<section id="explicit-types-for-variables">
+<span id="explicit-var-types"></span><h2>Explicit types for variables<a class="headerlink" href="#explicit-types-for-variables" title="永久链接至标题">¶</a></h2>
+<p>You can override the inferred type of a variable by using a
+variable type annotation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Without the type annotation, the type of <code class="docutils literal notranslate"><span class="pre">x</span></code> would be just <code class="docutils literal notranslate"><span class="pre">int</span></code>. We
+use an annotation to give it a more general type <code class="docutils literal notranslate"><span class="pre">Union[int,</span> <span class="pre">str]</span></code> (this
+type means that the value can be either an <code class="docutils literal notranslate"><span class="pre">int</span></code> or a <code class="docutils literal notranslate"><span class="pre">str</span></code>).
+Mypy checks that the type of the initializer is compatible with the
+declared type. The following example is not valid, since the initializer is
+a floating point number, and this is incompatible with the declared
+type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.1</span>  <span class="c1"># Error!</span>
+</pre></div>
+</div>
+<p>The variable annotation syntax is available starting from Python 3.6.
+In earlier Python versions, you can use a special comment after an
+assignment statement to declare the type of a variable:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># type: Union[int, str]</span>
+</pre></div>
+</div>
+<p>We’ll use both syntax variants in examples. The syntax variants are
+mostly interchangeable, but the variable annotation syntax allows
+defining the type of a variable without initialization, which is not
+possible with the comment syntax:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># Declare type of &#39;x&#39; without initialization</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The best way to think about this is that the type annotation sets the
+type of the variable, not the type of the expression. To force the
+type of an expression you can use <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.cast" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">cast(&lt;type&gt;,</span> <span class="pre">&lt;expression&gt;)</span></code></a>.</p>
+</div>
+</section>
+<section id="explicit-types-for-collections">
+<h2>Explicit types for collections<a class="headerlink" href="#explicit-types-for-collections" title="永久链接至标题">¶</a></h2>
+<p>The type checker cannot always infer the type of a list or a
+dictionary. This often arises when creating an empty list or
+dictionary and assigning it to a new variable that doesn’t have an explicit
+variable type. Here is an example where mypy can’t infer the type
+without some help:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Error: Need type annotation for &quot;l&quot;</span>
+</pre></div>
+</div>
+<p>In these cases you can give the type explicitly using a type annotation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>       <span class="c1"># Create empty list with type list[int]</span>
+<span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Create empty dictionary (str -&gt; int)</span>
+</pre></div>
+</div>
+<p>Similarly, you can also give an explicit type when creating an empty set:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Using type arguments (e.g. <code class="docutils literal notranslate"><span class="pre">list[int]</span></code>) on builtin collections like
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>,  <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>, and  <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a>
+only works in Python 3.9 and later. For Python 3.8 and earlier, you must use
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a> (e.g. <code class="docutils literal notranslate"><span class="pre">List[int]</span></code>), <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>, and
+so on.</p>
+</div>
+</section>
+<section id="compatibility-of-container-types">
+<h2>Compatibility of container types<a class="headerlink" href="#compatibility-of-container-types" title="永久链接至标题">¶</a></h2>
+<p>The following program generates a mypy error, since <code class="docutils literal notranslate"><span class="pre">list[int]</span></code>
+is not compatible with <code class="docutils literal notranslate"><span class="pre">list[object]</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">l</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">k</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">k</span>  <span class="c1"># Type check error: incompatible types in assignment</span>
+</pre></div>
+</div>
+<p>The reason why the above assignment is disallowed is that allowing the
+assignment could result in non-int values stored in a list of <code class="docutils literal notranslate"><span class="pre">int</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">l</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">k</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">k</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># Ouch; a string in list[int]</span>
+</pre></div>
+</div>
+<p>Other container types like <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> and <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a> behave similarly. We
+will discuss how you can work around this in <a class="reference internal" href="common_issues.html#variance"><span class="std std-ref">Invariance vs covariance</span></a>.</p>
+<p>You can still run the above program; it prints <code class="docutils literal notranslate"><span class="pre">x</span></code>. This illustrates
+the fact that static types are used during type checking, but they do
+not affect the runtime behavior of programs. You can run programs with
+type check failures, which is often very handy when performing a large
+refactoring. Thus you can always ‘work around’ the type system, and it
+doesn’t really limit what you can do in your program.</p>
+</section>
+<section id="context-in-type-inference">
+<h2>Context in type inference<a class="headerlink" href="#context-in-type-inference" title="永久链接至标题">¶</a></h2>
+<p>Type inference is <em>bidirectional</em> and takes context into account. For
+example, the following is valid:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">l</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># Infer type list[object] for [1, 2], not list[int]</span>
+</pre></div>
+</div>
+<p>In an assignment, the type context is determined by the assignment
+target. In this case this is <code class="docutils literal notranslate"><span class="pre">l</span></code>, which has the type
+<code class="docutils literal notranslate"><span class="pre">list[object]</span></code>. The value expression <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code> is type checked in
+this context and given the type <code class="docutils literal notranslate"><span class="pre">list[object]</span></code>. In the previous
+example we introduced a new variable <code class="docutils literal notranslate"><span class="pre">l</span></code>, and here the type context
+was empty.</p>
+<p>Declared argument types are also used for type context. In this program
+mypy knows that the empty list <code class="docutils literal notranslate"><span class="pre">[]</span></code> should have type <code class="docutils literal notranslate"><span class="pre">list[int]</span></code> based
+on the declared type of <code class="docutils literal notranslate"><span class="pre">arg</span></code> in <code class="docutils literal notranslate"><span class="pre">foo</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Items:&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">))</span>
+
+<span class="n">foo</span><span class="p">([])</span>  <span class="c1"># OK</span>
+</pre></div>
+</div>
+<p>However, context only works within a single statement. Here mypy requires
+an annotation for the empty list, since the context would only be available
+in the following statement:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">arg</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Items:&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Error: Need type annotation for &quot;a&quot;</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Working around the issue is easy by adding a type annotation:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="n">a</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># OK</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="declaring-multiple-variable-types-at-a-time">
+<h2>Declaring multiple variable types at a time<a class="headerlink" href="#declaring-multiple-variable-types-at-a-time" title="永久链接至标题">¶</a></h2>
+<p>You can declare more than a single variable at a time, but only with
+a type comment. In order to nicely work with multiple assignment, you
+must give each variable a type separately:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">i</span><span class="p">,</span> <span class="n">found</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span>  <span class="c1"># type: int, bool</span>
+</pre></div>
+</div>
+<p>You can optionally use parentheses around the types, assignment targets
+and assigned expression:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">i</span><span class="p">,</span> <span class="n">found</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span>  <span class="c1"># type: (int, bool)      # OK</span>
+<span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">found</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span>  <span class="c1"># type: int, bool      # OK</span>
+<span class="n">i</span><span class="p">,</span> <span class="n">found</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>  <span class="c1"># type: int, bool      # OK</span>
+<span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">found</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>  <span class="c1"># type: (int, bool)  # OK</span>
+</pre></div>
+</div>
+</section>
+<section id="starred-expressions">
+<h2>Starred expressions<a class="headerlink" href="#starred-expressions" title="永久链接至标题">¶</a></h2>
+<p>In most cases, mypy can infer the type of starred expressions from the
+right-hand side of an assignment, but not always:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span> <span class="o">*</span><span class="n">bs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>   <span class="c1"># OK</span>
+<span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="o">*</span><span class="n">rs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>   <span class="c1"># Error: Type of rs cannot be inferred</span>
+</pre></div>
+</div>
+<p>On first line, the type of <code class="docutils literal notranslate"><span class="pre">bs</span></code> is inferred to be
+<code class="docutils literal notranslate"><span class="pre">list[int]</span></code>. However, on the second line, mypy cannot infer the type
+of <code class="docutils literal notranslate"><span class="pre">rs</span></code>, because there is no right-hand side value for <code class="docutils literal notranslate"><span class="pre">rs</span></code> to
+infer the type from. In cases like these, the starred expression needs
+to be annotated with a starred type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="o">*</span><span class="n">rs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>  <span class="c1"># type: int, int, list[int]</span>
+</pre></div>
+</div>
+<p>Here, the type of <code class="docutils literal notranslate"><span class="pre">rs</span></code> is set to <code class="docutils literal notranslate"><span class="pre">list[int]</span></code>.</p>
+</section>
+<section id="silencing-type-errors">
+<h2>Silencing type errors<a class="headerlink" href="#silencing-type-errors" title="永久链接至标题">¶</a></h2>
+<p>You might want to disable type checking on specific lines, or within specific
+files in your codebase. To do that, you can use a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comment.</p>
+<p>For example, say that the web framework that you use now takes an integer
+argument to <code class="docutils literal notranslate"><span class="pre">run()</span></code>, which starts it on localhost on that port. Like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Starting app on http://localhost:8000</span>
+<span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, the type stubs that the package uses is not up-to-date, and it still
+expects only <code class="docutils literal notranslate"><span class="pre">str</span></code> types for <code class="docutils literal notranslate"><span class="pre">run()</span></code>. This would give you the following error:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>error: Argument 1 to &quot;run&quot; of &quot;A&quot; has incompatible type &quot;int&quot;; expected &quot;str&quot;
+</pre></div>
+</div>
+<p>If you cannot directly fix the type stubs yourself, you can temporarily
+disable type checking on that line, by adding a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Starting app on http://localhost:8000</span>
+<span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+</pre></div>
+</div>
+<p>This will suppress any mypy errors that would have raised on that specific line.</p>
+<p>You should probably add some more information on the <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comment,
+to explain why the ignore was added in the first place. This could be a link to
+an issue on the repository responsible for the type stubs, or it could be a
+short explanation of the bug. To do that, use this format:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Starting app on http://localhost:8000</span>
+<span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">8000</span><span class="p">)</span>  <span class="c1"># type: ignore  # `run()` now accepts an `int`, as a port</span>
+</pre></div>
+</div>
+<p>Mypy displays an error code for each error if you use
+<a class="reference internal" href="command_line.html#cmdoption-mypy-show-error-codes"><code class="xref std std-option docutils literal notranslate"><span class="pre">--show-error-codes</span></code></a>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>error: &quot;str&quot; has no attribute &quot;trim&quot;  [attr-defined]
+</pre></div>
+</div>
+<p>It is possible to add a specific error-code in your ignore comment (e.g.
+<code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore[attr-defined]</span></code>) to clarify what’s being silenced. You can
+find more information about error codes <a class="reference internal" href="error_codes.html#silence-error-codes"><span class="std std-ref">here</span></a>.</p>
+<p>Similarly, you can also ignore all mypy checks in a file, by adding a
+<code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> at the top of the file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># type: ignore</span>
+<span class="c1"># This is a test file, skipping type checking in it.</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Type inference and type annotations</a><ul>
+<li><a class="reference internal" href="#type-inference">Type inference</a></li>
+<li><a class="reference internal" href="#explicit-types-for-variables">Explicit types for variables</a></li>
+<li><a class="reference internal" href="#explicit-types-for-collections">Explicit types for collections</a></li>
+<li><a class="reference internal" href="#compatibility-of-container-types">Compatibility of container types</a></li>
+<li><a class="reference internal" href="#context-in-type-inference">Context in type inference</a></li>
+<li><a class="reference internal" href="#declaring-multiple-variable-types-at-a-time">Declaring multiple variable types at a time</a></li>
+<li><a class="reference internal" href="#starred-expressions">Starred expressions</a></li>
+<li><a class="reference internal" href="#silencing-type-errors">Silencing type errors</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="builtin_types.html"
+                          title="上一章">Built-in types</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="kinds_of_types.html"
+                          title="下一章">Kinds of types</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/type_inference_and_annotations.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="kinds_of_types.html" title="Kinds of types"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="builtin_types.html" title="Built-in types"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Type inference and type annotations</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

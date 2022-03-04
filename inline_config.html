@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Inline configuration &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Mypy daemon (mypy server)" href="mypy_daemon.html" />
+    <link rel="prev" title="The mypy configuration file" href="config_file.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="mypy_daemon.html" title="Mypy daemon (mypy server)"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="config_file.html" title="The mypy configuration file"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Inline configuration</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="inline-configuration">
+<span id="inline-config"></span><h1>Inline configuration<a class="headerlink" href="#inline-configuration" title="永久链接至标题">¶</a></h1>
+<p>Mypy supports setting per-file configuration options inside files themselves
+using <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">mypy:</span></code> comments. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mypy: disallow-any-generics</span>
+</pre></div>
+</div>
+<p>Inline configuration comments take precedence over all other
+configuration mechanisms.</p>
+<section id="configuration-comment-format">
+<h2>Configuration comment format<a class="headerlink" href="#configuration-comment-format" title="永久链接至标题">¶</a></h2>
+<p>Flags correspond to <a class="reference internal" href="config_file.html#config-file"><span class="std std-ref">config file flags</span></a> but allow
+hyphens to be substituted for underscores.</p>
+<p>Values are specified using <code class="docutils literal notranslate"><span class="pre">=</span></code>, but <code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">True</span></code> may be omitted:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mypy: disallow-any-generics</span>
+<span class="c1"># mypy: always-true=FOO</span>
+</pre></div>
+</div>
+<p>Multiple flags can be separated by commas or placed on separate
+lines. To include a comma as part of an option’s value, place the
+value inside quotes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mypy: disallow-untyped-defs, always-false=&quot;FOO,BAR&quot;</span>
+</pre></div>
+</div>
+<p>Like in the configuration file, options that take a boolean value may be
+inverted by adding <code class="docutils literal notranslate"><span class="pre">no-</span></code> to their name or by (when applicable)
+swapping their prefix from <code class="docutils literal notranslate"><span class="pre">disallow</span></code> to <code class="docutils literal notranslate"><span class="pre">allow</span></code> (and vice versa):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mypy: allow-untyped-defs, no-strict-optional</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Inline configuration</a><ul>
+<li><a class="reference internal" href="#configuration-comment-format">Configuration comment format</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="config_file.html"
+                          title="上一章">The mypy configuration file</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="mypy_daemon.html"
+                          title="下一章">Mypy daemon (mypy server)</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/inline_config.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="mypy_daemon.html" title="Mypy daemon (mypy server)"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="config_file.html" title="The mypy configuration file"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Inline configuration</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

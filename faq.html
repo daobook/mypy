@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Frequently Asked Questions &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="prev" title="Additional features" href="additional_features.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="additional_features.html" title="Additional features"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Frequently Asked Questions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="frequently-asked-questions">
+<h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="永久链接至标题">¶</a></h1>
+<section id="why-have-both-dynamic-and-static-typing">
+<h2>Why have both dynamic and static typing?<a class="headerlink" href="#why-have-both-dynamic-and-static-typing" title="永久链接至标题">¶</a></h2>
+<p>Dynamic typing can be flexible, powerful, convenient and easy. But
+it’s not always the best approach; there are good reasons why many
+developers choose to use statically typed languages or static typing
+for Python.</p>
+<p>Here are some potential benefits of mypy-style static typing:</p>
+<ul class="simple">
+<li><p>Static typing can make programs easier to understand and
+maintain. Type declarations can serve as machine-checked
+documentation. This is important as code is typically read much more
+often than modified, and this is especially important for large and
+complex programs.</p></li>
+<li><p>Static typing can help you find bugs earlier and with less testing
+and debugging. Especially in large and complex projects this can be
+a major time-saver.</p></li>
+<li><p>Static typing can help you find difficult-to-find bugs before your
+code goes into production. This can improve reliability and reduce
+the number of security issues.</p></li>
+<li><p>Static typing makes it practical to build very useful development
+tools that can improve programming productivity or software quality,
+including IDEs with precise and reliable code completion, static
+analysis tools, etc.</p></li>
+<li><p>You can get the benefits of both dynamic and static typing in a
+single language. Dynamic typing can be perfect for a small project
+or for writing the UI of your program, for example. As your program
+grows, you can adapt tricky application logic to static typing to
+help maintenance.</p></li>
+</ul>
+<p>See also the <a class="reference external" href="http://www.mypy-lang.org">front page</a> of the mypy web
+site.</p>
+</section>
+<section id="would-my-project-benefit-from-static-typing">
+<h2>Would my project benefit from static typing?<a class="headerlink" href="#would-my-project-benefit-from-static-typing" title="永久链接至标题">¶</a></h2>
+<p>For many projects dynamic typing is perfectly fine (we think that
+Python is a great language). But sometimes your projects demand bigger
+guns, and that’s when mypy may come in handy.</p>
+<p>If some of these ring true for your projects, mypy (and static typing)
+may be useful:</p>
+<ul class="simple">
+<li><p>Your project is large or complex.</p></li>
+<li><p>Your codebase must be maintained for a long time.</p></li>
+<li><p>Multiple developers are working on the same code.</p></li>
+<li><p>Running tests takes a lot of time or work (type checking helps
+you find errors quickly early in development, reducing the number of
+testing iterations).</p></li>
+<li><p>Some project members (devs or management) don’t like dynamic typing,
+but others prefer dynamic typing and Python syntax. Mypy could be a
+solution that everybody finds easy to accept.</p></li>
+<li><p>You want to future-proof your project even if currently none of the
+above really apply. The earlier you start, the easier it will be to
+adopt static typing.</p></li>
+</ul>
+</section>
+<section id="can-i-use-mypy-to-type-check-my-existing-python-code">
+<h2>Can I use mypy to type check my existing Python code?<a class="headerlink" href="#can-i-use-mypy-to-type-check-my-existing-python-code" title="永久链接至标题">¶</a></h2>
+<p>Mypy supports most Python features and idioms, and many large Python
+projects are using mypy successfully. Code that uses complex
+introspection or metaprogramming may be impractical to type check, but
+it should still be possible to use static typing in other parts of a
+codebase that are less dynamic.</p>
+</section>
+<section id="will-static-typing-make-my-programs-run-faster">
+<h2>Will static typing make my programs run faster?<a class="headerlink" href="#will-static-typing-make-my-programs-run-faster" title="永久链接至标题">¶</a></h2>
+<p>Mypy only does static type checking and it does not improve
+performance. It has a minimal performance impact. In the future, there
+could be other tools that can compile statically typed mypy code to C
+modules or to efficient JVM bytecode, for example, but this is outside
+the scope of the mypy project.</p>
+</section>
+<section id="how-do-i-type-check-my-python-2-code">
+<h2>How do I type check my Python 2 code?<a class="headerlink" href="#how-do-i-type-check-my-python-2-code" title="永久链接至标题">¶</a></h2>
+<p>You can use a <span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0484#suggested-syntax-for-python-2-7-and-straddling-code"><strong>comment-based function annotation syntax</strong></a>
+and use the <a class="reference internal" href="command_line.html#cmdoption-mypy-2"><code class="xref std std-option docutils literal notranslate"><span class="pre">--py2</span></code></a> command-line option to type check your Python 2 code.
+You’ll also need to install <code class="docutils literal notranslate"><span class="pre">typing</span></code> for Python 2 via <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">typing</span></code>.</p>
+</section>
+<section id="is-mypy-free">
+<h2>Is mypy free?<a class="headerlink" href="#is-mypy-free" title="永久链接至标题">¶</a></h2>
+<p>Yes. Mypy is free software, and it can also be used for commercial and
+proprietary projects. Mypy is available under the MIT license.</p>
+</section>
+<section id="can-i-use-duck-typing-with-mypy">
+<h2>Can I use duck typing with mypy?<a class="headerlink" href="#can-i-use-duck-typing-with-mypy" title="永久链接至标题">¶</a></h2>
+<p>Mypy provides support for both <a class="reference external" href="https://en.wikipedia.org/wiki/Nominative_type_system">nominal subtyping</a> and
+<a class="reference external" href="https://en.wikipedia.org/wiki/Structural_type_system">structural subtyping</a>.
+Structural subtyping can be thought of as “static duck typing”.
+Some argue that structural subtyping is better suited for languages with duck
+typing such as Python. Mypy however primarily uses nominal subtyping,
+leaving structural subtyping mostly opt-in (except for built-in protocols
+such as <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a> that always support structural subtyping). Here are some
+reasons why:</p>
+<ol class="arabic simple">
+<li><p>It is easy to generate short and informative error messages when
+using a nominal type system. This is especially important when
+using type inference.</p></li>
+<li><p>Python provides built-in support for nominal <a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a> tests and
+they are widely used in programs. Only limited support for structural
+<a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a> is available, and it’s less type safe than nominal type tests.</p></li>
+<li><p>Many programmers are already familiar with static, nominal subtyping and it
+has been successfully used in languages such as Java, C++ and
+C#. Fewer languages use structural subtyping.</p></li>
+</ol>
+<p>However, structural subtyping can also be useful. For example, a “public API”
+may be more flexible if it is typed with protocols. Also, using protocol types
+removes the necessity to explicitly declare implementations of ABCs.
+As a rule of thumb, we recommend using nominal classes where possible, and
+protocols where necessary. For more details about protocol types and structural
+subtyping see <a class="reference internal" href="protocols.html#protocol-types"><span class="std std-ref">Protocols and structural subtyping</span></a> and <span class="target" id="index-1"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0544"><strong>PEP 544</strong></a>.</p>
+</section>
+<section id="i-like-python-and-i-have-no-need-for-static-typing">
+<h2>I like Python and I have no need for static typing<a class="headerlink" href="#i-like-python-and-i-have-no-need-for-static-typing" title="永久链接至标题">¶</a></h2>
+<p>The aim of mypy is not to convince everybody to write statically typed
+Python – static typing is entirely optional, now and in the
+future. The goal is to give more options for Python programmers, to
+make Python a more competitive alternative to other statically typed
+languages in large projects, to improve programmer productivity, and
+to improve software quality.</p>
+</section>
+<section id="how-are-mypy-programs-different-from-normal-python">
+<h2>How are mypy programs different from normal Python?<a class="headerlink" href="#how-are-mypy-programs-different-from-normal-python" title="永久链接至标题">¶</a></h2>
+<p>Since you use a vanilla Python implementation to run mypy programs,
+mypy programs are also Python programs. The type checker may give
+warnings for some valid Python code, but the code is still always
+runnable. Also, some Python features and syntax are still not
+supported by mypy, but this is gradually improving.</p>
+<p>The obvious difference is the availability of static type
+checking. The section <a class="reference internal" href="common_issues.html#common-issues"><span class="std std-ref">Common issues and solutions</span></a> mentions some
+modifications to Python code that may be required to make code type
+check without errors. Also, your code must make attributes explicit.</p>
+<p>Mypy supports modular, efficient type checking, and this seems to
+rule out type checking some language features, such as arbitrary
+monkey patching of methods.</p>
+</section>
+<section id="how-is-mypy-different-from-cython">
+<h2>How is mypy different from Cython?<a class="headerlink" href="#how-is-mypy-different-from-cython" title="永久链接至标题">¶</a></h2>
+<p><a class="reference external" href="http://docs.cython.org/en/latest/index.html" title="(在 Cython v3.0)"><span class="xref std std-doc">Cython</span></a> is a variant of Python that supports
+compilation to CPython C modules. It can give major speedups to
+certain classes of programs compared to CPython, and it provides
+static typing (though this is different from mypy). Mypy differs in
+the following aspects, among others:</p>
+<ul class="simple">
+<li><p>Cython is much more focused on performance than mypy. Mypy is only
+about static type checking, and increasing performance is not a
+direct goal.</p></li>
+<li><p>The mypy syntax is arguably simpler and more “Pythonic” (no cdef/cpdef, etc.) for statically typed code.</p></li>
+<li><p>The mypy syntax is compatible with Python. Mypy programs are normal
+Python programs that can be run using any Python
+implementation. Cython has many incompatible extensions to Python
+syntax, and Cython programs generally cannot be run without first
+compiling them to CPython extension modules via C. Cython also has a
+pure Python mode, but it seems to support only a subset of Cython
+functionality, and the syntax is quite verbose.</p></li>
+<li><p>Mypy has a different set of type system features. For example, mypy
+has genericity (parametric polymorphism), function types and
+bidirectional type inference, which are not supported by
+Cython. (Cython has fused types that are different but related to
+mypy generics. Mypy also has a similar feature as an extension of
+generics.)</p></li>
+<li><p>The mypy type checker knows about the static types of many Python
+stdlib modules and can effectively type check code that uses them.</p></li>
+<li><p>Cython supports accessing C functions directly and many features are
+defined in terms of translating them to C or C++. Mypy just uses
+Python semantics, and mypy does not deal with accessing C library
+functionality.</p></li>
+</ul>
+</section>
+<section id="does-it-run-on-pypy">
+<h2>Does it run on PyPy?<a class="headerlink" href="#does-it-run-on-pypy" title="永久链接至标题">¶</a></h2>
+<p>Somewhat. With PyPy 3.8, mypy is at least able to type check itself.
+With older versions of PyPy, mypy relies on <a class="reference external" href="https://github.com/python/typed_ast">typed-ast</a>, which uses several APIs that
+PyPy does not support (including some internal CPython APIs).</p>
+</section>
+<section id="mypy-is-a-cool-project-can-i-help">
+<h2>Mypy is a cool project. Can I help?<a class="headerlink" href="#mypy-is-a-cool-project-can-i-help" title="永久链接至标题">¶</a></h2>
+<p>Any help is much appreciated! <a class="reference external" href="http://www.mypy-lang.org/contact.html">Contact</a> the developers if you would
+like to contribute. Any help related to development, design,
+publicity, documentation, testing, web site maintenance, financing,
+etc. can be helpful. You can learn a lot by contributing, and anybody
+can help, even beginners! However, some knowledge of compilers and/or
+type systems is essential if you want to work on mypy internals.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Frequently Asked Questions</a><ul>
+<li><a class="reference internal" href="#why-have-both-dynamic-and-static-typing">Why have both dynamic and static typing?</a></li>
+<li><a class="reference internal" href="#would-my-project-benefit-from-static-typing">Would my project benefit from static typing?</a></li>
+<li><a class="reference internal" href="#can-i-use-mypy-to-type-check-my-existing-python-code">Can I use mypy to type check my existing Python code?</a></li>
+<li><a class="reference internal" href="#will-static-typing-make-my-programs-run-faster">Will static typing make my programs run faster?</a></li>
+<li><a class="reference internal" href="#how-do-i-type-check-my-python-2-code">How do I type check my Python 2 code?</a></li>
+<li><a class="reference internal" href="#is-mypy-free">Is mypy free?</a></li>
+<li><a class="reference internal" href="#can-i-use-duck-typing-with-mypy">Can I use duck typing with mypy?</a></li>
+<li><a class="reference internal" href="#i-like-python-and-i-have-no-need-for-static-typing">I like Python and I have no need for static typing</a></li>
+<li><a class="reference internal" href="#how-are-mypy-programs-different-from-normal-python">How are mypy programs different from normal Python?</a></li>
+<li><a class="reference internal" href="#how-is-mypy-different-from-cython">How is mypy different from Cython?</a></li>
+<li><a class="reference internal" href="#does-it-run-on-pypy">Does it run on PyPy?</a></li>
+<li><a class="reference internal" href="#mypy-is-a-cool-project-can-i-help">Mypy is a cool project. Can I help?</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="additional_features.html"
+                          title="上一章">Additional features</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/faq.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="additional_features.html" title="Additional features"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Frequently Asked Questions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

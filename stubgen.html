@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Automatic stub generation (stubgen) &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Automatic stub testing (stubtest)" href="stubtest.html" />
+    <link rel="prev" title="Extending and integrating mypy" href="extending_mypy.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="stubtest.html" title="Automatic stub testing (stubtest)"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="extending_mypy.html" title="Extending and integrating mypy"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Automatic stub generation (stubgen)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="automatic-stub-generation-stubgen">
+<span id="stubgen"></span><h1>Automatic stub generation (stubgen)<a class="headerlink" href="#automatic-stub-generation-stubgen" title="永久链接至标题">¶</a></h1>
+<p>A stub file (see <span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0484"><strong>PEP 484</strong></a>) contains only type hints for the public
+interface of a module, with empty function bodies. Mypy can use a stub
+file instead of the real implementation to provide type information
+for the module. They are useful for third-party modules whose authors
+have not yet added type hints (and when no stubs are available in
+typeshed) and C extension modules (which mypy can’t directly process).</p>
+<p>Mypy includes the <code class="docutils literal notranslate"><span class="pre">stubgen</span></code> tool that can automatically generate
+stub files (<code class="docutils literal notranslate"><span class="pre">.pyi</span></code> files) for Python modules and C extension modules.
+For example, consider this source file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">other_module</span> <span class="kn">import</span> <span class="n">dynamic</span>
+
+<span class="n">BORDER_WIDTH</span> <span class="o">=</span> <span class="mi">15</span>
+
+<span class="k">class</span> <span class="nc">Window</span><span class="p">:</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">dynamic</span><span class="p">()</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+
+<span class="k">def</span> <span class="nf">create_empty</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Window</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Window</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Stubgen can generate this stub file based on the above file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="n">BORDER_WIDTH</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">Window</span><span class="p">:</span>
+    <span class="n">parent</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">width</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">height</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">def</span> <span class="nf">create_empty</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Window</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Stubgen generates <em>draft</em> stubs. The auto-generated stub files often
+require some manual updates, and most types will default to <code class="docutils literal notranslate"><span class="pre">Any</span></code>.
+The stubs will be much more useful if you add more precise type annotations,
+at least for the most commonly used functionality.</p>
+<p>The rest of this section documents the command line interface of stubgen.
+Run <a class="reference internal" href="#cmdoption-stubgen-h"><code class="xref std std-option docutils literal notranslate"><span class="pre">stubgen</span> <span class="pre">--help</span></code></a> for a quick summary of options.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The command-line flags may change between releases.</p>
+</div>
+<section id="specifying-what-to-stub">
+<h2>Specifying what to stub<a class="headerlink" href="#specifying-what-to-stub" title="永久链接至标题">¶</a></h2>
+<p>You can give stubgen paths of the source files for which you want to
+generate stubs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ stubgen foo.py bar.py
+</pre></div>
+</div>
+<p>This generates stubs <code class="docutils literal notranslate"><span class="pre">out/foo.pyi</span></code> and <code class="docutils literal notranslate"><span class="pre">out/bar.pyi</span></code>. The default
+output directory <code class="docutils literal notranslate"><span class="pre">out</span></code> can be overridden with <a class="reference internal" href="#cmdoption-stubgen-o"><code class="xref std std-option docutils literal notranslate"><span class="pre">-o</span> <span class="pre">DIR</span></code></a>.</p>
+<p>You can also pass directories, and stubgen will recursively search
+them for any <code class="docutils literal notranslate"><span class="pre">.py</span></code> files and generate stubs for all of them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ stubgen my_pkg_dir
+</pre></div>
+</div>
+<p>Alternatively, you can give module or package names using the
+<a class="reference internal" href="#cmdoption-stubgen-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">-m</span></code></a> or <a class="reference internal" href="#cmdoption-stubgen-p"><code class="xref std std-option docutils literal notranslate"><span class="pre">-p</span></code></a> options:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ stubgen -m foo -m bar -p my_pkg_dir
+</pre></div>
+</div>
+<p>Details of the options:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-m">
+<span id="cmdoption-stubgen-module"></span><span class="sig-name descname"><span class="pre">-m</span></span><span class="sig-prename descclassname"> <span class="pre">MODULE</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--module</span></span><span class="sig-prename descclassname"> <span class="pre">MODULE</span></span><a class="headerlink" href="#cmdoption-stubgen-m" title="永久链接至目标">¶</a></dt>
+<dd><p>Generate a stub file for the given module. This flag may be repeated
+multiple times.</p>
+<p>Stubgen <em>will not</em> recursively generate stubs for any submodules of
+the provided module.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-p">
+<span id="cmdoption-stubgen-package"></span><span class="sig-name descname"><span class="pre">-p</span></span><span class="sig-prename descclassname"> <span class="pre">PACKAGE</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--package</span></span><span class="sig-prename descclassname"> <span class="pre">PACKAGE</span></span><a class="headerlink" href="#cmdoption-stubgen-p" title="永久链接至目标">¶</a></dt>
+<dd><p>Generate stubs for the given package. This flag maybe repeated
+multiple times.</p>
+<p>Stubgen <em>will</em> recursively generate stubs for all submodules of
+the provided package. This flag is identical to <a class="reference internal" href="#cmdoption-stubgen-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">--module</span></code></a> apart from
+this behavior.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>You can’t mix paths and <a class="reference internal" href="#cmdoption-stubgen-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">-m</span></code></a>/<a class="reference internal" href="#cmdoption-stubgen-p"><code class="xref std std-option docutils literal notranslate"><span class="pre">-p</span></code></a> options in the same stubgen
+invocation.</p>
+</div>
+<p>Stubgen applies heuristics to avoid generating stubs for submodules
+that include tests or vendored third-party packages.</p>
+</section>
+<section id="specifying-how-to-generate-stubs">
+<h2>Specifying how to generate stubs<a class="headerlink" href="#specifying-how-to-generate-stubs" title="永久链接至标题">¶</a></h2>
+<p>By default stubgen will try to import the target modules and packages.
+This allows stubgen to use runtime introspection to generate stubs for C
+extension modules and to improve the quality of the generated
+stubs. By default, stubgen will also use mypy to perform light-weight
+semantic analysis of any Python modules. Use the following flags to
+alter the default behavior:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-no-import">
+<span class="sig-name descname"><span class="pre">--no-import</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubgen-no-import" title="永久链接至目标">¶</a></dt>
+<dd><p>Don’t try to import modules. Instead only use mypy’s normal search mechanism to find
+sources. This does not support C extension modules. This flag also disables
+runtime introspection functionality, which mypy uses to find the value of
+<code class="docutils literal notranslate"><span class="pre">__all__</span></code>. As result the set of exported imported names in stubs may be
+incomplete. This flag is generally only useful when importing a module causes
+unwanted side effects, such as the running of tests. Stubgen tries to skip test
+modules even without this option, but this does not always work.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-parse-only">
+<span class="sig-name descname"><span class="pre">--parse-only</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubgen-parse-only" title="永久链接至目标">¶</a></dt>
+<dd><p>Don’t perform semantic analysis of source files. This may generate
+worse stubs – in particular, some module, class, and function aliases may
+be represented as variables with the <code class="docutils literal notranslate"><span class="pre">Any</span></code> type. This is generally only
+useful if semantic analysis causes a critical mypy error.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-doc-dir">
+<span class="sig-name descname"><span class="pre">--doc-dir</span></span><span class="sig-prename descclassname"> <span class="pre">PATH</span></span><a class="headerlink" href="#cmdoption-stubgen-doc-dir" title="永久链接至目标">¶</a></dt>
+<dd><p>Try to infer better signatures by parsing .rst documentation in <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.
+This may result in better stubs, but currently it only works for C extension
+modules.</p>
+</dd></dl>
+
+</section>
+<section id="additional-flags">
+<h2>Additional flags<a class="headerlink" href="#additional-flags" title="永久链接至标题">¶</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-h">
+<span id="cmdoption-stubgen-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubgen-h" title="永久链接至目标">¶</a></dt>
+<dd><p>Show help message and exit.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-py2">
+<span class="sig-name descname"><span class="pre">--py2</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubgen-py2" title="永久链接至目标">¶</a></dt>
+<dd><p>Run stubgen in Python 2 mode (the default is Python 3 mode).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-ignore-errors">
+<span class="sig-name descname"><span class="pre">--ignore-errors</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubgen-ignore-errors" title="永久链接至目标">¶</a></dt>
+<dd><p>If an exception was raised during stub generation, continue to process any
+remaining modules instead of immediately failing with an error.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-include-private">
+<span class="sig-name descname"><span class="pre">--include-private</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubgen-include-private" title="永久链接至目标">¶</a></dt>
+<dd><p>Include definitions that are considered private in stubs (with names such
+as <code class="docutils literal notranslate"><span class="pre">_foo</span></code> with single leading underscore and no trailing underscores).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-export-less">
+<span class="sig-name descname"><span class="pre">--export-less</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubgen-export-less" title="永久链接至目标">¶</a></dt>
+<dd><p>Don’t export all names imported from other modules within the same package.
+Instead, only export imported names that are not referenced in the module
+that contains the import.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-search-path">
+<span class="sig-name descname"><span class="pre">--search-path</span></span><span class="sig-prename descclassname"> <span class="pre">PATH</span></span><a class="headerlink" href="#cmdoption-stubgen-search-path" title="永久链接至目标">¶</a></dt>
+<dd><p>Specify module search directories, separated by colons (only used if
+<a class="reference internal" href="#cmdoption-stubgen-no-import"><code class="xref std std-option docutils literal notranslate"><span class="pre">--no-import</span></code></a> is given).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-python-executable">
+<span class="sig-name descname"><span class="pre">--python-executable</span></span><span class="sig-prename descclassname"> <span class="pre">PATH</span></span><a class="headerlink" href="#cmdoption-stubgen-python-executable" title="永久链接至目标">¶</a></dt>
+<dd><p>Use Python interpreter at <code class="docutils literal notranslate"><span class="pre">PATH</span></code> for importing modules and runtime
+introspection. This has no effect with <a class="reference internal" href="#cmdoption-stubgen-no-import"><code class="xref std std-option docutils literal notranslate"><span class="pre">--no-import</span></code></a>, and this only works
+in Python 2 mode. In Python 3 mode the Python interpreter used to run stubgen
+will always be used.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-o">
+<span id="cmdoption-stubgen-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"> <span class="pre">PATH</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">PATH</span></span><a class="headerlink" href="#cmdoption-stubgen-o" title="永久链接至目标">¶</a></dt>
+<dd><p>Change the output directory. By default the stubs are written in the
+<code class="docutils literal notranslate"><span class="pre">./out</span></code> directory. The output directory will be created if it doesn’t
+exist. Existing stubs in the output directory will be overwritten without
+warning.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-v">
+<span id="cmdoption-stubgen-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubgen-v" title="永久链接至目标">¶</a></dt>
+<dd><p>Produce more verbose output.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-stubgen-q">
+<span id="cmdoption-stubgen-quiet"></span><span class="sig-name descname"><span class="pre">-q</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--quiet</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-stubgen-q" title="永久链接至目标">¶</a></dt>
+<dd><p>Produce less verbose output.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Automatic stub generation (stubgen)</a><ul>
+<li><a class="reference internal" href="#specifying-what-to-stub">Specifying what to stub</a></li>
+<li><a class="reference internal" href="#specifying-how-to-generate-stubs">Specifying how to generate stubs</a></li>
+<li><a class="reference internal" href="#additional-flags">Additional flags</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="extending_mypy.html"
+                          title="上一章">Extending and integrating mypy</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="stubtest.html"
+                          title="下一章">Automatic stub testing (stubtest)</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/stubgen.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="stubtest.html" title="Automatic stub testing (stubtest)"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="extending_mypy.html" title="Extending and integrating mypy"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Automatic stub generation (stubgen)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

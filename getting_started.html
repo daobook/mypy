@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Getting started &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Using mypy with an existing codebase" href="existing_code.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="existing_code.html" title="Using mypy with an existing codebase"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Getting started</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="getting-started">
+<span id="id1"></span><h1>Getting started<a class="headerlink" href="#getting-started" title="永久链接至标题">¶</a></h1>
+<p>This chapter introduces some core concepts of mypy, including function
+annotations, the <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module, library stubs, and more.</p>
+<p>Be sure to read this chapter carefully, as the rest of the documentation
+may not make much sense otherwise.</p>
+<section id="installing-and-running-mypy">
+<h2>Installing and running mypy<a class="headerlink" href="#installing-and-running-mypy" title="永久链接至标题">¶</a></h2>
+<p>Mypy requires Python 3.6 or later to run.  Once you’ve
+<a class="reference external" href="https://www.python.org/downloads/">installed Python 3</a>,
+install mypy using pip:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ python3 -m pip install mypy
+</pre></div>
+</div>
+<p>Once mypy is installed, run it by using the <code class="docutils literal notranslate"><span class="pre">mypy</span></code> tool:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mypy program.py
+</pre></div>
+</div>
+<p>This command makes mypy <em>type check</em> your <code class="docutils literal notranslate"><span class="pre">program.py</span></code> file and print
+out any errors it finds. Mypy will type check your code <em>statically</em>: this
+means that it will check for errors without ever running your code, just
+like a linter.</p>
+<p>This means that you are always free to ignore the errors mypy reports and
+treat them as just warnings, if you so wish: mypy runs independently from
+Python itself.</p>
+<p>However, if you try directly running mypy on your existing Python code, it
+will most likely report little to no errors: you must add <em>type annotations</em>
+to your code to take full advantage of mypy. See the section below for details.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Although you must install Python 3 to run mypy, mypy is fully capable of
+type checking Python 2 code as well: just pass in the <a class="reference internal" href="command_line.html#cmdoption-mypy-2"><code class="xref std std-option docutils literal notranslate"><span class="pre">--py2</span></code></a> flag. See
+<a class="reference internal" href="python2.html#python2"><span class="std std-ref">Type checking Python 2 code</span></a> for more details.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mypy --py2 program.py
+</pre></div>
+</div>
+</div>
+</section>
+<section id="function-signatures-and-dynamic-vs-static-typing">
+<h2>Function signatures and dynamic vs static typing<a class="headerlink" href="#function-signatures-and-dynamic-vs-static-typing" title="永久链接至标题">¶</a></h2>
+<p>A function without type annotations is considered to be <em>dynamically typed</em> by mypy:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">greeting</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello &#39;</span> <span class="o">+</span> <span class="n">name</span>
+</pre></div>
+</div>
+<p>By default, mypy will <strong>not</strong> type check dynamically typed functions. This means
+that with a few exceptions, mypy will not report any errors with regular unannotated Python.</p>
+<p>This is the case even if you misuse the function: for example, mypy would currently
+not report any errors if you tried running <code class="docutils literal notranslate"><span class="pre">greeting(3)</span></code> or <code class="docutils literal notranslate"><span class="pre">greeting(b&quot;Alice&quot;)</span></code>
+even though those function calls would result in errors at runtime.</p>
+<p>You can teach mypy to detect these kinds of bugs by adding <em>type annotations</em> (also
+known as <em>type hints</em>). For example, you can teach mypy that <code class="docutils literal notranslate"><span class="pre">greeting</span></code> both accepts
+and returns a string like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">greeting</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello &#39;</span> <span class="o">+</span> <span class="n">name</span>
+</pre></div>
+</div>
+<p>This function is now <em>statically typed</em>: mypy can use the provided type hints to detect
+incorrect usages of the <code class="docutils literal notranslate"><span class="pre">greeting</span></code> function. For example, it will reject the following
+calls since the arguments have invalid types:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">greeting</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello &#39;</span> <span class="o">+</span> <span class="n">name</span>
+
+<span class="n">greeting</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>         <span class="c1"># Argument 1 to &quot;greeting&quot; has incompatible type &quot;int&quot;; expected &quot;str&quot;</span>
+<span class="n">greeting</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;Alice&#39;</span><span class="p">)</span>  <span class="c1"># Argument 1 to &quot;greeting&quot; has incompatible type &quot;bytes&quot;; expected &quot;str&quot;</span>
+</pre></div>
+</div>
+<p>Note that this is all still valid Python 3 code! The function annotation syntax
+shown above was added to Python <span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-3107"><strong>as a part of Python 3.0</strong></a>.</p>
+<p>If you are trying to type check Python 2 code, you can add type hints
+using a comment-based syntax instead of the Python 3 annotation syntax.
+See our section on <a class="reference internal" href="python2.html#python2"><span class="std std-ref">typing Python 2 code</span></a> for more details.</p>
+<p>Being able to pick whether you want a function to be dynamically or statically
+typed can be very helpful. For example, if you are migrating an existing
+Python codebase to use static types, it’s usually easier to migrate by incrementally
+adding type hints to your code rather than adding them all at once. Similarly,
+when you are prototyping a new feature, it may be convenient to initially implement
+the code using dynamic typing and only add type hints later once the code is more stable.</p>
+<p>Once you are finished migrating or prototyping your code, you can make mypy warn you
+if you add a dynamic function by mistake by using the <a class="reference internal" href="command_line.html#cmdoption-mypy-disallow-untyped-defs"><code class="xref std std-option docutils literal notranslate"><span class="pre">--disallow-untyped-defs</span></code></a>
+flag. See <a class="reference internal" href="command_line.html#command-line"><span class="std std-ref">The mypy command line</span></a> for more information on configuring mypy.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The earlier stages of analysis performed by mypy may report errors
+even for dynamically typed functions. However, you should not rely
+on this, as this may change in the future.</p>
+</div>
+</section>
+<section id="more-function-signatures">
+<h2>More function signatures<a class="headerlink" href="#more-function-signatures" title="永久链接至标题">¶</a></h2>
+<p>Here are a few more examples of adding type hints to function signatures.</p>
+<p>If a function does not explicitly return a value, give it a return
+type of <code class="docutils literal notranslate"><span class="pre">None</span></code>. Using a <code class="docutils literal notranslate"><span class="pre">None</span></code> result in a statically typed
+context results in a type check error:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">p</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="p">()</span>  <span class="c1"># Error: &quot;p&quot; does not return a value</span>
+</pre></div>
+</div>
+<p>Make sure to remember to include <code class="docutils literal notranslate"><span class="pre">None</span></code>: if you don’t, the function
+will be dynamically typed. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
+    <span class="mi">1</span> <span class="o">+</span> <span class="s1">&#39;x&#39;</span>  <span class="c1"># No static type error (dynamically typed)</span>
+
+<span class="k">def</span> <span class="nf">g</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="mi">1</span> <span class="o">+</span> <span class="s1">&#39;x&#39;</span>  <span class="c1"># Type check error (statically typed)</span>
+</pre></div>
+</div>
+<p>Arguments with default values can be annotated like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">greeting</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">excited</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Hello, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">excited</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39;!!!&#39;</span>
+    <span class="k">return</span> <span class="n">message</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">*args</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> arguments can be annotated like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">stars</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># &#39;args&#39; has type &#39;tuple[int, ...]&#39; (a tuple of ints)</span>
+    <span class="c1"># &#39;kwargs&#39; has type &#39;dict[str, float]&#39; (a dict of strs to floats)</span>
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="additional-types-and-the-typing-module">
+<h2>Additional types, and the typing module<a class="headerlink" href="#additional-types-and-the-typing-module" title="永久链接至标题">¶</a></h2>
+<p>So far, we’ve added type hints that use only basic concrete types like
+<code class="docutils literal notranslate"><span class="pre">str</span></code> and <code class="docutils literal notranslate"><span class="pre">float</span></code>. What if we want to express more complex types,
+such as “a list of strings” or “an iterable of ints”?</p>
+<p>For example, to indicate that some function can accept a list of
+strings, use the <code class="docutils literal notranslate"><span class="pre">list[str]</span></code> type (Python 3.9 and later):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">greet_all</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Hello &#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="s2">&quot;Bob&quot;</span><span class="p">,</span> <span class="s2">&quot;Charlie&quot;</span><span class="p">]</span>
+<span class="n">ages</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">]</span>
+
+<span class="n">greet_all</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>   <span class="c1"># Ok!</span>
+<span class="n">greet_all</span><span class="p">(</span><span class="n">ages</span><span class="p">)</span>    <span class="c1"># Error due to incompatible types</span>
+</pre></div>
+</div>
+<p>The <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> type is an example of something called a <em>generic type</em>: it can
+accept one or more <em>type parameters</em>. In this case, we <em>parameterized</em> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+by writing <code class="docutils literal notranslate"><span class="pre">list[str]</span></code>. This lets mypy know that <code class="docutils literal notranslate"><span class="pre">greet_all</span></code> accepts specifically
+lists containing strings, and not lists containing ints or any other type.</p>
+<p>In Python 3.8 and earlier, you can instead import the
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a> type from the <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>  <span class="c1"># Python 3.8 and earlier</span>
+
+<span class="k">def</span> <span class="nf">greet_all</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Hello &#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>You can find many of these more complex static types in the <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module.</p>
+<p>In the above examples, the type signature is perhaps a little too rigid.
+After all, there’s no reason why this function must accept <em>specifically</em> a list –
+it would run just fine if you were to pass in a tuple, a set, or any other custom iterable.</p>
+<p>You can express this idea using the
+<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code></a> (or <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Iterable</span></code></a> in Python
+3.8 and earlier) type instead of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>  <span class="c1"># or &quot;from typing import Iterable&quot;</span>
+
+<span class="k">def</span> <span class="nf">greet_all</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Hello &#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As another example, suppose you want to write a function that can accept <em>either</em>
+ints or strings, but no other types. You can express this using the <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a> type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="k">def</span> <span class="nf">normalize_id</span><span class="p">(</span><span class="n">user_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;user-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">100000</span> <span class="o">+</span> <span class="n">user_id</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">user_id</span>
+</pre></div>
+</div>
+<p>Similarly, suppose that you want the function to accept only strings or <code class="docutils literal notranslate"><span class="pre">None</span></code>. You can
+again use <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a> and use <code class="docutils literal notranslate"><span class="pre">Union[str,</span> <span class="pre">None]</span></code> – or alternatively, use the type
+<code class="docutils literal notranslate"><span class="pre">Optional[str]</span></code>. These two types are identical and interchangeable: <code class="docutils literal notranslate"><span class="pre">Optional[str]</span></code>
+is just a shorthand or <em>alias</em> for <code class="docutils literal notranslate"><span class="pre">Union[str,</span> <span class="pre">None]</span></code>. It exists mostly as a convenience
+to help function signatures look a little cleaner:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="k">def</span> <span class="nf">greeting</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># Optional[str] means the same thing as Union[str, None]</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;stranger&#39;</span>
+    <span class="k">return</span> <span class="s1">&#39;Hello, &#39;</span> <span class="o">+</span> <span class="n">name</span>
+</pre></div>
+</div>
+<p>The <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module contains many other useful types. You can find a
+quick overview by looking through the <a class="reference internal" href="index.html#overview-cheat-sheets"><span class="std std-ref">mypy cheatsheets</span></a>
+and a more detailed overview (including information on how to make your own
+generic types or your own type aliases) by looking through the
+<a class="reference internal" href="index.html#overview-type-system-reference"><span class="std std-ref">type system reference</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>When adding types, the convention is to import types
+using the form <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">typing</span> <span class="pre">import</span> <span class="pre">Union</span></code> (as opposed to doing
+just <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">typing</span></code> or <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">typing</span> <span class="pre">as</span> <span class="pre">t</span></code> or <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">typing</span> <span class="pre">import</span> <span class="pre">*</span></code>).</p>
+<p>For brevity, we often omit imports from <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#module-collections.abc" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">collections.abc</span></code></a>
+in code examples, but mypy will give an error if you use types such as
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(在 Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a> without first importing them.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>In some examples we use capitalized variants of types, such as
+<code class="docutils literal notranslate"><span class="pre">List</span></code>, and sometimes we use plain <code class="docutils literal notranslate"><span class="pre">list</span></code>. They are equivalent,
+but the prior variant is needed if you are using Python 3.8 or earlier.</p>
+</div>
+</section>
+<section id="local-type-inference">
+<h2>Local type inference<a class="headerlink" href="#local-type-inference" title="永久链接至标题">¶</a></h2>
+<p>Once you have added type hints to a function (i.e. made it statically typed),
+mypy will automatically type check that function’s body. While doing so,
+mypy will try and <em>infer</em> as many details as possible.</p>
+<p>We saw an example of this in the <code class="docutils literal notranslate"><span class="pre">normalize_id</span></code> function above – mypy understands
+basic <a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance</span></code></a> checks and so can infer that the <code class="docutils literal notranslate"><span class="pre">user_id</span></code> variable was of
+type <code class="docutils literal notranslate"><span class="pre">int</span></code> in the if-branch and of type <code class="docutils literal notranslate"><span class="pre">str</span></code> in the else-branch. Similarly, mypy
+was able to understand that <code class="docutils literal notranslate"><span class="pre">name</span></code> could not possibly be <code class="docutils literal notranslate"><span class="pre">None</span></code> in the <code class="docutils literal notranslate"><span class="pre">greeting</span></code>
+function above, based both on the <code class="docutils literal notranslate"><span class="pre">name</span> <span class="pre">is</span> <span class="pre">None</span></code> check and the variable assignment
+in that if statement.</p>
+<p>As another example, consider the following function. Mypy can type check this function
+without a problem: it will use the available context and deduce that <code class="docutils literal notranslate"><span class="pre">output</span></code> must be
+of type <code class="docutils literal notranslate"><span class="pre">list[float]</span></code> and that <code class="docutils literal notranslate"><span class="pre">num</span></code> must be of type <code class="docutils literal notranslate"><span class="pre">float</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">nums_below</span><span class="p">(</span><span class="n">numbers</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="n">limit</span><span class="p">:</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+<p>Mypy will warn you if it is unable to determine the type of some variable –
+for example, when assigning an empty dictionary to some global value:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_global_dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Error: Need type annotation for &quot;my_global_dict&quot;</span>
+</pre></div>
+</div>
+<p>You can teach mypy what type <code class="docutils literal notranslate"><span class="pre">my_global_dict</span></code> is meant to have by giving it
+a type hint. For example, if you knew this variable is supposed to be a dict
+of ints to floats, you could annotate it using either variable annotations
+(introduced in Python 3.6 by <span class="target" id="index-1"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0526"><strong>PEP 526</strong></a>) or using a comment-based
+syntax like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># If you&#39;re using Python 3.9+</span>
+<span class="n">my_global_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># If you&#39;re using Python 3.6+</span>
+<span class="n">my_global_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># If you want compatibility with even older versions of Python</span>
+<span class="n">my_global_dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, float]</span>
+</pre></div>
+</div>
+</section>
+<section id="library-stubs-and-typeshed">
+<span id="stubs-intro"></span><h2>Library stubs and typeshed<a class="headerlink" href="#library-stubs-and-typeshed" title="永久链接至标题">¶</a></h2>
+<p>Mypy uses library <em>stubs</em> to type check code interacting with library
+modules, including the Python standard library. A library stub defines
+a skeleton of the public interface of the library, including classes,
+variables and functions, and their types. Mypy ships with stubs for
+the standard library from the <a class="reference external" href="https://github.com/python/typeshed">typeshed</a> project, which contains library
+stubs for the Python builtins, the standard library, and selected
+third-party packages.</p>
+<p>For example, consider this code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Without a library stub, mypy would have no way of inferring the type of <code class="docutils literal notranslate"><span class="pre">x</span></code>
+and checking that the argument to <a class="reference external" href="https://docs.python.org/3/library/functions.html#chr" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">chr()</span></code></a> has a valid type.</p>
+<p>Mypy complains if it can’t find a stub (or a real module) for a
+library module that you import. Some modules ship with stubs or inline
+annotations that mypy can automatically find, or you can install
+additional stubs using pip (see <a class="reference internal" href="running_mypy.html#fix-missing-imports"><span class="std std-ref">Missing imports</span></a> and
+<a class="reference internal" href="installed_packages.html#installed-packages"><span class="std std-ref">Using installed packages</span></a> for the details). For example, you can install
+the stubs for the <code class="docutils literal notranslate"><span class="pre">requests</span></code> package like this:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3 -m pip install types-requests
+</pre></div>
+</div>
+<p>The stubs are usually packaged in a distribution named
+<code class="docutils literal notranslate"><span class="pre">types-&lt;distribution&gt;</span></code>.  Note that the distribution name may be
+different from the name of the package that you import. For example,
+<code class="docutils literal notranslate"><span class="pre">types-PyYAML</span></code> contains stubs for the <code class="docutils literal notranslate"><span class="pre">yaml</span></code> package. Mypy can
+often suggest the name of the stub distribution:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>prog.py:1: error: Library stubs not installed for &quot;yaml&quot; (or incompatible with Python 3.8)
+prog.py:1: note: Hint: &quot;python3 -m pip install types-PyYAML&quot;
+...
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Starting in mypy 0.900, most third-party package stubs must be
+installed explicitly. This decouples mypy and stub versioning,
+allowing stubs to updated without updating mypy. This also allows
+stubs not originally included with mypy to be installed. Earlier
+mypy versions included a fixed set of stubs for third-party
+packages.</p>
+</div>
+<p>You can also <a class="reference internal" href="stubs.html#stub-files"><span class="std std-ref">create
+stubs</span></a> easily. We discuss ways of silencing complaints
+about missing stubs in <a class="reference internal" href="running_mypy.html#ignore-missing-imports"><span class="std std-ref">Missing imports</span></a>.</p>
+</section>
+<section id="configuring-mypy">
+<h2>Configuring mypy<a class="headerlink" href="#configuring-mypy" title="永久链接至标题">¶</a></h2>
+<p>Mypy supports many command line options that you can use to tweak how
+mypy behaves: see <a class="reference internal" href="command_line.html#command-line"><span class="std std-ref">The mypy command line</span></a> for more details.</p>
+<p>For example, suppose you want to make sure <em>all</em> functions within your
+codebase are using static typing and make mypy report an error if you
+add a dynamically-typed function by mistake. You can make mypy do this
+by running mypy with the <a class="reference internal" href="command_line.html#cmdoption-mypy-disallow-untyped-defs"><code class="xref std std-option docutils literal notranslate"><span class="pre">--disallow-untyped-defs</span></code></a> flag.</p>
+<p>Another potentially useful flag is <a class="reference internal" href="command_line.html#cmdoption-mypy-strict"><code class="xref std std-option docutils literal notranslate"><span class="pre">--strict</span></code></a>, which enables many
+(though not all) of the available strictness options – including
+<a class="reference internal" href="command_line.html#cmdoption-mypy-disallow-untyped-defs"><code class="xref std std-option docutils literal notranslate"><span class="pre">--disallow-untyped-defs</span></code></a>.</p>
+<p>This flag is mostly useful if you’re starting a new project from scratch
+and want to maintain a high degree of type safety from day one. However,
+this flag will probably be too aggressive if you either plan on using
+many untyped third party libraries or are trying to add static types to
+a large, existing codebase. See <a class="reference internal" href="existing_code.html#existing-code"><span class="std std-ref">Using mypy with an existing codebase</span></a> for more suggestions
+on how to handle the latter case.</p>
+</section>
+<section id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="永久链接至标题">¶</a></h2>
+<p>If you are in a hurry and don’t want to read lots of documentation
+before getting started, here are some pointers to quick learning
+resources:</p>
+<ul class="simple">
+<li><p>Read the <a class="reference internal" href="cheat_sheet_py3.html#cheat-sheet-py3"><span class="std std-ref">mypy cheatsheet</span></a> (also for
+<a class="reference internal" href="cheat_sheet.html#cheat-sheet-py2"><span class="std std-ref">Python 2</span></a>).</p></li>
+<li><p>Read <a class="reference internal" href="existing_code.html#existing-code"><span class="std std-ref">Using mypy with an existing codebase</span></a> if you have a significant existing
+codebase without many type annotations.</p></li>
+<li><p>Read the <a class="reference external" href="https://blog.zulip.org/2016/10/13/static-types-in-python-oh-mypy/">blog post</a>
+about the Zulip project’s experiences with adopting mypy.</p></li>
+<li><p>If you prefer watching talks instead of reading, here are
+some ideas:</p>
+<ul>
+<li><p>Carl Meyer:
+<a class="reference external" href="https://www.youtube.com/watch?v=pMgmKJyWKn8">Type Checked Python in the Real World</a>
+(PyCon 2018)</p></li>
+<li><p>Greg Price:
+<a class="reference external" href="https://www.youtube.com/watch?v=0c46YHS3RY8">Clearer Code at Scale: Static Types at Zulip and Dropbox</a>
+(PyCon 2018)</p></li>
+</ul>
+</li>
+<li><p>Look at <a class="reference internal" href="common_issues.html#common-issues"><span class="std std-ref">solutions to common issues</span></a> with mypy if
+you encounter problems.</p></li>
+<li><p>You can ask questions about mypy in the
+<a class="reference external" href="https://github.com/python/mypy/issues">mypy issue tracker</a> and
+typing <a class="reference external" href="https://gitter.im/python/typing">Gitter chat</a>.</p></li>
+</ul>
+<p>You can also continue reading this document and skip sections that
+aren’t relevant for you. You don’t need to read sections in order.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Getting started</a><ul>
+<li><a class="reference internal" href="#installing-and-running-mypy">Installing and running mypy</a></li>
+<li><a class="reference internal" href="#function-signatures-and-dynamic-vs-static-typing">Function signatures and dynamic vs static typing</a></li>
+<li><a class="reference internal" href="#more-function-signatures">More function signatures</a></li>
+<li><a class="reference internal" href="#additional-types-and-the-typing-module">Additional types, and the typing module</a></li>
+<li><a class="reference internal" href="#local-type-inference">Local type inference</a></li>
+<li><a class="reference internal" href="#library-stubs-and-typeshed">Library stubs and typeshed</a></li>
+<li><a class="reference internal" href="#configuring-mypy">Configuring mypy</a></li>
+<li><a class="reference internal" href="#next-steps">Next steps</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="introduction.html"
+                          title="上一章">Introduction</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="existing_code.html"
+                          title="下一章">Using mypy with an existing codebase</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/getting_started.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="existing_code.html" title="Using mypy with an existing codebase"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Getting started</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

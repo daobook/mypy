@@ -1,0 +1,605 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Running mypy and managing imports &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="The mypy command line" href="command_line.html" />
+    <link rel="prev" title="Metaclasses" href="metaclasses.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="command_line.html" title="The mypy command line"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="metaclasses.html" title="Metaclasses"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Running mypy and managing imports</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="running-mypy-and-managing-imports">
+<span id="running-mypy"></span><h1>Running mypy and managing imports<a class="headerlink" href="#running-mypy-and-managing-imports" title="永久链接至标题">¶</a></h1>
+<p>The <a class="reference internal" href="getting_started.html#getting-started"><span class="std std-ref">Getting started</span></a> page should have already introduced you
+to the basics of how to run mypy – pass in the files and directories
+you want to type check via the command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy foo.py bar.py some_directory
+</pre></div>
+</div>
+<p>This page discusses in more detail how exactly to specify what files
+you want mypy to type check, how mypy discovers imported modules,
+and recommendations on how to handle any issues you may encounter
+along the way.</p>
+<p>If you are interested in learning about how to configure the
+actual way mypy type checks your code, see our
+<a class="reference internal" href="command_line.html#command-line"><span class="std std-ref">The mypy command line</span></a> guide.</p>
+<section id="specifying-code-to-be-checked">
+<span id="id1"></span><h2>Specifying code to be checked<a class="headerlink" href="#specifying-code-to-be-checked" title="永久链接至标题">¶</a></h2>
+<p>Mypy lets you specify what files it should type check in several different ways.</p>
+<p>Note that if you use namespace packages (in particular, packages without
+<code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>), you’ll need to specify <a class="reference internal" href="command_line.html#cmdoption-mypy-namespace-packages"><code class="xref std std-option docutils literal notranslate"><span class="pre">--namespace-packages</span></code></a>.</p>
+<ol class="arabic">
+<li><p>First, you can pass in paths to Python files and directories you
+want to type check. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy file_1.py foo/file_2.py file_3.pyi some/directory
+</pre></div>
+</div>
+<p>The above command tells mypy it should type check all of the provided
+files together. In addition, mypy will recursively type check the
+entire contents of any provided directories.</p>
+<p>For more details about how exactly this is done, see
+<a class="reference internal" href="#mapping-paths-to-modules"><span class="std std-ref">Mapping file paths to modules</span></a>.</p>
+</li>
+<li><p>Second, you can use the <a class="reference internal" href="command_line.html#cmdoption-mypy-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">-m</span></code></a> flag (long form: <a class="reference internal" href="command_line.html#cmdoption-mypy-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">--module</span></code></a>) to
+specify a module name to be type checked. The name of a module
+is identical to the name you would use to import that module
+within a Python program. For example, running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy -m html.parser
+</pre></div>
+</div>
+<p>…will type check the module <code class="docutils literal notranslate"><span class="pre">html.parser</span></code> (this happens to be
+a library stub).</p>
+<p>Mypy will use an algorithm very similar to the one Python uses to
+find where modules and imports are located on the file system.
+For more details, see <a class="reference internal" href="#finding-imports"><span class="std std-ref">How imports are found</span></a>.</p>
+</li>
+<li><p>Third, you can use the <a class="reference internal" href="command_line.html#cmdoption-mypy-p"><code class="xref std std-option docutils literal notranslate"><span class="pre">-p</span></code></a> (long form: <a class="reference internal" href="command_line.html#cmdoption-mypy-p"><code class="xref std std-option docutils literal notranslate"><span class="pre">--package</span></code></a>) flag to
+specify a package to be (recursively) type checked. This flag
+is almost identical to the <a class="reference internal" href="command_line.html#cmdoption-mypy-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">-m</span></code></a> flag except that if you give it
+a package name, mypy will recursively type check all submodules
+and subpackages of that package. For example, running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy -p html
+</pre></div>
+</div>
+<p>…will type check the entire <code class="docutils literal notranslate"><span class="pre">html</span></code> package (of library stubs).
+In contrast, if we had used the <a class="reference internal" href="command_line.html#cmdoption-mypy-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">-m</span></code></a> flag, mypy would have type
+checked just <code class="docutils literal notranslate"><span class="pre">html</span></code>’s <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file and anything imported
+from there.</p>
+<p>Note that we can specify multiple packages and modules on the
+command line. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy --package p.a --package p.b --module c
+</pre></div>
+</div>
+</li>
+<li><p>Fourth, you can also instruct mypy to directly type check small
+strings as programs by using the <a class="reference internal" href="command_line.html#cmdoption-mypy-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">-c</span></code></a> (long form: <a class="reference internal" href="command_line.html#cmdoption-mypy-c"><code class="xref std std-option docutils literal notranslate"><span class="pre">--command</span></code></a>)
+flag. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy -c &#39;x = [1, 2]; print(x())&#39;
+</pre></div>
+</div>
+<p>…will type check the above string as a mini-program (and in this case,
+will report that <code class="docutils literal notranslate"><span class="pre">list[int]</span></code> is not callable).</p>
+</li>
+</ol>
+</section>
+<section id="reading-a-list-of-files-from-a-file">
+<h2>Reading a list of files from a file<a class="headerlink" href="#reading-a-list-of-files-from-a-file" title="永久链接至标题">¶</a></h2>
+<p>Finally, any command-line argument starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> reads additional
+command-line arguments from the file following the <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> character.
+This is primarily useful if you have a file containing a list of files
+that you want to be type-checked: instead of using shell syntax like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy $(cat file_of_files.txt)
+</pre></div>
+</div>
+<p>you can use this instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy @file_of_files.txt
+</pre></div>
+</div>
+<p>This file can technically also contain any command line flag, not
+just file paths. However, if you want to configure many different
+flags, the recommended approach is to use a
+<a class="reference internal" href="config_file.html#config-file"><span class="std std-ref">configuration file</span></a> instead.</p>
+</section>
+<section id="how-mypy-handles-imports">
+<h2>How mypy handles imports<a class="headerlink" href="#how-mypy-handles-imports" title="永久链接至标题">¶</a></h2>
+<p>When mypy encounters an <code class="docutils literal notranslate"><span class="pre">import</span></code> statement, it will first
+<a class="reference internal" href="#finding-imports"><span class="std std-ref">attempt to locate</span></a> that module
+or type stubs for that module in the file system. Mypy will then
+type check the imported module. There are three different outcomes
+of this process:</p>
+<ol class="arabic simple">
+<li><p>Mypy is unable to follow the import: the module either does not
+exist, or is a third party library that does not use type hints.</p></li>
+<li><p>Mypy is able to follow and type check the import, but you did
+not want mypy to type check that module at all.</p></li>
+<li><p>Mypy is able to successfully both follow and type check the
+module, and you want mypy to type check that module.</p></li>
+</ol>
+<p>The third outcome is what mypy will do in the ideal case. The following
+sections will discuss what to do in the other two cases.</p>
+</section>
+<section id="missing-imports">
+<span id="fix-missing-imports"></span><span id="ignore-missing-imports"></span><h2>Missing imports<a class="headerlink" href="#missing-imports" title="永久链接至标题">¶</a></h2>
+<p>When you import a module, mypy may report that it is unable to follow
+the import. This can cause errors that look like the following:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>main.py:1: error: Skipping analyzing &#39;django&#39;: module is installed, but missing library stubs or py.typed marker
+main.py:2: error: Library stubs not installed for &quot;requests&quot; (or incompatible with Python 3.8)
+main.py:3: error: Cannot find implementation or library stub for module named &quot;this_module_does_not_exist&quot;
+</pre></div>
+</div>
+<p>If you get any of these errors on an import, mypy will assume the type of that
+module is <code class="docutils literal notranslate"><span class="pre">Any</span></code>, the dynamic type. This means attempting to access any
+attribute of the module will automatically succeed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error: Cannot find implementation or library stub for module named &#39;does_not_exist&#39;</span>
+<span class="kn">import</span> <span class="nn">does_not_exist</span>
+
+<span class="c1"># But this type checks, and x will have type &#39;Any&#39;</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">does_not_exist</span><span class="o">.</span><span class="n">foobar</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The next sections describe what each of these errors means and recommended next steps; scroll to
+the section that matches your error.</p>
+<section id="missing-library-stubs-or-py-typed-marker">
+<h3>Missing library stubs or py.typed marker<a class="headerlink" href="#missing-library-stubs-or-py-typed-marker" title="永久链接至标题">¶</a></h3>
+<p>If you are getting a <code class="docutils literal notranslate"><span class="pre">Skipping</span> <span class="pre">analyzing</span> <span class="pre">X:</span> <span class="pre">module</span> <span class="pre">is</span> <span class="pre">installed,</span> <span class="pre">but</span> <span class="pre">missing</span> <span class="pre">library</span> <span class="pre">stubs</span> <span class="pre">or</span> <span class="pre">py.typed</span> <span class="pre">marker</span></code>,
+error, this means mypy was able to find the module you were importing, but no
+corresponding type hints.</p>
+<p>Mypy will not try inferring the types of any 3rd party libraries you have installed
+unless they either have declared themselves to be
+<a class="reference internal" href="installed_packages.html#installed-packages"><span class="std std-ref">PEP 561 compliant stub package</span></a> (e.g. with a <code class="docutils literal notranslate"><span class="pre">py.typed</span></code> file) or have registered
+themselves on <a class="reference external" href="https://github.com/python/typeshed">typeshed</a>, the repository
+of types for the standard library and some 3rd party libraries.</p>
+<p>If you are getting this error, try:</p>
+<ol class="arabic">
+<li><p>Upgrading the version of the library you’re using, in case a newer version
+has started to include type hints.</p></li>
+<li><p>Searching to see if there is a <a class="reference internal" href="installed_packages.html#installed-packages"><span class="std std-ref">PEP 561 compliant stub package</span></a>.
+corresponding to your third party library. Stub packages let you install
+type hints independently from the library itself.</p>
+<p>For example, if you want type hints for the <code class="docutils literal notranslate"><span class="pre">django</span></code> library, you can
+install the <a class="reference external" href="https://pypi.org/project/django-stubs/">django-stubs</a> package.</p>
+</li>
+<li><p><a class="reference internal" href="stubs.html#stub-files"><span class="std std-ref">Writing your own stub files</span></a> containing type hints for
+the library. You can point mypy at your type hints either by passing
+them in via the command line, by using the  <a class="reference internal" href="config_file.html#confval-files"><code class="xref std std-confval docutils literal notranslate"><span class="pre">files</span></code></a> or <a class="reference internal" href="config_file.html#confval-mypy_path"><code class="xref std std-confval docutils literal notranslate"><span class="pre">mypy_path</span></code></a>
+config file options, or by
+adding the location to the <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> environment variable.</p>
+<p>These stub files do not need to be complete! A good strategy is to use
+stubgen, a program that comes bundled with mypy, to generate a first
+rough draft of the stubs. You can then iterate on just the parts of the
+library you need.</p>
+<p>If you want to share your work, you can try contributing your stubs back
+to the library – see our documentation on creating
+<a class="reference internal" href="installed_packages.html#installed-packages"><span class="std std-ref">PEP 561 compliant packages</span></a>.</p>
+</li>
+</ol>
+<p>If you are unable to find any existing type hints nor have time to write your
+own, you can instead <em>suppress</em> the errors. All this will do is make mypy stop
+reporting an error on the line containing the import: the imported module
+will continue to be of type <code class="docutils literal notranslate"><span class="pre">Any</span></code>.</p>
+<ol class="arabic">
+<li><p>To suppress a <em>single</em> missing import error, add a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> at the end of the
+line containing the import.</p></li>
+<li><p>To suppress <em>all</em> missing import imports errors from a single library, add
+a section to your <a class="reference internal" href="config_file.html#config-file"><span class="std std-ref">mypy config file</span></a> for that library setting
+<a class="reference internal" href="config_file.html#confval-ignore_missing_imports"><code class="xref std std-confval docutils literal notranslate"><span class="pre">ignore_missing_imports</span></code></a> to True. For example, suppose your codebase
+makes heavy use of an (untyped) library named <code class="docutils literal notranslate"><span class="pre">foobar</span></code>. You can silence
+all import errors associated with that library and that library alone by
+adding the following section to your config file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">mypy</span><span class="o">-</span><span class="n">foobar</span><span class="o">.*</span><span class="p">]</span>
+<span class="n">ignore_missing_imports</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Note: this option is equivalent to adding a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> to every
+import of <code class="docutils literal notranslate"><span class="pre">foobar</span></code> in your codebase. For more information, see the
+documentation about configuring
+<a class="reference internal" href="config_file.html#config-file-import-discovery"><span class="std std-ref">import discovery</span></a> in config files.
+The <code class="docutils literal notranslate"><span class="pre">.*</span></code> after <code class="docutils literal notranslate"><span class="pre">foobar</span></code> will ignore imports of <code class="docutils literal notranslate"><span class="pre">foobar</span></code> modules
+and subpackages in addition to the <code class="docutils literal notranslate"><span class="pre">foobar</span></code> top-level package namespace.</p>
+</li>
+<li><p>To suppress <em>all</em> missing import errors for <em>all</em> libraries in your codebase,
+invoke mypy with the <a class="reference internal" href="command_line.html#cmdoption-mypy-ignore-missing-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--ignore-missing-imports</span></code></a> command line flag or set
+the <a class="reference internal" href="config_file.html#confval-ignore_missing_imports"><code class="xref std std-confval docutils literal notranslate"><span class="pre">ignore_missing_imports</span></code></a>
+config file option to True
+in the <em>global</em> section of your mypy config file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">mypy</span><span class="p">]</span>
+<span class="n">ignore_missing_imports</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>We recommend using this approach only as a last resort: it’s equivalent
+to adding a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> to all unresolved imports in your codebase.</p>
+</li>
+</ol>
+</section>
+<section id="library-stubs-not-installed">
+<h3>Library stubs not installed<a class="headerlink" href="#library-stubs-not-installed" title="永久链接至标题">¶</a></h3>
+<p>If mypy can’t find stubs for a third-party library, and it knows that stubs exist for
+the library, you will get a message like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>main.py:1: error: Library stubs not installed for &quot;yaml&quot; (or incompatible with Python 3.8)
+main.py:1: note: Hint: &quot;python3 -m pip install types-PyYAML&quot;
+main.py:1: note: (or run &quot;mypy --install-types&quot; to install all missing stub packages)
+</pre></div>
+</div>
+<p>You can resolve the issue by running the suggested pip command or
+commands. Alternatively, you can use <a class="reference internal" href="command_line.html#cmdoption-mypy-install-types"><code class="xref std std-option docutils literal notranslate"><span class="pre">--install-types</span></code></a> to install all known missing stubs:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mypy --install-types
+</pre></div>
+</div>
+<p>This installs any stub packages that were suggested in the previous
+mypy run. You can also use your normal mypy command line with the
+extra <a class="reference internal" href="command_line.html#cmdoption-mypy-install-types"><code class="xref std std-option docutils literal notranslate"><span class="pre">--install-types</span></code></a> option to
+install missing stubs at the end of the run (if any were found).</p>
+<p>Use <a class="reference internal" href="command_line.html#cmdoption-mypy-install-types"><code class="xref std std-option docutils literal notranslate"><span class="pre">--install-types</span></code></a> with
+<a class="reference internal" href="command_line.html#cmdoption-mypy-non-interactive"><code class="xref std std-option docutils literal notranslate"><span class="pre">--non-interactive</span></code></a>  to install all suggested
+stub packages without asking for confirmation, <em>and</em> type check your
+code, in a single command:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mypy --install-types --non-interactive src/
+</pre></div>
+</div>
+<p>This can be useful in Continuous Integration jobs if you’d prefer not
+to manage stub packages manually. This is somewhat slower than
+explicitly installing stubs before running mypy, since it may type
+check your code twice – the first time to find the missing stubs, and
+the second time to type check your code properly after mypy has
+installed the stubs.</p>
+</section>
+<section id="cannot-find-implementation-or-library-stub">
+<span id="missing-type-hints-for-third-party-library"></span><h3>Cannot find implementation or library stub<a class="headerlink" href="#cannot-find-implementation-or-library-stub" title="永久链接至标题">¶</a></h3>
+<p>If you are getting a <code class="docutils literal notranslate"><span class="pre">Cannot</span> <span class="pre">find</span> <span class="pre">implementation</span> <span class="pre">or</span> <span class="pre">library</span> <span class="pre">stub</span> <span class="pre">for</span> <span class="pre">module</span></code>
+error, this means mypy was not able to find the module you are trying to
+import, whether it comes bundled with type hints or not. If you are getting
+this error, try:</p>
+<ol class="arabic">
+<li><p>Making sure your import does not contain a typo.</p></li>
+<li><p>If the module is a third party library, making sure that mypy is able
+to find the interpreter containing the installed library.</p>
+<p>For example, if you are running your code in a virtualenv, make sure
+to install and use mypy within the virtualenv. Alternatively, if you
+want to use a globally installed mypy, set the
+<a class="reference internal" href="command_line.html#cmdoption-mypy-python-executable"><code class="xref std std-option docutils literal notranslate"><span class="pre">--python-executable</span></code></a> command
+line flag to point the Python interpreter containing your installed
+third party packages.</p>
+</li>
+</ol>
+<ol class="arabic" start="2">
+<li><p>Reading the <a class="reference internal" href="#finding-imports"><span class="std std-ref">How imports are found</span></a> section below to make sure you
+understand how exactly mypy searches for and finds modules and modify
+how you’re invoking mypy accordingly.</p></li>
+<li><p>Directly specifying the directory containing the module you want to
+type check from the command line, by using the <a class="reference internal" href="config_file.html#confval-mypy_path"><code class="xref std std-confval docutils literal notranslate"><span class="pre">mypy_path</span></code></a>
+or <a class="reference internal" href="config_file.html#confval-files"><code class="xref std std-confval docutils literal notranslate"><span class="pre">files</span></code></a> config file options,
+or by using the <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> environment variable.</p>
+<p>Note: if the module you are trying to import is actually a <em>submodule</em> of
+some package, you should specify the directory containing the <em>entire</em> package.
+For example, suppose you are trying to add the module <code class="docutils literal notranslate"><span class="pre">foo.bar.baz</span></code>
+which is located at <code class="docutils literal notranslate"><span class="pre">~/foo-project/src/foo/bar/baz.py</span></code>. In this case,
+you must run <code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">~/foo-project/src</span></code> (or set the <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> to
+<code class="docutils literal notranslate"><span class="pre">~/foo-project/src</span></code>.</p>
+</li>
+<li><p>If you are using namespace packages – packages which do not contain
+<code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> files within each subfolder – using the
+<a class="reference internal" href="command_line.html#cmdoption-mypy-namespace-packages"><code class="xref std std-option docutils literal notranslate"><span class="pre">--namespace-packages</span></code></a> command
+line flag.</p></li>
+</ol>
+<p>In some rare cases, you may get the “Cannot find implementation or library
+stub for module” error even when the module is installed in your system.
+This can happen when the module is both missing type hints and is installed
+on your system in a unconventional way.</p>
+<p>In this case, follow the steps above on how to handle
+<a class="reference internal" href="#missing-type-hints-for-third-party-library"><span class="std std-ref">missing type hints in third party libraries</span></a>.</p>
+</section>
+</section>
+<section id="following-imports">
+<span id="follow-imports"></span><h2>Following imports<a class="headerlink" href="#following-imports" title="永久链接至标题">¶</a></h2>
+<p>Mypy is designed to <a class="reference internal" href="#finding-imports"><span class="std std-ref">doggedly follow all imports</span></a>,
+even if the imported module is not a file you explicitly wanted mypy to check.</p>
+<p>For example, suppose we have two modules <code class="docutils literal notranslate"><span class="pre">mycode.foo</span></code> and <code class="docutils literal notranslate"><span class="pre">mycode.bar</span></code>:
+the former has type hints and the latter does not. We run
+<a class="reference internal" href="command_line.html#cmdoption-mypy-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">-m</span> <span class="pre">mycode.foo</span></code></a> and mypy discovers that <code class="docutils literal notranslate"><span class="pre">mycode.foo</span></code> imports
+<code class="docutils literal notranslate"><span class="pre">mycode.bar</span></code>.</p>
+<p>How do we want mypy to type check <code class="docutils literal notranslate"><span class="pre">mycode.bar</span></code>? Mypy’s behaviour here is
+configurable – although we <strong>strongly recommend</strong> using the default –
+by using the <a class="reference internal" href="command_line.html#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports</span></code></a> flag. This flag
+accepts one of four string values:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">normal</span></code> (the default, recommended) follows all imports normally and
+type checks all top level code (as well as the bodies of all
+functions and methods with at least one type annotation in
+the signature).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">silent</span></code> behaves in the same way as <code class="docutils literal notranslate"><span class="pre">normal</span></code> but will
+additionally <em>suppress</em> any error messages.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">skip</span></code> will <em>not</em> follow imports and instead will silently
+replace the module (and <em>anything imported from it</em>) with an
+object of type <code class="docutils literal notranslate"><span class="pre">Any</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">error</span></code> behaves in the same way as <code class="docutils literal notranslate"><span class="pre">skip</span></code> but is not quite as
+silent – it will flag the import as an error, like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">main</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span> <span class="n">note</span><span class="p">:</span> <span class="n">Import</span> <span class="n">of</span> <span class="s2">&quot;mycode.bar&quot;</span> <span class="n">ignored</span>
+<span class="n">main</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span> <span class="n">note</span><span class="p">:</span> <span class="p">(</span><span class="n">Using</span> <span class="o">--</span><span class="n">follow</span><span class="o">-</span><span class="n">imports</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">module</span> <span class="ow">not</span> <span class="n">passed</span> <span class="n">on</span> <span class="n">command</span> <span class="n">line</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>If you are starting a new codebase and plan on using type hints from
+the start, we recommend you use either <a class="reference internal" href="command_line.html#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports=normal</span></code></a>
+(the default) or <a class="reference internal" href="command_line.html#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports=error</span></code></a>. Either option will help
+make sure you are not skipping checking any part of your codebase by
+accident.</p>
+<p>If you are planning on adding type hints to a large, existing code base,
+we recommend you start by trying to make your entire codebase (including
+files that do not use type hints) pass under <a class="reference internal" href="command_line.html#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports=normal</span></code></a>.
+This is usually not too difficult to do: mypy is designed to report as
+few error messages as possible when it is looking at unannotated code.</p>
+<p>Only if doing this is intractable, we recommend passing mypy just the files
+you want to type check and use <a class="reference internal" href="command_line.html#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports=silent</span></code></a>. Even if
+mypy is unable to perfectly type check a file, it can still glean some
+useful information by parsing it (for example, understanding what methods
+a given object has). See <a class="reference internal" href="existing_code.html#existing-code"><span class="std std-ref">Using mypy with an existing codebase</span></a> for more recommendations.</p>
+<p>We do not recommend using <code class="docutils literal notranslate"><span class="pre">skip</span></code> unless you know what you are doing:
+while this option can be quite powerful, it can also cause many
+hard-to-debug errors.</p>
+<p>Adjusting import following behaviour is often most useful when restricted to
+specific modules. This can be accomplished by setting a per-module
+<a class="reference internal" href="config_file.html#confval-follow_imports"><code class="xref std std-confval docutils literal notranslate"><span class="pre">follow_imports</span></code></a> config option.</p>
+</section>
+<section id="mapping-file-paths-to-modules">
+<span id="mapping-paths-to-modules"></span><h2>Mapping file paths to modules<a class="headerlink" href="#mapping-file-paths-to-modules" title="永久链接至标题">¶</a></h2>
+<p>One of the main ways you can tell mypy what to type check
+is by providing mypy a list of paths. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy file_1.py foo/file_2.py file_3.pyi some/directory
+</pre></div>
+</div>
+<p>This section describes how exactly mypy maps the provided paths
+to modules to type check.</p>
+<ul class="simple">
+<li><p>Mypy will check all paths provided that correspond to files.</p></li>
+<li><p>Mypy will recursively discover and check all files ending in <code class="docutils literal notranslate"><span class="pre">.py</span></code> or
+<code class="docutils literal notranslate"><span class="pre">.pyi</span></code> in directory paths provided, after accounting for
+<a class="reference internal" href="command_line.html#cmdoption-mypy-exclude"><code class="xref std std-option docutils literal notranslate"><span class="pre">--exclude</span></code></a>.</p></li>
+<li><p>For each file to be checked, mypy will attempt to associate the file (e.g.
+<code class="docutils literal notranslate"><span class="pre">project/foo/bar/baz.py</span></code>) with a fully qualified module name (e.g.
+<code class="docutils literal notranslate"><span class="pre">foo.bar.baz</span></code>). The directory the package is in (<code class="docutils literal notranslate"><span class="pre">project</span></code>) is then
+added to mypy’s module search paths.</p></li>
+</ul>
+<p>How mypy determines fully qualified module names depends on if the options
+<a class="reference internal" href="command_line.html#cmdoption-mypy-namespace-packages"><code class="xref std std-option docutils literal notranslate"><span class="pre">--namespace-packages</span></code></a> and
+<a class="reference internal" href="command_line.html#cmdoption-mypy-explicit-package-bases"><code class="xref std std-option docutils literal notranslate"><span class="pre">--explicit-package-bases</span></code></a> are set.</p>
+<ol class="arabic">
+<li><p>If <a class="reference internal" href="command_line.html#cmdoption-mypy-namespace-packages"><code class="xref std std-option docutils literal notranslate"><span class="pre">--namespace-packages</span></code></a> is off,
+mypy will rely solely upon the presence of <code class="docutils literal notranslate"><span class="pre">__init__.py[i]</span></code> files to
+determine the fully qualified module name. That is, mypy will crawl up the
+directory tree for as long as it continues to find <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">__init__.pyi</span></code>) files.</p>
+<p>For example, if your directory tree consists of <code class="docutils literal notranslate"><span class="pre">pkg/subpkg/mod.py</span></code>, mypy
+would require <code class="docutils literal notranslate"><span class="pre">pkg/__init__.py</span></code> and <code class="docutils literal notranslate"><span class="pre">pkg/subpkg/__init__.py</span></code> to exist in
+order correctly associate <code class="docutils literal notranslate"><span class="pre">mod.py</span></code> with <code class="docutils literal notranslate"><span class="pre">pkg.subpkg.mod</span></code></p>
+</li>
+<li><p>If <a class="reference internal" href="command_line.html#cmdoption-mypy-namespace-packages"><code class="xref std std-option docutils literal notranslate"><span class="pre">--namespace-packages</span></code></a> is on, but
+<a class="reference internal" href="command_line.html#cmdoption-mypy-explicit-package-bases"><code class="xref std std-option docutils literal notranslate"><span class="pre">--explicit-package-bases</span></code></a> is off,
+mypy will allow for the possibility that directories without
+<code class="docutils literal notranslate"><span class="pre">__init__.py[i]</span></code> are packages. Specifically, mypy will look at all parent
+directories of the file and use the location of the highest
+<code class="docutils literal notranslate"><span class="pre">__init__.py[i]</span></code> in the directory tree to determine the top-level package.</p>
+<p>For example, say your directory tree consists solely of <code class="docutils literal notranslate"><span class="pre">pkg/__init__.py</span></code>
+and <code class="docutils literal notranslate"><span class="pre">pkg/a/b/c/d/mod.py</span></code>. When determining <code class="docutils literal notranslate"><span class="pre">mod.py</span></code>’s fully qualified
+module name, mypy will look at <code class="docutils literal notranslate"><span class="pre">pkg/__init__.py</span></code> and conclude that the
+associated module name is <code class="docutils literal notranslate"><span class="pre">pkg.a.b.c.d.mod</span></code>.</p>
+</li>
+<li><p>You’ll notice that the above case still relies on <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>. If
+you can’t put an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> in your top-level package, but still wish to
+pass paths (as opposed to packages or modules using the <code class="docutils literal notranslate"><span class="pre">-p</span></code> or <code class="docutils literal notranslate"><span class="pre">-m</span></code>
+flags), <a class="reference internal" href="command_line.html#cmdoption-mypy-explicit-package-bases"><code class="xref std std-option docutils literal notranslate"><span class="pre">--explicit-package-bases</span></code></a>
+provides a solution.</p>
+<p>With <a class="reference internal" href="command_line.html#cmdoption-mypy-explicit-package-bases"><code class="xref std std-option docutils literal notranslate"><span class="pre">--explicit-package-bases</span></code></a>, mypy
+will locate the nearest parent directory that is a member of the <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code>
+environment variable, the <a class="reference internal" href="config_file.html#confval-mypy_path"><code class="xref std std-confval docutils literal notranslate"><span class="pre">mypy_path</span></code></a> config or is the current
+working directory. Mypy will then use the relative path to determine the
+fully qualified module name.</p>
+<p>For example, say your directory tree consists solely of
+<code class="docutils literal notranslate"><span class="pre">src/namespace_pkg/mod.py</span></code>. If you run the following command, mypy
+will correctly associate <code class="docutils literal notranslate"><span class="pre">mod.py</span></code> with <code class="docutils literal notranslate"><span class="pre">namespace_pkg.mod</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ MYPYPATH=src mypy --namespace-packages --explicit-package-bases .
+</pre></div>
+</div>
+</li>
+</ol>
+<p>If you pass a file not ending in <code class="docutils literal notranslate"><span class="pre">.py[i]</span></code>, the module name assumed is
+<code class="docutils literal notranslate"><span class="pre">__main__</span></code> (matching the behavior of the Python interpreter), unless
+<a class="reference internal" href="command_line.html#cmdoption-mypy-scripts-are-modules"><code class="xref std std-option docutils literal notranslate"><span class="pre">--scripts-are-modules</span></code></a> is passed.</p>
+<p>Passing <a class="reference internal" href="command_line.html#cmdoption-mypy-v"><code class="xref std std-option docutils literal notranslate"><span class="pre">-v</span></code></a> will show you the files and associated module
+names that mypy will check.</p>
+</section>
+<section id="how-imports-are-found">
+<span id="finding-imports"></span><h2>How imports are found<a class="headerlink" href="#how-imports-are-found" title="永久链接至标题">¶</a></h2>
+<p>When mypy encounters an <code class="docutils literal notranslate"><span class="pre">import</span></code> statement or receives module
+names from the command line via the <a class="reference internal" href="command_line.html#cmdoption-mypy-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">--module</span></code></a> or <a class="reference internal" href="command_line.html#cmdoption-mypy-p"><code class="xref std std-option docutils literal notranslate"><span class="pre">--package</span></code></a>
+flags, mypy tries to find the module on the file system similar
+to the way Python finds it. However, there are some differences.</p>
+<p>First, mypy has its own search path.
+This is computed from the following items:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> environment variable
+(a colon-separated list of directories).</p></li>
+<li><p>The <a class="reference internal" href="config_file.html#confval-mypy_path"><code class="xref std std-confval docutils literal notranslate"><span class="pre">mypy_path</span></code></a> config file option.</p></li>
+<li><p>The directories containing the sources given on the command line
+(see <a class="reference internal" href="#mapping-paths-to-modules"><span class="std std-ref">Mapping file paths to modules</span></a>).</p></li>
+<li><p>The installed packages marked as safe for type checking (see
+<a class="reference internal" href="installed_packages.html#installed-packages"><span class="std std-ref">PEP 561 support</span></a>)</p></li>
+<li><p>The relevant directories of the
+<a class="reference external" href="https://github.com/python/typeshed">typeshed</a> repo.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>You cannot point to a stub-only package (<span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0561"><strong>PEP 561</strong></a>) via the <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code>, it must be
+installed (see <a class="reference internal" href="installed_packages.html#installed-packages"><span class="std std-ref">PEP 561 support</span></a>)</p>
+</div>
+<p>Second, mypy searches for stub files in addition to regular Python files
+and packages.
+The rules for searching for a module <code class="docutils literal notranslate"><span class="pre">foo</span></code> are as follows:</p>
+<ul class="simple">
+<li><p>The search looks in each of the directories in the search path
+(see above) until a match is found.</p></li>
+<li><p>If a package named <code class="docutils literal notranslate"><span class="pre">foo</span></code> is found (i.e. a directory
+<code class="docutils literal notranslate"><span class="pre">foo</span></code> containing an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> or <code class="docutils literal notranslate"><span class="pre">__init__.pyi</span></code> file)
+that’s a match.</p></li>
+<li><p>If a stub file named <code class="docutils literal notranslate"><span class="pre">foo.pyi</span></code> is found, that’s a match.</p></li>
+<li><p>If a Python module named <code class="docutils literal notranslate"><span class="pre">foo.py</span></code> is found, that’s a match.</p></li>
+</ul>
+<p>These matches are tried in order, so that if multiple matches are found
+in the same directory on the search path
+(e.g. a package and a Python file, or a stub file and a Python file)
+the first one in the above list wins.</p>
+<p>In particular, if a Python file and a stub file are both present in the
+same directory on the search path, only the stub file is used.
+(However, if the files are in different directories, the one found
+in the earlier directory is used.)</p>
+</section>
+<section id="other-advice-and-best-practices">
+<h2>Other advice and best practices<a class="headerlink" href="#other-advice-and-best-practices" title="永久链接至标题">¶</a></h2>
+<p>There are multiple ways of telling mypy what files to type check, ranging
+from passing in command line arguments to using the <a class="reference internal" href="config_file.html#confval-files"><code class="xref std std-confval docutils literal notranslate"><span class="pre">files</span></code></a> or <a class="reference internal" href="config_file.html#confval-mypy_path"><code class="xref std std-confval docutils literal notranslate"><span class="pre">mypy_path</span></code></a>
+config file options to setting the
+<code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> environment variable.</p>
+<p>However, in practice, it is usually sufficient to just use either
+command line arguments or the <a class="reference internal" href="config_file.html#confval-files"><code class="xref std std-confval docutils literal notranslate"><span class="pre">files</span></code></a> config file option (the two
+are largely interchangeable).</p>
+<p>Setting <a class="reference internal" href="config_file.html#confval-mypy_path"><code class="xref std std-confval docutils literal notranslate"><span class="pre">mypy_path</span></code></a>/<code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> is mostly useful in the case
+where you want to try running mypy against multiple distinct
+sets of files that happen to share some common dependencies.</p>
+<p>For example, if you have multiple projects that happen to be
+using the same set of work-in-progress stubs, it could be
+convenient to just have your <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> point to a single
+directory containing the stubs.</p>
+</section>
+<section id="directories-specific-to-python-2-python2">
+<h2>Directories specific to Python 2 (&#64;python2)<a class="headerlink" href="#directories-specific-to-python-2-python2" title="永久链接至标题">¶</a></h2>
+<p>When type checking in Python 2 mode, mypy also looks for files under
+the <code class="docutils literal notranslate"><span class="pre">&#64;python2</span></code> subdirectory of each <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> and <code class="docutils literal notranslate"><span class="pre">mypy_path</span></code>
+entry, if the subdirectory exists. Files under the subdirectory take
+precedence over the parent directory. This can be used to provide
+separate Python 2 versions of stubs.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>This does not need to be used (and cannot be used) with
+<a class="reference internal" href="installed_packages.html#installed-packages"><span class="std std-ref">PEP 561 compliant stub packages</span></a>.</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Running mypy and managing imports</a><ul>
+<li><a class="reference internal" href="#specifying-code-to-be-checked">Specifying code to be checked</a></li>
+<li><a class="reference internal" href="#reading-a-list-of-files-from-a-file">Reading a list of files from a file</a></li>
+<li><a class="reference internal" href="#how-mypy-handles-imports">How mypy handles imports</a></li>
+<li><a class="reference internal" href="#missing-imports">Missing imports</a><ul>
+<li><a class="reference internal" href="#missing-library-stubs-or-py-typed-marker">Missing library stubs or py.typed marker</a></li>
+<li><a class="reference internal" href="#library-stubs-not-installed">Library stubs not installed</a></li>
+<li><a class="reference internal" href="#cannot-find-implementation-or-library-stub">Cannot find implementation or library stub</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#following-imports">Following imports</a></li>
+<li><a class="reference internal" href="#mapping-file-paths-to-modules">Mapping file paths to modules</a></li>
+<li><a class="reference internal" href="#how-imports-are-found">How imports are found</a></li>
+<li><a class="reference internal" href="#other-advice-and-best-practices">Other advice and best practices</a></li>
+<li><a class="reference internal" href="#directories-specific-to-python-2-python2">Directories specific to Python 2 (&#64;python2)</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="metaclasses.html"
+                          title="上一章">Metaclasses</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="command_line.html"
+                          title="下一章">The mypy command line</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/running_mypy.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="command_line.html" title="The mypy command line"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="metaclasses.html" title="Metaclasses"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Running mypy and managing imports</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

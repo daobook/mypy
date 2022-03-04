@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Welcome to mypy documentation! &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Introduction" href="introduction.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             accesskey="N">下一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to mypy documentation!</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="welcome-to-mypy-documentation">
+<h1>Welcome to mypy documentation!<a class="headerlink" href="#welcome-to-mypy-documentation" title="永久链接至标题">¶</a></h1>
+<p>Mypy is a static type checker for Python 3 and Python 2.7.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">First steps</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installing-and-running-mypy">Installing and running mypy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#function-signatures-and-dynamic-vs-static-typing">Function signatures and dynamic vs static typing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#more-function-signatures">More function signatures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#additional-types-and-the-typing-module">Additional types, and the typing module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#local-type-inference">Local type inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#library-stubs-and-typeshed">Library stubs and typeshed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#configuring-mypy">Configuring mypy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#next-steps">Next steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="existing_code.html">Using mypy with an existing codebase</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="existing_code.html#start-small">Start small</a></li>
+<li class="toctree-l2"><a class="reference internal" href="existing_code.html#mypy-runner-script">Mypy runner script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="existing_code.html#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="existing_code.html#annotate-widely-imported-modules">Annotate widely imported modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="existing_code.html#write-annotations-as-you-go">Write annotations as you go</a></li>
+<li class="toctree-l2"><a class="reference internal" href="existing_code.html#automate-annotation-of-legacy-code">Automate annotation of legacy code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="existing_code.html#speed-up-mypy-runs">Speed up mypy runs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="existing_code.html#introduce-stricter-options">Introduce stricter options</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound" id="overview-cheat-sheets">
+<p class="caption" role="heading"><span class="caption-text">Cheat sheets</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cheat_sheet_py3.html">Type hints cheat sheet (Python 3)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet_py3.html#variables">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet_py3.html#built-in-types">Built-in types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet_py3.html#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet_py3.html#when-you-re-puzzled-or-when-things-are-complicated">When you’re puzzled or when things are complicated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet_py3.html#standard-duck-types">Standard “duck types”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet_py3.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet_py3.html#coroutines-and-asyncio">Coroutines and asyncio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet_py3.html#miscellaneous">Miscellaneous</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet_py3.html#decorators">Decorators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cheat_sheet.html">Type hints cheat sheet (Python 2)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet.html#built-in-types">Built-in types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet.html#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet.html#when-you-re-puzzled-or-when-things-are-complicated">When you’re puzzled or when things are complicated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet.html#standard-duck-types">Standard “duck types”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet.html#classes">Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet.html#miscellaneous">Miscellaneous</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cheat_sheet.html#decorators">Decorators</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound" id="overview-type-system-reference">
+<p class="caption" role="heading"><span class="caption-text">Type system reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="builtin_types.html">Built-in types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="builtin_types.html#simple-types">Simple types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="builtin_types.html#any-type">Any type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="builtin_types.html#generic-types">Generic types</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="type_inference_and_annotations.html">Type inference and type annotations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="type_inference_and_annotations.html#type-inference">Type inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type_inference_and_annotations.html#explicit-types-for-variables">Explicit types for variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type_inference_and_annotations.html#explicit-types-for-collections">Explicit types for collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type_inference_and_annotations.html#compatibility-of-container-types">Compatibility of container types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type_inference_and_annotations.html#context-in-type-inference">Context in type inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type_inference_and_annotations.html#declaring-multiple-variable-types-at-a-time">Declaring multiple variable types at a time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type_inference_and_annotations.html#starred-expressions">Starred expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type_inference_and_annotations.html#silencing-type-errors">Silencing type errors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="kinds_of_types.html">Kinds of types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#class-types">Class types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#the-any-type">The Any type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#tuple-types">Tuple types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#callable-types-and-lambdas">Callable types (and lambdas)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#union-types">Union types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#optional-types-and-the-none-type">Optional types and the None type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#disabling-strict-optional-checking">Disabling strict optional checking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#type-aliases">Type aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#named-tuples">Named tuples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#the-type-of-class-objects">The type of class objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#text-and-anystr">Text and AnyStr</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinds_of_types.html#generators">Generators</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="class_basics.html">Class basics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="class_basics.html#instance-and-class-attributes">Instance and class attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_basics.html#annotating-init-methods">Annotating __init__ methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_basics.html#class-attribute-annotations">Class attribute annotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_basics.html#overriding-statically-typed-methods">Overriding statically typed methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_basics.html#abstract-base-classes-and-multiple-inheritance">Abstract base classes and multiple inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_basics.html#slots">Slots</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="runtime_troubles.html">Annotation issues at runtime</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="runtime_troubles.html#string-literal-types">String literal types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime_troubles.html#future-annotations-import-pep-563">Future annotations import (PEP 563)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime_troubles.html#typing-type-checking">typing.TYPE_CHECKING</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime_troubles.html#class-name-forward-references">Class name forward references</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime_troubles.html#import-cycles">Import cycles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime_troubles.html#using-classes-that-are-generic-in-stubs-but-not-at-runtime">Using classes that are generic in stubs but not at runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime_troubles.html#using-types-defined-in-stubs-but-not-at-runtime">Using types defined in stubs but not at runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime_troubles.html#using-generic-builtins">Using generic builtins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime_troubles.html#using-x-y-syntax-for-unions">Using X | Y syntax for Unions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime_troubles.html#using-new-additions-to-the-typing-module">Using new additions to the typing module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocols.html">Protocols and structural subtyping</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#predefined-protocols">Predefined protocols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#simple-user-defined-protocols">Simple user-defined protocols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#defining-subprotocols-and-subclassing-protocols">Defining subprotocols and subclassing protocols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#recursive-protocols">Recursive protocols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#using-isinstance-with-protocols">Using isinstance() with protocols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocols.html#callback-protocols">Callback protocols</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dynamic_typing.html">Dynamically typed code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_typing.html#operations-on-any-values">Operations on Any values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_typing.html#any-vs-object">Any vs. object</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python2.html">Type checking Python 2 code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python2.html#multi-line-python-2-function-annotations">Multi-line Python 2 function annotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python2.html#additional-notes">Additional notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="type_narrowing.html">Type narrowing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="type_narrowing.html#type-narrowing-expressions">Type narrowing expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type_narrowing.html#casts">Casts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="type_narrowing.html#user-defined-type-guards">User-Defined Type Guards</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="duck_type_compatibility.html">Duck type compatibility</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stubs.html">Stub files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stubs.html#creating-a-stub">Creating a stub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubs.html#stub-file-syntax">Stub file syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubs.html#using-stub-file-syntax-at-runtime">Using stub file syntax at runtime</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generics.html">泛型</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#defining-generic-classes">定义泛型类</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#generic-class-internals">泛型类内部</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#defining-sub-classes-of-generic-classes">Defining sub-classes of generic classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#generic-functions">Generic functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#generic-methods-and-generic-self">Generic methods and generic self</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#variance-of-generic-types">Variance of generic types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#type-variables-with-value-restriction">Type variables with value restriction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#type-variables-with-upper-bounds">Type variables with upper bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#declaring-decorators">Declaring decorators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#generic-protocols">Generic protocols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generics.html#generic-type-aliases">Generic type aliases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="more_types.html">More types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="more_types.html#the-noreturn-type">The NoReturn type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_types.html#newtypes">NewTypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_types.html#function-overloading">Function overloading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_types.html#advanced-uses-of-self-types">Advanced uses of self-types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_types.html#typing-async-await">Typing async/await</a></li>
+<li class="toctree-l2"><a class="reference internal" href="more_types.html#typeddict">TypedDict</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="literal_types.html">Literal types and Enums</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="literal_types.html#literal-types">Literal types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="literal_types.html#enums">Enums</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="final_attrs.html">Final names, methods and classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="final_attrs.html#final-names">Final names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="final_attrs.html#final-methods">Final methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="final_attrs.html#final-classes">Final classes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metaclasses.html">Metaclasses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metaclasses.html#defining-a-metaclass">Defining a metaclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metaclasses.html#metaclass-usage-example">Metaclass usage example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metaclasses.html#gotchas-and-limitations-of-metaclass-support">Gotchas and limitations of metaclass support</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Configuring and running mypy</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="running_mypy.html">Running mypy and managing imports</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="running_mypy.html#specifying-code-to-be-checked">Specifying code to be checked</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_mypy.html#reading-a-list-of-files-from-a-file">Reading a list of files from a file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_mypy.html#how-mypy-handles-imports">How mypy handles imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_mypy.html#missing-imports">Missing imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_mypy.html#following-imports">Following imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_mypy.html#mapping-file-paths-to-modules">Mapping file paths to modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_mypy.html#how-imports-are-found">How imports are found</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_mypy.html#other-advice-and-best-practices">Other advice and best practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_mypy.html#directories-specific-to-python-2-python2">Directories specific to Python 2 (&#64;python2)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="command_line.html">The mypy command line</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#specifying-what-to-type-check">Specifying what to type check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#optional-arguments">Optional arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#config-file">Config file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#import-discovery">Import discovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#platform-configuration">Platform configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#disallow-dynamic-typing">Disallow dynamic typing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#untyped-definitions-and-calls">Untyped definitions and calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#none-and-optional-handling">None and Optional handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#configuring-warnings">Configuring warnings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#miscellaneous-strictness-flags">Miscellaneous strictness flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#configuring-error-messages">Configuring error messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#incremental-mode">Incremental mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#advanced-options">Advanced options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#report-generation">Report generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="command_line.html#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="config_file.html">The mypy configuration file</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#config-file-format">Config file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#per-module-and-global-options">Per-module and global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#inverting-option-values">Inverting option values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#import-discovery">Import discovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#platform-configuration">Platform configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#disallow-dynamic-typing">Disallow dynamic typing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#untyped-definitions-and-calls">Untyped definitions and calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#none-and-optional-handling">None and Optional handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#configuring-warnings">Configuring warnings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#suppressing-errors">Suppressing errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#miscellaneous-strictness-flags">Miscellaneous strictness flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#configuring-error-messages">Configuring error messages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#incremental-mode">Incremental mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#advanced-options">Advanced options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#report-generation">Report generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#miscellaneous">Miscellaneous</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#using-a-pyproject-toml-file">Using a pyproject.toml file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config_file.html#example-pyproject-toml">Example <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inline_config.html">Inline configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inline_config.html#configuration-comment-format">Configuration comment format</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mypy_daemon.html">Mypy daemon (mypy server)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mypy_daemon.html#basic-usage">Basic usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mypy_daemon.html#daemon-client-commands">Daemon client commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mypy_daemon.html#additional-daemon-flags">Additional daemon flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mypy_daemon.html#static-inference-of-annotations">Static inference of annotations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installed_packages.html">Using installed packages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installed_packages.html#using-installed-packages-with-mypy-pep-561">Using installed packages with mypy (PEP 561)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installed_packages.html#creating-pep-561-compatible-packages">Creating PEP 561 compatible packages</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extending_mypy.html">Extending and integrating mypy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="extending_mypy.html#integrating-mypy-into-another-python-application">Integrating mypy into another Python application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending_mypy.html#extending-mypy-using-plugins">Extending mypy using plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending_mypy.html#configuring-mypy-to-use-plugins">Configuring mypy to use plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending_mypy.html#high-level-overview">High-level overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending_mypy.html#current-list-of-plugin-hooks">Current list of plugin hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending_mypy.html#notes-about-the-semantic-analyzer">Notes about the semantic analyzer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stubgen.html">Automatic stub generation (stubgen)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stubgen.html#specifying-what-to-stub">Specifying what to stub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubgen.html#specifying-how-to-generate-stubs">Specifying how to generate stubs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubgen.html#additional-flags">Additional flags</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stubtest.html">Automatic stub testing (stubtest)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stubtest.html#what-stubtest-does-and-does-not-do">What stubtest does and does not do</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubtest.html#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stubtest.html#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="common_issues.html">Common issues and solutions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#can-t-install-mypy-using-pip">Can’t install mypy using pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#no-errors-reported-for-obviously-wrong-code">No errors reported for obviously wrong code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#spurious-errors-and-locally-silencing-the-checker">Spurious errors and locally silencing the checker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#ignoring-a-whole-file">Ignoring a whole file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#unexpected-errors-about-none-and-or-optional-types">Unexpected errors about ‘None’ and/or ‘Optional’ types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#issues-with-code-at-runtime">Issues with code at runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#mypy-runs-are-slow">Mypy runs are slow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#types-of-empty-collections">Types of empty collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#redefinitions-with-incompatible-types">Redefinitions with incompatible types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#invariance-vs-covariance">Invariance vs covariance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#declaring-a-supertype-as-variable-type">Declaring a supertype as variable type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#complex-type-tests">Complex type tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#python-version-and-system-platform-checks">Python version and system platform checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#displaying-the-type-of-an-expression">Displaying the type of an expression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#silencing-linters">Silencing linters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#covariant-subtyping-of-mutable-protocol-members-is-rejected">Covariant subtyping of mutable protocol members is rejected</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#dealing-with-conflicting-names">Dealing with conflicting names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#using-a-development-mypy-build">Using a development mypy build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#variables-vs-type-aliases">Variables vs type aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#incompatible-overrides">Incompatible overrides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#unreachable-code">Unreachable code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common_issues.html#narrowing-and-inner-functions">Narrowing and inner functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="supported_python_features.html">Supported Python features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="supported_python_features.html#runtime-definition-of-methods-and-functions">Runtime definition of methods and functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="error_codes.html">Error codes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="error_codes.html#displaying-error-codes">Displaying error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_codes.html#silencing-errors-based-on-error-codes">Silencing errors based on error codes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="error_code_list.html">Error codes enabled by default</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-attribute-exists-attr-defined">Check that attribute exists [attr-defined]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-attribute-exists-in-each-union-item-union-attr">Check that attribute exists in each union item [union-attr]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-name-is-defined-name-defined">Check that name is defined [name-defined]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-arguments-in-calls-call-arg">Check arguments in calls [call-arg]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-argument-types-arg-type">Check argument types [arg-type]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-calls-to-overloaded-functions-call-overload">Check calls to overloaded functions [call-overload]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-validity-of-types-valid-type">Check validity of types [valid-type]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#require-annotation-if-variable-type-is-unclear-var-annotated">Require annotation if variable type is unclear [var-annotated]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-validity-of-overrides-override">Check validity of overrides [override]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-function-returns-a-value-return">Check that function returns a value [return]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-return-value-is-compatible-return-value">Check that return value is compatible [return-value]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-types-in-assignment-statement-assignment">Check types in assignment statement [assignment]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-type-variable-values-type-var">Check type variable values [type-var]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-uses-of-various-operators-operator">Check uses of various operators [operator]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-indexing-operations-index">Check indexing operations [index]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-list-items-list-item">Check list items [list-item]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-dict-items-dict-item">Check dict items [dict-item]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-typeddict-items-typeddict-item">Check TypedDict items [typeddict-item]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-type-of-target-is-known-has-type">Check that type of target is known [has-type]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-import-target-can-be-found-import">Check that import target can be found [import]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-each-name-is-defined-once-no-redef">Check that each name is defined once [no-redef]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-called-function-returns-a-value-func-returns-value">Check that called function returns a value [func-returns-value]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-instantiation-of-abstract-classes-abstract">Check instantiation of abstract classes [abstract]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-the-target-of-newtype-valid-newtype">Check the target of NewType [valid-newtype]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-the-return-type-of-exit-exit-return">Check the return type of __exit__ [exit-return]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-naming-is-consistent-name-match">Check that naming is consistent [name-match]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#check-that-overloaded-functions-have-an-implementation-no-overload-impl">Check that overloaded functions have an implementation [no-overload-impl]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#report-syntax-errors-syntax">Report syntax errors [syntax]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list.html#miscellaneous-checks-misc">Miscellaneous checks [misc]</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="error_code_list2.html">Error codes for optional checks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-type-arguments-exist-type-arg">Check that type arguments exist [type-arg]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-every-function-has-an-annotation-no-untyped-def">Check that every function has an annotation [no-untyped-def]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-cast-is-not-redundant-redundant-cast">Check that cast is not redundant [redundant-cast]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-comparisons-are-overlapping-comparison-overlap">Check that comparisons are overlapping [comparison-overlap]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-no-untyped-functions-are-called-no-untyped-call">Check that no untyped functions are called [no-untyped-call]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-function-does-not-return-any-value-no-any-return">Check that function does not return Any value [no-any-return]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-types-have-no-any-components-due-to-missing-imports-no-any-unimported">Check that types have no Any components due to missing imports [no-any-unimported]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-statement-or-expression-is-unreachable-unreachable">Check that statement or expression is unreachable [unreachable]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-expression-is-redundant-redundant-expr">Check that expression is redundant [redundant-expr]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-expression-is-not-implicitly-true-in-boolean-context-truthy-bool">Check that expression is not implicitly true in boolean context [truthy-bool]</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_code_list2.html#check-that-type-ignore-include-an-error-code-ignore-without-code">Check that <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> include an error code [ignore-without-code]</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="additional_features.html">Additional features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="additional_features.html#dataclasses">Dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="additional_features.html#the-attrs-package">The attrs package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="additional_features.html#using-a-remote-cache-to-speed-up-mypy-runs">Using a remote cache to speed up mypy runs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="additional_features.html#extended-callable-types">Extended Callable types</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#why-have-both-dynamic-and-static-typing">Why have both dynamic and static typing?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#would-my-project-benefit-from-static-typing">Would my project benefit from static typing?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#can-i-use-mypy-to-type-check-my-existing-python-code">Can I use mypy to type check my existing Python code?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#will-static-typing-make-my-programs-run-faster">Will static typing make my programs run faster?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-do-i-type-check-my-python-2-code">How do I type check my Python 2 code?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#is-mypy-free">Is mypy free?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#can-i-use-duck-typing-with-mypy">Can I use duck typing with mypy?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#i-like-python-and-i-have-no-need-for-static-typing">I like Python and I have no need for static typing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-are-mypy-programs-different-from-normal-python">How are mypy programs different from normal Python?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-is-mypy-different-from-cython">How is mypy different from Cython?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#does-it-run-on-pypy">Does it run on PyPy?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#mypy-is-a-cool-project-can-i-help">Mypy is a cool project. Can I help?</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="永久链接至标题">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">索引</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">搜索页面</span></a></p></li>
+</ul>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="#">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Welcome to mypy documentation!</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="introduction.html"
+                          title="下一章">Introduction</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="introduction.html" title="Introduction"
+             >下一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to mypy documentation!</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

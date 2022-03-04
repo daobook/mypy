@@ -1,0 +1,1140 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>The mypy command line &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="The mypy configuration file" href="config_file.html" />
+    <link rel="prev" title="Running mypy and managing imports" href="running_mypy.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="config_file.html" title="The mypy configuration file"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="running_mypy.html" title="Running mypy and managing imports"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The mypy command line</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-mypy-command-line">
+<span id="command-line"></span><h1>The mypy command line<a class="headerlink" href="#the-mypy-command-line" title="永久链接至标题">¶</a></h1>
+<p>This section documents mypy’s command line interface. You can view
+a quick summary of the available flags by running <a class="reference internal" href="#cmdoption-mypy-h"><code class="xref std std-option docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">--help</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Command line flags are liable to change between releases.</p>
+</div>
+<section id="specifying-what-to-type-check">
+<h2>Specifying what to type check<a class="headerlink" href="#specifying-what-to-type-check" title="永久链接至标题">¶</a></h2>
+<p>By default, you can specify what code you want mypy to type check
+by passing in the paths to what you want to have type checked:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mypy foo.py bar.py some_directory
+</pre></div>
+</div>
+<p>Note that directories are checked recursively.</p>
+<p>Mypy also lets you specify what code to type check in several other
+ways. A short summary of the relevant flags is included below:
+for full details, see <a class="reference internal" href="running_mypy.html#running-mypy"><span class="std std-ref">Running mypy and managing imports</span></a>.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-m">
+<span id="cmdoption-mypy-module"></span><span class="sig-name descname"><span class="pre">-m</span></span><span class="sig-prename descclassname"> <span class="pre">MODULE</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--module</span></span><span class="sig-prename descclassname"> <span class="pre">MODULE</span></span><a class="headerlink" href="#cmdoption-mypy-m" title="永久链接至目标">¶</a></dt>
+<dd><p>Asks mypy to type check the provided module. This flag may be
+repeated multiple times.</p>
+<p>Mypy <em>will not</em> recursively type check any submodules of the provided
+module.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-p">
+<span id="cmdoption-mypy-package"></span><span class="sig-name descname"><span class="pre">-p</span></span><span class="sig-prename descclassname"> <span class="pre">PACKAGE</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--package</span></span><span class="sig-prename descclassname"> <span class="pre">PACKAGE</span></span><a class="headerlink" href="#cmdoption-mypy-p" title="永久链接至目标">¶</a></dt>
+<dd><p>Asks mypy to type check the provided package. This flag may be
+repeated multiple times.</p>
+<p>Mypy <em>will</em> recursively type check any submodules of the provided
+package. This flag is identical to <a class="reference internal" href="#cmdoption-mypy-m"><code class="xref std std-option docutils literal notranslate"><span class="pre">--module</span></code></a> apart from this
+behavior.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-c">
+<span id="cmdoption-mypy-command"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"> <span class="pre">PROGRAM_TEXT</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--command</span></span><span class="sig-prename descclassname"> <span class="pre">PROGRAM_TEXT</span></span><a class="headerlink" href="#cmdoption-mypy-c" title="永久链接至目标">¶</a></dt>
+<dd><p>Asks mypy to type check the provided string as a program.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-exclude">
+<span class="sig-name descname"><span class="pre">--exclude</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-exclude" title="永久链接至目标">¶</a></dt>
+<dd><p>A regular expression that matches file names, directory names and paths
+which mypy should ignore while recursively discovering files to check.
+Use forward slashes on all platforms.</p>
+<p>For instance, to avoid discovering any files named <cite>setup.py</cite> you could
+pass <code class="docutils literal notranslate"><span class="pre">--exclude</span> <span class="pre">'/setup\.py$'</span></code>. Similarly, you can ignore discovering
+directories with a given name by e.g. <code class="docutils literal notranslate"><span class="pre">--exclude</span> <span class="pre">/build/</span></code> or
+those matching a subpath with <code class="docutils literal notranslate"><span class="pre">--exclude</span> <span class="pre">/project/vendor/</span></code>. To ignore
+multiple files / directories / paths, you can provide the –exclude
+flag more than once, e.g <code class="docutils literal notranslate"><span class="pre">--exclude</span> <span class="pre">'/setup\.py$'</span> <span class="pre">--exclude</span> <span class="pre">'/build/'</span></code>.</p>
+<p>Note that this flag only affects recursive directory tree discovery, that
+is, when mypy is discovering files within a directory tree or submodules of
+a package to check. If you pass a file or module explicitly it will still be
+checked. For instance, <code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">--exclude</span> <span class="pre">'/setup.py$'</span>
+<span class="pre">but_still_check/setup.py</span></code>.</p>
+<p>In particular, <code class="docutils literal notranslate"><span class="pre">--exclude</span></code> does not affect mypy’s <a class="reference internal" href="running_mypy.html#follow-imports"><span class="std std-ref">import following</span></a>. You can use a per-module <a class="reference internal" href="config_file.html#confval-follow_imports"><code class="xref std std-confval docutils literal notranslate"><span class="pre">follow_imports</span></code></a> config
+option to additionally avoid mypy from following imports and checking code
+you do not wish to be checked.</p>
+<p>Note that mypy will never recursively discover files and directories named
+“site-packages”, “node_modules” or “__pycache__”, or those whose name starts
+with a period, exactly as <code class="docutils literal notranslate"><span class="pre">--exclude</span>
+<span class="pre">'/(site-packages|node_modules|__pycache__|\..*)/$'</span></code> would. Mypy will also
+never recursively discover files with extensions other than <code class="docutils literal notranslate"><span class="pre">.py</span></code> or
+<code class="docutils literal notranslate"><span class="pre">.pyi</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="optional-arguments">
+<h2>Optional arguments<a class="headerlink" href="#optional-arguments" title="永久链接至标题">¶</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-h">
+<span id="cmdoption-mypy-help"></span><span class="sig-name descname"><span class="pre">-h</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-h" title="永久链接至目标">¶</a></dt>
+<dd><p>Show help message and exit.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-v">
+<span id="cmdoption-mypy-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-v" title="永久链接至目标">¶</a></dt>
+<dd><p>More verbose messages.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-V">
+<span id="cmdoption-mypy-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-V" title="永久链接至目标">¶</a></dt>
+<dd><p>Show program’s version number and exit.</p>
+</dd></dl>
+
+</section>
+<section id="config-file">
+<span id="config-file-flag"></span><h2>Config file<a class="headerlink" href="#config-file" title="永久链接至标题">¶</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-config-file">
+<span class="sig-name descname"><span class="pre">--config-file</span></span><span class="sig-prename descclassname"> <span class="pre">CONFIG_FILE</span></span><a class="headerlink" href="#cmdoption-mypy-config-file" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag makes mypy read configuration settings from the given file.</p>
+<p>By default settings are read from <code class="docutils literal notranslate"><span class="pre">mypy.ini</span></code>, <code class="docutils literal notranslate"><span class="pre">.mypy.ini</span></code>, <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>, or <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code>
+in the current directory. Settings override mypy’s built-in defaults and
+command line flags can override settings.</p>
+<p>Specifying <a class="reference internal" href="#cmdoption-mypy-config-file"><code class="xref std std-option docutils literal notranslate"><span class="pre">--config-file=</span></code></a> (with no filename) will ignore <em>all</em>
+config files.</p>
+<p>See <a class="reference internal" href="config_file.html#config-file"><span class="std std-ref">The mypy configuration file</span></a> for the syntax of configuration files.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-warn-unused-configs">
+<span class="sig-name descname"><span class="pre">--warn-unused-configs</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-warn-unused-configs" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag makes mypy warn about unused <code class="docutils literal notranslate"><span class="pre">[mypy-&lt;pattern&gt;]</span></code> config
+file sections.
+(This requires turning off incremental mode using <a class="reference internal" href="#cmdoption-mypy-no-incremental"><code class="xref std std-option docutils literal notranslate"><span class="pre">--no-incremental</span></code></a>.)</p>
+</dd></dl>
+
+</section>
+<section id="import-discovery">
+<span id="id1"></span><h2>Import discovery<a class="headerlink" href="#import-discovery" title="永久链接至标题">¶</a></h2>
+<p>The following flags customize how exactly mypy discovers and follows
+imports.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-namespace-packages">
+<span class="sig-name descname"><span class="pre">--namespace-packages</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-namespace-packages" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag enables import discovery to use namespace packages (see
+<span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0420"><strong>PEP 420</strong></a>).  In particular, this allows discovery of imported
+packages that don’t have an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> (or <code class="docutils literal notranslate"><span class="pre">__init__.pyi</span></code>)
+file.</p>
+<p>Namespace packages are found (using the PEP 420 rules, which
+prefers “classic” packages over namespace packages) along the
+module search path – this is primarily set from the source files
+passed on the command line, the <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> environment variable,
+and the <a class="reference internal" href="config_file.html#confval-mypy_path"><code class="xref std std-confval docutils literal notranslate"><span class="pre">mypy_path</span></code></a> config option.</p>
+<p>This flag affects how mypy finds modules and packages explicitly passed on
+the command line. It also affects how mypy determines fully qualified module
+names for files passed on the command line. See <a class="reference internal" href="running_mypy.html#mapping-paths-to-modules"><span class="std std-ref">Mapping file paths to
+modules</span></a> for details.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-explicit-package-bases">
+<span class="sig-name descname"><span class="pre">--explicit-package-bases</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-explicit-package-bases" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag tells mypy that top-level packages will be based in either the
+current directory, or a member of the <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> environment variable or
+<a class="reference internal" href="config_file.html#confval-mypy_path"><code class="xref std std-confval docutils literal notranslate"><span class="pre">mypy_path</span></code></a> config option. This option is only useful in
+conjunction with <a class="reference internal" href="#cmdoption-mypy-namespace-packages"><code class="xref std std-option docutils literal notranslate"><span class="pre">--namespace-packages</span></code></a>. See <a class="reference internal" href="running_mypy.html#mapping-paths-to-modules"><span class="std std-ref">Mapping file
+paths to modules</span></a> for details.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-ignore-missing-imports">
+<span class="sig-name descname"><span class="pre">--ignore-missing-imports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-ignore-missing-imports" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag makes mypy ignore all missing imports. It is equivalent
+to adding <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comments to all unresolved imports
+within your codebase.</p>
+<p>Note that this flag does <em>not</em> suppress errors about missing names
+in successfully resolved modules. For example, if one has the
+following files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">package</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+<span class="n">package</span><span class="o">/</span><span class="n">mod</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Then mypy will generate the following errors with <a class="reference internal" href="#cmdoption-mypy-ignore-missing-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--ignore-missing-imports</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">package.unknown</span>      <span class="c1"># No error, ignored</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="n">unknown</span><span class="o">.</span><span class="n">func</span><span class="p">()</span>  <span class="c1"># OK. &#39;func&#39; is assumed to be of type &#39;Any&#39;</span>
+
+<span class="kn">from</span> <span class="nn">package</span> <span class="kn">import</span> <span class="n">unknown</span>          <span class="c1"># No error, ignored</span>
+<span class="kn">from</span> <span class="nn">package.mod</span> <span class="kn">import</span> <span class="n">NonExisting</span>  <span class="c1"># Error: Module has no attribute &#39;NonExisting&#39;</span>
+</pre></div>
+</div>
+<p>For more details, see <a class="reference internal" href="running_mypy.html#ignore-missing-imports"><span class="std std-ref">Missing imports</span></a>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-follow-imports">
+<span class="sig-name descname"><span class="pre">--follow-imports</span></span><span class="sig-prename descclassname"> <span class="pre">{normal,silent,skip,error}</span></span><a class="headerlink" href="#cmdoption-mypy-follow-imports" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag adjusts how mypy follows imported modules that were not
+explicitly passed in via the command line.</p>
+<p>The default option is <code class="docutils literal notranslate"><span class="pre">normal</span></code>: mypy will follow and type check
+all modules. For more information on what the other options do,
+see <a class="reference internal" href="running_mypy.html#follow-imports"><span class="std std-ref">Following imports</span></a>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-python-executable">
+<span class="sig-name descname"><span class="pre">--python-executable</span></span><span class="sig-prename descclassname"> <span class="pre">EXECUTABLE</span></span><a class="headerlink" href="#cmdoption-mypy-python-executable" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will have mypy collect type information from <span class="target" id="index-1"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0561"><strong>PEP 561</strong></a>
+compliant packages installed for the Python executable <code class="docutils literal notranslate"><span class="pre">EXECUTABLE</span></code>.
+If not provided, mypy will use PEP 561 compliant packages installed for
+the Python executable running mypy.</p>
+<p>See <a class="reference internal" href="installed_packages.html#installed-packages"><span class="std std-ref">Using installed packages</span></a> for more on making PEP 561 compliant packages.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-no-site-packages">
+<span class="sig-name descname"><span class="pre">--no-site-packages</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-no-site-packages" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will disable searching for <span class="target" id="index-2"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0561"><strong>PEP 561</strong></a> compliant packages. This
+will also disable searching for a usable Python executable.</p>
+<p>Use this  flag if mypy cannot find a Python executable for the version of
+Python being checked, and you don’t need to use PEP 561 typed packages.
+Otherwise, use <a class="reference internal" href="#cmdoption-mypy-python-executable"><code class="xref std std-option docutils literal notranslate"><span class="pre">--python-executable</span></code></a>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-no-silence-site-packages">
+<span class="sig-name descname"><span class="pre">--no-silence-site-packages</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-no-silence-site-packages" title="永久链接至目标">¶</a></dt>
+<dd><p>By default, mypy will suppress any error messages generated within <span class="target" id="index-3"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0561"><strong>PEP 561</strong></a>
+compliant packages. Adding this flag will disable this behavior.</p>
+</dd></dl>
+
+</section>
+<section id="platform-configuration">
+<span id="id2"></span><h2>Platform configuration<a class="headerlink" href="#platform-configuration" title="永久链接至标题">¶</a></h2>
+<p>By default, mypy will assume that you intend to run your code using the same
+operating system and Python version you are using to run mypy itself. The
+following flags let you modify this behavior.</p>
+<p>For more information on how to use these flags, see <a class="reference internal" href="common_issues.html#version-and-platform-checks"><span class="std std-ref">Python version and system platform checks</span></a>.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-python-version">
+<span class="sig-name descname"><span class="pre">--python-version</span></span><span class="sig-prename descclassname"> <span class="pre">X.Y</span></span><a class="headerlink" href="#cmdoption-mypy-python-version" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will make mypy type check your code as if it were
+run under Python version X.Y. Without this option, mypy will default to using
+whatever version of Python is running mypy. Note that the <a class="reference internal" href="#cmdoption-mypy-2"><code class="xref std std-option docutils literal notranslate"><span class="pre">-2</span></code></a> and
+<a class="reference internal" href="#cmdoption-mypy-2"><code class="xref std std-option docutils literal notranslate"><span class="pre">--py2</span></code></a> flags are aliases for <a class="reference internal" href="#cmdoption-mypy-python-version"><code class="xref std std-option docutils literal notranslate"><span class="pre">--python-version</span> <span class="pre">2.7</span></code></a>.</p>
+<p>This flag will attempt to find a Python executable of the corresponding
+version to search for <span class="target" id="index-4"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0561"><strong>PEP 561</strong></a> compliant packages. If you’d like to
+disable this, use the <a class="reference internal" href="#cmdoption-mypy-no-site-packages"><code class="xref std std-option docutils literal notranslate"><span class="pre">--no-site-packages</span></code></a> flag (see
+<a class="reference internal" href="#import-discovery"><span class="std std-ref">Import discovery</span></a> for more details).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-2">
+<span id="cmdoption-mypy-py2"></span><span class="sig-name descname"><span class="pre">-2</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--py2</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-2" title="永久链接至目标">¶</a></dt>
+<dd><p>Equivalent to running <a class="reference internal" href="#cmdoption-mypy-python-version"><code class="xref std std-option docutils literal notranslate"><span class="pre">--python-version</span> <span class="pre">2.7</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>To check Python 2 code with mypy, you’ll need to install mypy with
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'mypy[python2]'</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-platform">
+<span class="sig-name descname"><span class="pre">--platform</span></span><span class="sig-prename descclassname"> <span class="pre">PLATFORM</span></span><a class="headerlink" href="#cmdoption-mypy-platform" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will make mypy type check your code as if it were
+run under the given operating system. Without this option, mypy will
+default to using whatever operating system you are currently using.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">PLATFORM</span></code> parameter may be any string supported by
+<a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.platform" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.platform</span></code></a>.</p>
+</dd></dl>
+
+<span class="target" id="always-true"></span><dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-always-true">
+<span class="sig-name descname"><span class="pre">--always-true</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-mypy-always-true" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will treat all variables named <code class="docutils literal notranslate"><span class="pre">NAME</span></code> as
+compile-time constants that are always true.  This flag may
+be repeated.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-always-false">
+<span class="sig-name descname"><span class="pre">--always-false</span></span><span class="sig-prename descclassname"> <span class="pre">NAME</span></span><a class="headerlink" href="#cmdoption-mypy-always-false" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will treat all variables named <code class="docutils literal notranslate"><span class="pre">NAME</span></code> as
+compile-time constants that are always false.  This flag may
+be repeated.</p>
+</dd></dl>
+
+</section>
+<section id="disallow-dynamic-typing">
+<span id="id3"></span><h2>Disallow dynamic typing<a class="headerlink" href="#disallow-dynamic-typing" title="永久链接至标题">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Any</span></code> type is used to represent a value that has a <a class="reference internal" href="dynamic_typing.html#dynamic-typing"><span class="std std-ref">dynamic type</span></a>.
+The <code class="docutils literal notranslate"><span class="pre">--disallow-any</span></code> family of flags will disallow various uses of the <code class="docutils literal notranslate"><span class="pre">Any</span></code> type in
+a module – this lets us strategically disallow the use of dynamic typing in a controlled way.</p>
+<p>The following options are available:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disallow-any-unimported">
+<span class="sig-name descname"><span class="pre">--disallow-any-unimported</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disallow-any-unimported" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag disallows usage of types that come from unfollowed imports
+(such types become aliases for <code class="docutils literal notranslate"><span class="pre">Any</span></code>). Unfollowed imports occur either
+when the imported module does not exist or when <a class="reference internal" href="#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports=skip</span></code></a>
+is set.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disallow-any-expr">
+<span class="sig-name descname"><span class="pre">--disallow-any-expr</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disallow-any-expr" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag disallows all expressions in the module that have type <code class="docutils literal notranslate"><span class="pre">Any</span></code>.
+If an expression of type <code class="docutils literal notranslate"><span class="pre">Any</span></code> appears anywhere in the module
+mypy will output an error unless the expression is immediately
+used as an argument to <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.cast" title="(在 Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">cast()</span></code></a> or assigned to a variable with an
+explicit type annotation.</p>
+<p>In addition, declaring a variable of type <code class="docutils literal notranslate"><span class="pre">Any</span></code>
+or casting to type <code class="docutils literal notranslate"><span class="pre">Any</span></code> is not allowed. Note that calling functions
+that take parameters of type <code class="docutils literal notranslate"><span class="pre">Any</span></code> is still allowed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disallow-any-decorated">
+<span class="sig-name descname"><span class="pre">--disallow-any-decorated</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disallow-any-decorated" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag disallows functions that have <code class="docutils literal notranslate"><span class="pre">Any</span></code> in their signature
+after decorator transformation.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disallow-any-explicit">
+<span class="sig-name descname"><span class="pre">--disallow-any-explicit</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disallow-any-explicit" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag disallows explicit <code class="docutils literal notranslate"><span class="pre">Any</span></code> in type positions such as type
+annotations and generic type parameters.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disallow-any-generics">
+<span class="sig-name descname"><span class="pre">--disallow-any-generics</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disallow-any-generics" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag disallows usage of generic types that do not specify explicit
+type parameters. For example, you can’t use a bare <code class="docutils literal notranslate"><span class="pre">x:</span> <span class="pre">list</span></code>. Instead, you
+must always write something like <code class="docutils literal notranslate"><span class="pre">x:</span> <span class="pre">list[int]</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disallow-subclassing-any">
+<span class="sig-name descname"><span class="pre">--disallow-subclassing-any</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disallow-subclassing-any" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag reports an error whenever a class subclasses a value of
+type <code class="docutils literal notranslate"><span class="pre">Any</span></code>.  This may occur when the base class is imported from
+a module that doesn’t exist (when using
+<a class="reference internal" href="#cmdoption-mypy-ignore-missing-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--ignore-missing-imports</span></code></a>) or is
+ignored due to <a class="reference internal" href="#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports=skip</span></code></a> or a
+<code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comment on the <code class="docutils literal notranslate"><span class="pre">import</span></code> statement.</p>
+<p>Since the module is silenced, the imported class is given a type of <code class="docutils literal notranslate"><span class="pre">Any</span></code>.
+By default mypy will assume that the subclass correctly inherited
+the base class even though that may not actually be the case.  This
+flag makes mypy raise an error instead.</p>
+</dd></dl>
+
+</section>
+<section id="untyped-definitions-and-calls">
+<span id="id4"></span><h2>Untyped definitions and calls<a class="headerlink" href="#untyped-definitions-and-calls" title="永久链接至标题">¶</a></h2>
+<p>The following flags configure how mypy handles untyped function
+definitions or calls.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disallow-untyped-calls">
+<span class="sig-name descname"><span class="pre">--disallow-untyped-calls</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disallow-untyped-calls" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag reports an error whenever a function with type annotations
+calls a function defined without annotations.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disallow-untyped-defs">
+<span class="sig-name descname"><span class="pre">--disallow-untyped-defs</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disallow-untyped-defs" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag reports an error whenever it encounters a function definition
+without type annotations.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disallow-incomplete-defs">
+<span class="sig-name descname"><span class="pre">--disallow-incomplete-defs</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disallow-incomplete-defs" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag reports an error whenever it encounters a partly annotated
+function definition.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-check-untyped-defs">
+<span class="sig-name descname"><span class="pre">--check-untyped-defs</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-check-untyped-defs" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag is less severe than the previous two options – it type checks
+the body of every function, regardless of whether it has type annotations.
+(By default the bodies of functions without annotations are not type
+checked.)</p>
+<p>It will assume all arguments have type <code class="docutils literal notranslate"><span class="pre">Any</span></code> and always infer <code class="docutils literal notranslate"><span class="pre">Any</span></code>
+as the return type.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disallow-untyped-decorators">
+<span class="sig-name descname"><span class="pre">--disallow-untyped-decorators</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disallow-untyped-decorators" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag reports an error whenever a function with type annotations
+is decorated with a decorator without annotations.</p>
+</dd></dl>
+
+</section>
+<section id="none-and-optional-handling">
+<span id="id5"></span><h2>None and Optional handling<a class="headerlink" href="#none-and-optional-handling" title="永久链接至标题">¶</a></h2>
+<p>The following flags adjust how mypy handles values of type <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+For more details, see <a class="reference internal" href="kinds_of_types.html#no-strict-optional"><span class="std std-ref">Disabling strict optional checking</span></a>.</p>
+<span class="target" id="no-implicit-optional"></span><dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-no-implicit-optional">
+<span class="sig-name descname"><span class="pre">--no-implicit-optional</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-no-implicit-optional" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag causes mypy to stop treating arguments with a <code class="docutils literal notranslate"><span class="pre">None</span></code>
+default value as having an implicit <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a> type.</p>
+<p>For example, by default mypy will assume that the <code class="docutils literal notranslate"><span class="pre">x</span></code> parameter
+is of type <code class="docutils literal notranslate"><span class="pre">Optional[int]</span></code> in the code snippet below since
+the default parameter is <code class="docutils literal notranslate"><span class="pre">None</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If this flag is set, the above snippet will no longer type check:
+we must now explicitly indicate that the type is <code class="docutils literal notranslate"><span class="pre">Optional[int]</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-no-strict-optional">
+<span class="sig-name descname"><span class="pre">--no-strict-optional</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-no-strict-optional" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag disables strict checking of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>
+types and <code class="docutils literal notranslate"><span class="pre">None</span></code> values. With this option, mypy doesn’t
+generally check the use of <code class="docutils literal notranslate"><span class="pre">None</span></code> values – they are valid
+everywhere. See <a class="reference internal" href="kinds_of_types.html#no-strict-optional"><span class="std std-ref">Disabling strict optional checking</span></a> for more about this feature.</p>
+<p><strong>Note:</strong> Strict optional checking was enabled by default starting in
+mypy 0.600, and in previous versions it had to be explicitly enabled
+using <code class="docutils literal notranslate"><span class="pre">--strict-optional</span></code> (which is still accepted).</p>
+</dd></dl>
+
+</section>
+<section id="configuring-warnings">
+<span id="id6"></span><h2>Configuring warnings<a class="headerlink" href="#configuring-warnings" title="永久链接至标题">¶</a></h2>
+<p>The following flags enable warnings for code that is sound but is
+potentially problematic or redundant in some way.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-warn-redundant-casts">
+<span class="sig-name descname"><span class="pre">--warn-redundant-casts</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-warn-redundant-casts" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will make mypy report an error whenever your code uses
+an unnecessary cast that can safely be removed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-warn-unused-ignores">
+<span class="sig-name descname"><span class="pre">--warn-unused-ignores</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-warn-unused-ignores" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will make mypy report an error whenever your code uses
+a <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comment on a line that is not actually
+generating an error message.</p>
+<p>This flag, along with the <a class="reference internal" href="#cmdoption-mypy-warn-redundant-casts"><code class="xref std std-option docutils literal notranslate"><span class="pre">--warn-redundant-casts</span></code></a> flag, are both
+particularly useful when you are upgrading mypy. Previously,
+you may have needed to add casts or <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> annotations
+to work around bugs in mypy or missing stubs for 3rd party libraries.</p>
+<p>These two flags let you discover cases where either workarounds are
+no longer necessary.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-no-warn-no-return">
+<span class="sig-name descname"><span class="pre">--no-warn-no-return</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-no-warn-no-return" title="永久链接至目标">¶</a></dt>
+<dd><p>By default, mypy will generate errors when a function is missing
+return statements in some execution paths. The only exceptions
+are when:</p>
+<ul class="simple">
+<li><p>The function has a <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">Any</span></code> return type</p></li>
+<li><p>The function has an empty body or a body that is just
+ellipsis (<code class="docutils literal notranslate"><span class="pre">...</span></code>). Empty functions are often used for
+abstract methods.</p></li>
+</ul>
+<p>Passing in <a class="reference internal" href="#cmdoption-mypy-no-warn-no-return"><code class="xref std std-option docutils literal notranslate"><span class="pre">--no-warn-no-return</span></code></a> will disable these error
+messages in all cases.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-warn-return-any">
+<span class="sig-name descname"><span class="pre">--warn-return-any</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-warn-return-any" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag causes mypy to generate a warning when returning a value
+with type <code class="docutils literal notranslate"><span class="pre">Any</span></code> from a function declared with a non-<code class="docutils literal notranslate"><span class="pre">Any</span></code> return type.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-warn-unreachable">
+<span class="sig-name descname"><span class="pre">--warn-unreachable</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-warn-unreachable" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will make mypy report an error whenever it encounters
+code determined to be unreachable or redundant after performing type analysis.
+This can be a helpful way of detecting certain kinds of bugs in your code.</p>
+<p>For example, enabling this flag will make mypy report that the <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&gt;</span> <span class="pre">7</span></code>
+check is redundant and that the <code class="docutils literal notranslate"><span class="pre">else</span></code> block below is unreachable.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># Error: Right operand of &quot;or&quot; is never evaluated</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">7</span><span class="p">:</span>
+        <span class="c1"># Error: Unsupported operand types for + (&quot;int&quot; and &quot;str&quot;)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;bad&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Error: &#39;Statement is unreachable&#39; error</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;bad&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To help prevent mypy from generating spurious warnings, the “Statement is
+unreachable” warning will be silenced in exactly two cases:</p>
+<ol class="arabic simple">
+<li><p>When the unreachable statement is a <code class="docutils literal notranslate"><span class="pre">raise</span></code> statement, is an
+<code class="docutils literal notranslate"><span class="pre">assert</span> <span class="pre">False</span></code> statement, or calls a function that has the <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NoReturn" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">NoReturn</span></code></a>
+return type hint. In other words, when the unreachable statement
+throws an error or terminates the program in some way.</p></li>
+<li><p>When the unreachable statement was <em>intentionally</em> marked as unreachable
+using <a class="reference internal" href="common_issues.html#version-and-platform-checks"><span class="std std-ref">Python version and system platform checks</span></a>.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Mypy currently cannot detect and report unreachable or redundant code
+inside any functions using <a class="reference internal" href="generics.html#type-variable-value-restriction"><span class="std std-ref">Type variables with value restriction</span></a>.</p>
+<p>This limitation will be removed in future releases of mypy.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="miscellaneous-strictness-flags">
+<span id="id7"></span><h2>Miscellaneous strictness flags<a class="headerlink" href="#miscellaneous-strictness-flags" title="永久链接至标题">¶</a></h2>
+<p>This section documents any other flags that do not neatly fall under any
+of the above sections.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-allow-untyped-globals">
+<span class="sig-name descname"><span class="pre">--allow-untyped-globals</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-allow-untyped-globals" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag causes mypy to suppress errors caused by not being able to fully
+infer the types of global and class variables.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-allow-redefinition">
+<span class="sig-name descname"><span class="pre">--allow-redefinition</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-allow-redefinition" title="永久链接至目标">¶</a></dt>
+<dd><p>By default, mypy won’t allow a variable to be redefined with an
+unrelated type. This flag enables redefinition of a variable with an
+arbitrary type <em>in some contexts</em>: only redefinitions within the
+same block and nesting depth as the original definition are allowed.
+Example where this can be useful:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># &#39;items&#39; has type list[str]</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
+    <span class="c1"># &#39;items&#39; now has type list[list[str]]</span>
+</pre></div>
+</div>
+<p>The variable must be used before it can be redefined:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+   <span class="n">items</span> <span class="o">=</span> <span class="s2">&quot;mypy&quot;</span>  <span class="c1"># invalid redefinition to str because the variable hasn&#39;t been used yet</span>
+   <span class="nb">print</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+   <span class="n">items</span> <span class="o">=</span> <span class="s2">&quot;100&quot;</span>  <span class="c1"># valid, items now has type str</span>
+   <span class="n">items</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>  <span class="c1"># valid, items now has type int</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-local-partial-types">
+<span class="sig-name descname"><span class="pre">--local-partial-types</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-local-partial-types" title="永久链接至目标">¶</a></dt>
+<dd><p>In mypy, the most common cases for partial types are variables initialized using <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+but without explicit <code class="docutils literal notranslate"><span class="pre">Optional</span></code> annotations. By default, mypy won’t check partial types
+spanning module top level or class top level. This flag changes the behavior to only allow
+partial types at local level, therefore it disallows inferring variable type for <code class="docutils literal notranslate"><span class="pre">None</span></code>
+from two assignments in different scopes. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Need type annotation here if using --local-partial-types</span>
+<span class="n">b</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[int]</span>
+
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="n">bar</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Need type annotation here if using --local-partial-types</span>
+    <span class="n">baz</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[int]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bar</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">reveal_type</span><span class="p">(</span><span class="n">Foo</span><span class="p">()</span><span class="o">.</span><span class="n">bar</span><span class="p">)</span>  <span class="c1"># Union[int, None] without --local-partial-types</span>
+</pre></div>
+</div>
+<p>Note: this option is always implicitly enabled in mypy daemon and will become
+enabled by default for mypy in a future release.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-no-implicit-reexport">
+<span class="sig-name descname"><span class="pre">--no-implicit-reexport</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-no-implicit-reexport" title="永久链接至目标">¶</a></dt>
+<dd><p>By default, imported values to a module are treated as exported and mypy allows
+other modules to import them. This flag changes the behavior to not re-export unless
+the item is imported using from-as or is included in <code class="docutils literal notranslate"><span class="pre">__all__</span></code>. Note this is
+always treated as enabled for stub files. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This won&#39;t re-export the value</span>
+<span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">bar</span>
+
+<span class="c1"># Neither will this</span>
+<span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">bar</span> <span class="k">as</span> <span class="n">bang</span>
+
+<span class="c1"># This will re-export it as bar and allow other modules to import it</span>
+<span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">bar</span> <span class="k">as</span> <span class="n">bar</span>
+
+<span class="c1"># This will also re-export bar</span>
+<span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">bar</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;bar&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-strict-equality">
+<span class="sig-name descname"><span class="pre">--strict-equality</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-strict-equality" title="永久链接至目标">¶</a></dt>
+<dd><p>By default, mypy allows always-false comparisons like <code class="docutils literal notranslate"><span class="pre">42</span> <span class="pre">==</span> <span class="pre">'no'</span></code>.
+Use this flag to prohibit such comparisons of non-overlapping types, and
+similar identity and container checks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Text</span>
+
+<span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<span class="k">if</span> <span class="s1">&#39;some string&#39;</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>  <span class="c1"># Error: non-overlapping container check!</span>
+    <span class="o">...</span>
+
+<span class="n">text</span><span class="p">:</span> <span class="n">Text</span>
+<span class="k">if</span> <span class="n">text</span> <span class="o">!=</span> <span class="sa">b</span><span class="s1">&#39;other bytes&#39;</span><span class="p">:</span>  <span class="c1"># Error: non-overlapping equality check!</span>
+    <span class="o">...</span>
+
+<span class="k">assert</span> <span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>  <span class="c1"># OK, check against None is allowed as a special case.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-strict">
+<span class="sig-name descname"><span class="pre">--strict</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-strict" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag mode enables all optional error checking flags.  You can see the
+list of flags enabled by strict mode in the full <a class="reference internal" href="#cmdoption-mypy-h"><code class="xref std std-option docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">--help</span></code></a> output.</p>
+<p>Note: the exact list of flags enabled by running <a class="reference internal" href="#cmdoption-mypy-strict"><code class="xref std std-option docutils literal notranslate"><span class="pre">--strict</span></code></a> may change
+over time.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-disable-error-code">
+<span class="sig-name descname"><span class="pre">--disable-error-code</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-disable-error-code" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag allows disabling one or multiple error codes globally.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># no flag</span>
+<span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;a string&#39;</span>
+<span class="n">x</span><span class="o">.</span><span class="n">trim</span><span class="p">()</span>  <span class="c1"># error: &quot;str&quot; has no attribute &quot;trim&quot;  [attr-defined]</span>
+
+<span class="c1"># --disable-error-code attr-defined</span>
+<span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;a string&#39;</span>
+<span class="n">x</span><span class="o">.</span><span class="n">trim</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-enable-error-code">
+<span class="sig-name descname"><span class="pre">--enable-error-code</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-enable-error-code" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag allows enabling one or multiple error codes globally.</p>
+<p>Note: This flag will override disabled error codes from the –disable-error-code
+flag</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># --disable-error-code attr-defined</span>
+<span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;a string&#39;</span>
+<span class="n">x</span><span class="o">.</span><span class="n">trim</span><span class="p">()</span>
+
+<span class="c1"># --disable-error-code attr-defined --enable-error-code attr-defined</span>
+<span class="n">x</span> <span class="o">=</span> <span class="s1">&#39;a string&#39;</span>
+<span class="n">x</span><span class="o">.</span><span class="n">trim</span><span class="p">()</span>  <span class="c1"># error: &quot;str&quot; has no attribute &quot;trim&quot;  [attr-defined]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="configuring-error-messages">
+<span id="id8"></span><h2>Configuring error messages<a class="headerlink" href="#configuring-error-messages" title="永久链接至标题">¶</a></h2>
+<p>The following flags let you adjust how much detail mypy displays
+in error messages.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-show-error-context">
+<span class="sig-name descname"><span class="pre">--show-error-context</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-show-error-context" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will precede all errors with “note” messages explaining the
+context of the error. For example, consider the following program:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Test</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;bar&quot;</span>
+</pre></div>
+</div>
+<p>Mypy normally displays an error message that looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">main</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">3</span><span class="p">:</span> <span class="n">error</span><span class="p">:</span> <span class="n">Unsupported</span> <span class="n">operand</span> <span class="n">types</span> <span class="k">for</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;int&quot;</span> <span class="ow">and</span> <span class="s2">&quot;str&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we enable this flag, the error message now looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>main.py: note: In member &quot;foo&quot; of class &quot;Test&quot;:
+main.py:3: error: Unsupported operand types for + (&quot;int&quot; and &quot;str&quot;)
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-show-column-numbers">
+<span class="sig-name descname"><span class="pre">--show-column-numbers</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-show-column-numbers" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will add column offsets to error messages.
+For example, the following indicates an error in line 12, column 9
+(note that column offsets are 0-based):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">main</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">12</span><span class="p">:</span><span class="mi">9</span><span class="p">:</span> <span class="n">error</span><span class="p">:</span> <span class="n">Unsupported</span> <span class="n">operand</span> <span class="n">types</span> <span class="k">for</span> <span class="o">/</span> <span class="p">(</span><span class="s2">&quot;int&quot;</span> <span class="ow">and</span> <span class="s2">&quot;str&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-show-error-codes">
+<span class="sig-name descname"><span class="pre">--show-error-codes</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-show-error-codes" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will add an error code <code class="docutils literal notranslate"><span class="pre">[&lt;code&gt;]</span></code> to error messages. The error
+code is shown after each error message:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prog</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span> <span class="n">error</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s2">&quot;trim&quot;</span>  <span class="p">[</span><span class="n">attr</span><span class="o">-</span><span class="n">defined</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="error_codes.html#error-codes"><span class="std std-ref">Error codes</span></a> for more information.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-pretty">
+<span class="sig-name descname"><span class="pre">--pretty</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-pretty" title="永久链接至目标">¶</a></dt>
+<dd><p>Use visually nicer output in error messages: use soft word wrap,
+show source code snippets, and show error location markers.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-no-color-output">
+<span class="sig-name descname"><span class="pre">--no-color-output</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-no-color-output" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will disable color output in error messages, enabled by default.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-no-error-summary">
+<span class="sig-name descname"><span class="pre">--no-error-summary</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-no-error-summary" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will disable error summary. By default mypy shows a summary line
+including total number of errors, number of files with errors, and number
+of files checked.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-show-absolute-path">
+<span class="sig-name descname"><span class="pre">--show-absolute-path</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-show-absolute-path" title="永久链接至目标">¶</a></dt>
+<dd><p>Show absolute paths to files.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-soft-error-limit">
+<span class="sig-name descname"><span class="pre">--soft-error-limit</span></span><span class="sig-prename descclassname"> <span class="pre">N</span></span><a class="headerlink" href="#cmdoption-mypy-soft-error-limit" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will adjust the limit after which mypy will (sometimes)
+disable reporting most additional errors. The limit only applies
+if it seems likely that most of the remaining errors will not be
+useful or they may be overly noisy. If <code class="docutils literal notranslate"><span class="pre">N</span></code> is negative, there is
+no limit. The default limit is 200.</p>
+</dd></dl>
+
+</section>
+<section id="incremental-mode">
+<span id="incremental"></span><h2>Incremental mode<a class="headerlink" href="#incremental-mode" title="永久链接至标题">¶</a></h2>
+<p>By default, mypy will store type information into a cache. Mypy
+will use this information to avoid unnecessary recomputation when
+it type checks your code again.  This can help speed up the type
+checking process, especially when most parts of your program have
+not changed since the previous mypy run.</p>
+<p>If you want to speed up how long it takes to recheck your code
+beyond what incremental mode can offer, try running mypy in
+<a class="reference internal" href="mypy_daemon.html#mypy-daemon"><span class="std std-ref">daemon mode</span></a>.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-no-incremental">
+<span class="sig-name descname"><span class="pre">--no-incremental</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-no-incremental" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag disables incremental mode: mypy will no longer reference
+the cache when re-run.</p>
+<p>Note that mypy will still write out to the cache even when
+incremental mode is disabled: see the <a class="reference internal" href="#cmdoption-mypy-cache-dir"><code class="xref std std-option docutils literal notranslate"><span class="pre">--cache-dir</span></code></a> flag below
+for more details.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-cache-dir">
+<span class="sig-name descname"><span class="pre">--cache-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-mypy-cache-dir" title="永久链接至目标">¶</a></dt>
+<dd><p>By default, mypy stores all cache data inside of a folder named
+<code class="docutils literal notranslate"><span class="pre">.mypy_cache</span></code> in the current directory. This flag lets you
+change this folder. This flag can also be useful for controlling
+cache use when using <a class="reference internal" href="additional_features.html#remote-cache"><span class="std std-ref">remote caching</span></a>.</p>
+<p>This setting will override the <code class="docutils literal notranslate"><span class="pre">MYPY_CACHE_DIR</span></code> environment
+variable if it is set.</p>
+<p>Mypy will also always write to the cache even when incremental
+mode is disabled so it can “warm up” the cache. To disable
+writing to the cache, use <code class="docutils literal notranslate"><span class="pre">--cache-dir=/dev/null</span></code> (UNIX)
+or <code class="docutils literal notranslate"><span class="pre">--cache-dir=nul</span></code> (Windows).</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-sqlite-cache">
+<span class="sig-name descname"><span class="pre">--sqlite-cache</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-sqlite-cache" title="永久链接至目标">¶</a></dt>
+<dd><p>Use an <a class="reference external" href="https://www.sqlite.org/">SQLite</a> database to store the cache.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-cache-fine-grained">
+<span class="sig-name descname"><span class="pre">--cache-fine-grained</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-cache-fine-grained" title="永久链接至目标">¶</a></dt>
+<dd><p>Include fine-grained dependency information in the cache for the mypy daemon.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-skip-version-check">
+<span class="sig-name descname"><span class="pre">--skip-version-check</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-skip-version-check" title="永久链接至目标">¶</a></dt>
+<dd><p>By default, mypy will ignore cache data generated by a different
+version of mypy. This flag disables that behavior.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-skip-cache-mtime-checks">
+<span class="sig-name descname"><span class="pre">--skip-cache-mtime-checks</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-skip-cache-mtime-checks" title="永久链接至目标">¶</a></dt>
+<dd><p>Skip cache internal consistency checks based on mtime.</p>
+</dd></dl>
+
+</section>
+<section id="advanced-options">
+<h2>Advanced options<a class="headerlink" href="#advanced-options" title="永久链接至标题">¶</a></h2>
+<p>The following flags are useful mostly for people who are interested
+in developing or debugging mypy internals.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-pdb">
+<span class="sig-name descname"><span class="pre">--pdb</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-pdb" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will invoke the Python debugger when mypy encounters
+a fatal error.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-show-traceback">
+<span id="cmdoption-mypy-tb"></span><span class="sig-name descname"><span class="pre">--show-traceback</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--tb</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-show-traceback" title="永久链接至目标">¶</a></dt>
+<dd><p>If set, this flag will display a full traceback when mypy
+encounters a fatal error.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-raise-exceptions">
+<span class="sig-name descname"><span class="pre">--raise-exceptions</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-raise-exceptions" title="永久链接至目标">¶</a></dt>
+<dd><p>Raise exception on fatal error.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-custom-typing-module">
+<span class="sig-name descname"><span class="pre">--custom-typing-module</span></span><span class="sig-prename descclassname"> <span class="pre">MODULE</span></span><a class="headerlink" href="#cmdoption-mypy-custom-typing-module" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag lets you use a custom module as a substitute for the
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-custom-typeshed-dir">
+<span class="sig-name descname"><span class="pre">--custom-typeshed-dir</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-mypy-custom-typeshed-dir" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag specifies the directory where mypy looks for standard library typeshed
+stubs, instead of the typeshed that ships with mypy.  This is
+primarily intended to make it easier to test typeshed changes before
+submitting them upstream, but also allows you to use a forked version of
+typeshed.</p>
+<p>Note that this doesn’t affect third-party library stubs.</p>
+</dd></dl>
+
+<span class="target" id="warn-incomplete-stub"></span><dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-warn-incomplete-stub">
+<span class="sig-name descname"><span class="pre">--warn-incomplete-stub</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-warn-incomplete-stub" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag modifies both the <a class="reference internal" href="#cmdoption-mypy-disallow-untyped-defs"><code class="xref std std-option docutils literal notranslate"><span class="pre">--disallow-untyped-defs</span></code></a> and
+<a class="reference internal" href="#cmdoption-mypy-disallow-incomplete-defs"><code class="xref std std-option docutils literal notranslate"><span class="pre">--disallow-incomplete-defs</span></code></a> flags so they also report errors
+if stubs in typeshed are missing type annotations or has incomplete
+annotations. If both flags are missing, <a class="reference internal" href="#cmdoption-mypy-warn-incomplete-stub"><code class="xref std std-option docutils literal notranslate"><span class="pre">--warn-incomplete-stub</span></code></a>
+also does nothing.</p>
+<p>This flag is mainly intended to be used by people who want contribute
+to typeshed and would like a convenient way to find gaps and omissions.</p>
+<p>If you want mypy to report an error when your codebase <em>uses</em> an untyped
+function, whether that function is defined in typeshed or not, use the
+<a class="reference internal" href="#cmdoption-mypy-disallow-untyped-calls"><code class="xref std std-option docutils literal notranslate"><span class="pre">--disallow-untyped-calls</span></code></a> flag. See <a class="reference internal" href="#untyped-definitions-and-calls"><span class="std std-ref">Untyped definitions and calls</span></a>
+for more details.</p>
+</dd></dl>
+
+<span class="target" id="shadow-file"></span><dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-shadow-file">
+<span class="sig-name descname"><span class="pre">--shadow-file</span></span><span class="sig-prename descclassname"> <span class="pre">SOURCE_FILE</span> <span class="pre">SHADOW_FILE</span></span><a class="headerlink" href="#cmdoption-mypy-shadow-file" title="永久链接至目标">¶</a></dt>
+<dd><p>When mypy is asked to type check <code class="docutils literal notranslate"><span class="pre">SOURCE_FILE</span></code>, this flag makes mypy
+read from and type check the contents of <code class="docutils literal notranslate"><span class="pre">SHADOW_FILE</span></code> instead. However,
+diagnostics will continue to refer to <code class="docutils literal notranslate"><span class="pre">SOURCE_FILE</span></code>.</p>
+<p>Specifying this argument multiple times (<code class="docutils literal notranslate"><span class="pre">--shadow-file</span> <span class="pre">X1</span> <span class="pre">Y1</span> <span class="pre">--shadow-file</span> <span class="pre">X2</span> <span class="pre">Y2</span></code>)
+will allow mypy to perform multiple substitutions.</p>
+<p>This allows tooling to create temporary files with helpful modifications
+without having to change the source file in place. For example, suppose we
+have a pipeline that adds <code class="docutils literal notranslate"><span class="pre">reveal_type</span></code> for certain variables.
+This pipeline is run on <code class="docutils literal notranslate"><span class="pre">original.py</span></code> to produce <code class="docutils literal notranslate"><span class="pre">temp.py</span></code>.
+Running <code class="docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">--shadow-file</span> <span class="pre">original.py</span> <span class="pre">temp.py</span> <span class="pre">original.py</span></code> will then
+cause mypy to type check the contents of <code class="docutils literal notranslate"><span class="pre">temp.py</span></code> instead of  <code class="docutils literal notranslate"><span class="pre">original.py</span></code>,
+but error messages will still reference <code class="docutils literal notranslate"><span class="pre">original.py</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="report-generation">
+<h2>Report generation<a class="headerlink" href="#report-generation" title="永久链接至标题">¶</a></h2>
+<p>If these flags are set, mypy will generate a report in the specified
+format into the specified directory.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-any-exprs-report">
+<span class="sig-name descname"><span class="pre">--any-exprs-report</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-mypy-any-exprs-report" title="永久链接至目标">¶</a></dt>
+<dd><p>Causes mypy to generate a text file report documenting how many
+expressions of type <code class="docutils literal notranslate"><span class="pre">Any</span></code> are present within your codebase.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-cobertura-xml-report">
+<span class="sig-name descname"><span class="pre">--cobertura-xml-report</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-mypy-cobertura-xml-report" title="永久链接至目标">¶</a></dt>
+<dd><p>Causes mypy to generate a Cobertura XML type checking coverage report.</p>
+<p>To generate this report, you must either manually install the <a class="reference external" href="https://pypi.org/project/lxml/">lxml</a>
+library or specify mypy installation with the setuptools extra
+<code class="docutils literal notranslate"><span class="pre">mypy[reports]</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-html-report">
+<span class="sig-name descname"><span class="pre">--html-report</span></span><span class="sig-prename descclassname"> <span class="pre">/</span> <span class="pre">--xslt-html-report</span> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-mypy-html-report" title="永久链接至目标">¶</a></dt>
+<dd><p>Causes mypy to generate an HTML type checking coverage report.</p>
+<p>To generate this report, you must either manually install the <a class="reference external" href="https://pypi.org/project/lxml/">lxml</a>
+library or specify mypy installation with the setuptools extra
+<code class="docutils literal notranslate"><span class="pre">mypy[reports]</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-linecount-report">
+<span class="sig-name descname"><span class="pre">--linecount-report</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-mypy-linecount-report" title="永久链接至目标">¶</a></dt>
+<dd><p>Causes mypy to generate a text file report documenting the functions
+and lines that are typed and untyped within your codebase.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-linecoverage-report">
+<span class="sig-name descname"><span class="pre">--linecoverage-report</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-mypy-linecoverage-report" title="永久链接至目标">¶</a></dt>
+<dd><p>Causes mypy to generate a JSON file that maps each source file’s
+absolute filename to a list of line numbers that belong to typed
+functions in that file.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-lineprecision-report">
+<span class="sig-name descname"><span class="pre">--lineprecision-report</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-mypy-lineprecision-report" title="永久链接至目标">¶</a></dt>
+<dd><p>Causes mypy to generate a flat text file report with per-module
+statistics of how many lines are typechecked etc.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-txt-report">
+<span class="sig-name descname"><span class="pre">--txt-report</span></span><span class="sig-prename descclassname"> <span class="pre">/</span> <span class="pre">--xslt-txt-report</span> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-mypy-txt-report" title="永久链接至目标">¶</a></dt>
+<dd><p>Causes mypy to generate a text file type checking coverage report.</p>
+<p>To generate this report, you must either manually install the <a class="reference external" href="https://pypi.org/project/lxml/">lxml</a>
+library or specify mypy installation with the setuptools extra
+<code class="docutils literal notranslate"><span class="pre">mypy[reports]</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-xml-report">
+<span class="sig-name descname"><span class="pre">--xml-report</span></span><span class="sig-prename descclassname"> <span class="pre">DIR</span></span><a class="headerlink" href="#cmdoption-mypy-xml-report" title="永久链接至目标">¶</a></dt>
+<dd><p>Causes mypy to generate an XML type checking coverage report.</p>
+<p>To generate this report, you must either manually install the <a class="reference external" href="https://pypi.org/project/lxml/">lxml</a>
+library or specify mypy installation with the setuptools extra
+<code class="docutils literal notranslate"><span class="pre">mypy[reports]</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="永久链接至标题">¶</a></h2>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-install-types">
+<span class="sig-name descname"><span class="pre">--install-types</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-install-types" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag causes mypy to install known missing stub packages for
+third-party libraries using pip.  It will display the pip command
+that will be run, and expects a confirmation before installing
+anything. For security reasons, these stubs are limited to only a
+small subset of manually selected packages that have been
+verified by the typeshed team. These packages include only stub
+files and no executable code.</p>
+<p>If you use this option without providing any files or modules to
+type check, mypy will install stub packages suggested during the
+previous mypy run. If there are files or modules to type check,
+mypy first type checks those, and proposes to install missing
+stubs at the end of the run, but only if any missing modules were
+detected.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>This is new in mypy 0.900. Previous mypy versions included a
+selection of third-party package stubs, instead of having
+them installed separately.</p>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-non-interactive">
+<span class="sig-name descname"><span class="pre">--non-interactive</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-non-interactive" title="永久链接至目标">¶</a></dt>
+<dd><p>When used together with <a class="reference internal" href="#cmdoption-mypy-install-types"><code class="xref std std-option docutils literal notranslate"><span class="pre">--install-types</span></code></a>, this causes mypy to install all suggested stub
+packages using pip without asking for confirmation, and then
+continues to perform type checking using the installed stubs, if
+some files or modules are provided to type check.</p>
+<p>This is implemented as up to two mypy runs internally. The first run
+is used to find missing stub packages, and output is shown from
+this run only if no missing stub packages were found. If missing
+stub packages were found, they are installed and then another run
+is performed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-junit-xml">
+<span class="sig-name descname"><span class="pre">--junit-xml</span></span><span class="sig-prename descclassname"> <span class="pre">JUNIT_XML</span></span><a class="headerlink" href="#cmdoption-mypy-junit-xml" title="永久链接至目标">¶</a></dt>
+<dd><p>Causes mypy to generate a JUnit XML test result document with
+type checking results. This can make it easier to integrate mypy
+with continuous integration (CI) tools.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-find-occurrences">
+<span class="sig-name descname"><span class="pre">--find-occurrences</span></span><span class="sig-prename descclassname"> <span class="pre">CLASS.MEMBER</span></span><a class="headerlink" href="#cmdoption-mypy-find-occurrences" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will make mypy print out all usages of a class member
+based on static type information. This feature is experimental.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-mypy-scripts-are-modules">
+<span class="sig-name descname"><span class="pre">--scripts-are-modules</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-mypy-scripts-are-modules" title="永久链接至目标">¶</a></dt>
+<dd><p>This flag will give command line arguments that appear to be
+scripts (i.e. files whose name does not end in <code class="docutils literal notranslate"><span class="pre">.py</span></code>)
+a module name derived from the script name rather than the fixed
+name <a class="reference external" href="https://docs.python.org/3/library/__main__.html#module-__main__" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">__main__</span></code></a>.</p>
+<p>This lets you check more than one script in a single mypy invocation.
+(The default <a class="reference external" href="https://docs.python.org/3/library/__main__.html#module-__main__" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">__main__</span></code></a> is technically more correct, but if you
+have many scripts that import a large package, the behavior enabled
+by this flag is often more convenient.)</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">The mypy command line</a><ul>
+<li><a class="reference internal" href="#specifying-what-to-type-check">Specifying what to type check</a></li>
+<li><a class="reference internal" href="#optional-arguments">Optional arguments</a></li>
+<li><a class="reference internal" href="#config-file">Config file</a></li>
+<li><a class="reference internal" href="#import-discovery">Import discovery</a></li>
+<li><a class="reference internal" href="#platform-configuration">Platform configuration</a></li>
+<li><a class="reference internal" href="#disallow-dynamic-typing">Disallow dynamic typing</a></li>
+<li><a class="reference internal" href="#untyped-definitions-and-calls">Untyped definitions and calls</a></li>
+<li><a class="reference internal" href="#none-and-optional-handling">None and Optional handling</a></li>
+<li><a class="reference internal" href="#configuring-warnings">Configuring warnings</a></li>
+<li><a class="reference internal" href="#miscellaneous-strictness-flags">Miscellaneous strictness flags</a></li>
+<li><a class="reference internal" href="#configuring-error-messages">Configuring error messages</a></li>
+<li><a class="reference internal" href="#incremental-mode">Incremental mode</a></li>
+<li><a class="reference internal" href="#advanced-options">Advanced options</a></li>
+<li><a class="reference internal" href="#report-generation">Report generation</a></li>
+<li><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="running_mypy.html"
+                          title="上一章">Running mypy and managing imports</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="config_file.html"
+                          title="下一章">The mypy configuration file</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/command_line.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="config_file.html" title="The mypy configuration file"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="running_mypy.html" title="Running mypy and managing imports"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The mypy command line</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

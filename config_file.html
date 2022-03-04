@@ -1,0 +1,1579 @@
+
+<!DOCTYPE html>
+
+<html lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>The mypy configuration file &#8212; Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="Inline configuration" href="inline_config.html" />
+    <link rel="prev" title="The mypy command line" href="command_line.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="inline_config.html" title="Inline configuration"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="command_line.html" title="The mypy command line"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The mypy configuration file</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="the-mypy-configuration-file">
+<span id="config-file"></span><h1>The mypy configuration file<a class="headerlink" href="#the-mypy-configuration-file" title="永久链接至标题">¶</a></h1>
+<p>Mypy supports reading configuration settings from a file.  By default
+it uses the file <code class="docutils literal notranslate"><span class="pre">mypy.ini</span></code> with a fallback to <code class="docutils literal notranslate"><span class="pre">.mypy.ini</span></code>, then <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>,
+then <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code> in the current directory, then <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/mypy/config</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">~/.config/mypy/config</span></code>, and finally <code class="docutils literal notranslate"><span class="pre">.mypy.ini</span></code> in the user home directory
+if none of them are found; the <a class="reference internal" href="command_line.html#cmdoption-mypy-config-file"><code class="xref std std-option docutils literal notranslate"><span class="pre">--config-file</span></code></a> command-line flag can be used
+to read a different file instead (see <a class="reference internal" href="command_line.html#config-file-flag"><span class="std std-ref">Config file</span></a>).</p>
+<p>It is important to understand that there is no merging of configuration
+files, as it would lead to ambiguity.  The <a class="reference internal" href="command_line.html#cmdoption-mypy-config-file"><code class="xref std std-option docutils literal notranslate"><span class="pre">--config-file</span></code></a> flag
+has the highest precedence and must be correct; otherwise mypy will report
+an error and exit.  Without command line option, mypy will look for configuration files in the above mentioned order.</p>
+<p>Most flags correspond closely to <a class="reference internal" href="command_line.html#command-line"><span class="std std-ref">command-line flags</span></a> but there are some differences in flag names and some
+flags may take a different value based on the module being processed.</p>
+<p>Some flags support user home directory and environment variable expansion.
+To refer to the user home directory, use <code class="docutils literal notranslate"><span class="pre">~</span></code> at the beginning of the path.
+To expand environment variables use <code class="docutils literal notranslate"><span class="pre">$VARNAME</span></code> or <code class="docutils literal notranslate"><span class="pre">${VARNAME}</span></code>.</p>
+<section id="config-file-format">
+<h2>Config file format<a class="headerlink" href="#config-file-format" title="永久链接至标题">¶</a></h2>
+<p>The configuration file format is the usual
+<a class="reference external" href="https://docs.python.org/3/library/configparser.html" title="(在 Python v3.10)"><span class="xref std std-doc">ini file</span></a> format. It should contain
+section names in square brackets and flag settings of the form
+<cite>NAME = VALUE</cite>. Comments start with <code class="docutils literal notranslate"><span class="pre">#</span></code> characters.</p>
+<ul>
+<li><p>A section named <code class="docutils literal notranslate"><span class="pre">[mypy]</span></code> must be present.  This specifies
+the global flags.</p></li>
+<li><p>Additional sections named <code class="docutils literal notranslate"><span class="pre">[mypy-PATTERN1,PATTERN2,...]</span></code> may be
+present, where <code class="docutils literal notranslate"><span class="pre">PATTERN1</span></code>, <code class="docutils literal notranslate"><span class="pre">PATTERN2</span></code>, etc., are comma-separated
+patterns of fully-qualified module names, with some components optionally
+replaced by the ‘*’ character (e.g. <code class="docutils literal notranslate"><span class="pre">foo.bar</span></code>, <code class="docutils literal notranslate"><span class="pre">foo.bar.*</span></code>, <code class="docutils literal notranslate"><span class="pre">foo.*.baz</span></code>).
+These sections specify additional flags that only apply to <em>modules</em>
+whose name matches at least one of the patterns.</p>
+<p>A pattern of the form <code class="docutils literal notranslate"><span class="pre">qualified_module_name</span></code> matches only the named module,
+while <code class="docutils literal notranslate"><span class="pre">dotted_module_name.*</span></code> matches <code class="docutils literal notranslate"><span class="pre">dotted_module_name</span></code> and any
+submodules (so <code class="docutils literal notranslate"><span class="pre">foo.bar.*</span></code> would match all of <code class="docutils literal notranslate"><span class="pre">foo.bar</span></code>,
+<code class="docutils literal notranslate"><span class="pre">foo.bar.baz</span></code>, and <code class="docutils literal notranslate"><span class="pre">foo.bar.baz.quux</span></code>).</p>
+<p>Patterns may also be “unstructured” wildcards, in which stars may
+appear in the middle of a name (e.g
+<code class="docutils literal notranslate"><span class="pre">site.*.migrations.*</span></code>). Stars match zero or more module
+components (so <code class="docutils literal notranslate"><span class="pre">site.*.migrations.*</span></code> can match <code class="docutils literal notranslate"><span class="pre">site.migrations</span></code>).</p>
+<p id="config-precedence">When options conflict, the precedence order for configuration is:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><a class="reference internal" href="inline_config.html#inline-config"><span class="std std-ref">Inline configuration</span></a> in the source file</p></li>
+<li><p>Sections with concrete module names (<code class="docutils literal notranslate"><span class="pre">foo.bar</span></code>)</p></li>
+<li><p>Sections with “unstructured” wildcard patterns (<code class="docutils literal notranslate"><span class="pre">foo.*.baz</span></code>),
+with sections later in the configuration file overriding
+sections earlier.</p></li>
+<li><p>Sections with “well-structured” wildcard patterns
+(<code class="docutils literal notranslate"><span class="pre">foo.bar.*</span></code>), with more specific overriding more general.</p></li>
+<li><p>Command line options.</p></li>
+<li><p>Top-level configuration file options.</p></li>
+</ol>
+</div></blockquote>
+</li>
+</ul>
+<p>The difference in precedence order between “structured” patterns (by
+specificity) and “unstructured” patterns (by order in the file) is
+unfortunate, and is subject to change in future versions.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>The <a class="reference internal" href="#confval-warn_unused_configs"><code class="xref std std-confval docutils literal notranslate"><span class="pre">warn_unused_configs</span></code></a> flag may be useful to debug misspelled
+section names.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Configuration flags are liable to change between releases.</p>
+</div>
+</section>
+<section id="per-module-and-global-options">
+<h2>Per-module and global options<a class="headerlink" href="#per-module-and-global-options" title="永久链接至标题">¶</a></h2>
+<p>Some of the config options may be set either globally (in the <code class="docutils literal notranslate"><span class="pre">[mypy]</span></code> section)
+or on a per-module basis (in sections like <code class="docutils literal notranslate"><span class="pre">[mypy-foo.bar]</span></code>).</p>
+<p>If you set an option both globally and for a specific module, the module configuration
+options take precedence. This lets you set global defaults and override them on a
+module-by-module basis. If multiple pattern sections match a module, <a class="reference internal" href="#config-precedence"><span class="std std-ref">the options from the
+most specific section are used where they disagree</span></a>.</p>
+<p>Some other options, as specified in their description,
+may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+</section>
+<section id="inverting-option-values">
+<h2>Inverting option values<a class="headerlink" href="#inverting-option-values" title="永久链接至标题">¶</a></h2>
+<p>Options that take a boolean value may be inverted by adding <code class="docutils literal notranslate"><span class="pre">no_</span></code> to
+their name or by (when applicable) swapping their prefix from
+<code class="docutils literal notranslate"><span class="pre">disallow</span></code> to <code class="docutils literal notranslate"><span class="pre">allow</span></code> (and vice versa).</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="永久链接至标题">¶</a></h2>
+<p>Here is an example of a <code class="docutils literal notranslate"><span class="pre">mypy.ini</span></code> file. To use this config file, place it at the root
+of your repo and run mypy.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># Global options:</span><span class="w"></span>
+
+<span class="k">[mypy]</span><span class="w"></span>
+<span class="na">python_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">2.7</span><span class="w"></span>
+<span class="na">warn_return_any</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">True</span><span class="w"></span>
+<span class="na">warn_unused_configs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">True</span><span class="w"></span>
+
+<span class="c1"># Per-module options:</span><span class="w"></span>
+
+<span class="k">[mypy-mycode.foo.*]</span><span class="w"></span>
+<span class="na">disallow_untyped_defs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">True</span><span class="w"></span>
+
+<span class="k">[mypy-mycode.bar]</span><span class="w"></span>
+<span class="na">warn_return_any</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">False</span><span class="w"></span>
+
+<span class="k">[mypy-somelibrary]</span><span class="w"></span>
+<span class="na">ignore_missing_imports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">True</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This config file specifies three global options in the <code class="docutils literal notranslate"><span class="pre">[mypy]</span></code> section. These three
+options will:</p>
+<ol class="arabic simple">
+<li><p>Type-check your entire project assuming it will be run using Python 2.7.
+(This is equivalent to using the <a class="reference internal" href="command_line.html#cmdoption-mypy-python-version"><code class="xref std std-option docutils literal notranslate"><span class="pre">--python-version</span> <span class="pre">2.7</span></code></a> or <a class="reference internal" href="command_line.html#cmdoption-mypy-2"><code class="xref std std-option docutils literal notranslate"><span class="pre">-2</span></code></a> flag).</p></li>
+<li><p>Report an error whenever a function returns a value that is inferred
+to have type <code class="docutils literal notranslate"><span class="pre">Any</span></code>.</p></li>
+<li><p>Report any config options that are unused by mypy. (This will help us catch typos
+when making changes to our config file).</p></li>
+</ol>
+<p>Next, this module specifies three per-module options. The first two options change how mypy
+type checks code in <code class="docutils literal notranslate"><span class="pre">mycode.foo.*</span></code> and <code class="docutils literal notranslate"><span class="pre">mycode.bar</span></code>, which we assume here are two modules
+that you wrote. The final config option changes how mypy type checks <code class="docutils literal notranslate"><span class="pre">somelibrary</span></code>, which we
+assume here is some 3rd party library you’ve installed and are importing. These options will:</p>
+<ol class="arabic simple">
+<li><p>Selectively disallow untyped function definitions only within the <code class="docutils literal notranslate"><span class="pre">mycode.foo</span></code>
+package – that is, only for function definitions defined in the
+<code class="docutils literal notranslate"><span class="pre">mycode/foo</span></code> directory.</p></li>
+<li><p>Selectively <em>disable</em> the “function is returning any” warnings within
+<code class="docutils literal notranslate"><span class="pre">mycode.bar</span></code> only. This overrides the global default we set earlier.</p></li>
+<li><p>Suppress any error messages generated when your codebase tries importing the
+module <code class="docutils literal notranslate"><span class="pre">somelibrary</span></code>. This is useful if <code class="docutils literal notranslate"><span class="pre">somelibrary</span></code> is some 3rd party library
+missing type hints.</p></li>
+</ol>
+</section>
+<section id="import-discovery">
+<span id="config-file-import-discovery"></span><h2>Import discovery<a class="headerlink" href="#import-discovery" title="永久链接至标题">¶</a></h2>
+<p>For more information, see the <a class="reference internal" href="command_line.html#import-discovery"><span class="std std-ref">Import discovery</span></a>
+section of the command line docs.</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-mypy_path">
+<span class="sig-name descname"><span class="pre">mypy_path</span></span><a class="headerlink" href="#confval-mypy_path" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Specifies the paths to use, after trying the paths from <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> environment
+variable.  Useful if you’d like to keep stubs in your repo, along with the config file.
+Multiple paths are always separated with a <code class="docutils literal notranslate"><span class="pre">:</span></code> or <code class="docutils literal notranslate"><span class="pre">,</span></code> regardless of the platform.
+User home directory and environment variables will be expanded.</p>
+<p>Relative paths are treated relative to the working directory of the mypy command,
+not the config file.
+Use the <code class="docutils literal notranslate"><span class="pre">MYPY_CONFIG_FILE_DIR</span></code> environment variable to refer to paths relative to
+the config file (e.g. <code class="docutils literal notranslate"><span class="pre">mypy_path</span> <span class="pre">=</span> <span class="pre">$MYPY_CONFIG_FILE_DIR/src</span></code>).</p>
+<p>This option may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+<p><strong>Note:</strong> On Windows, use UNC paths to avoid using <code class="docutils literal notranslate"><span class="pre">:</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">\\127.0.0.1\X$\MyDir</span></code> where <code class="docutils literal notranslate"><span class="pre">X</span></code> is the drive letter).</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-files">
+<span class="sig-name descname"><span class="pre">files</span></span><a class="headerlink" href="#confval-files" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>comma-separated list of strings</p>
+</dd>
+</dl>
+<p>A comma-separated list of paths which should be checked by mypy if none are given on the command
+line. Supports recursive file globbing using <a class="reference external" href="https://docs.python.org/3/library/glob.html#module-glob" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">glob</span></code></a>, where <code class="docutils literal notranslate"><span class="pre">*</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">*.py</span></code>) matches
+files in the current directory and <code class="docutils literal notranslate"><span class="pre">**/</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">**/*.py</span></code>) matches files in any directories below
+the current one. User home directory and environment variables will be expanded.</p>
+<p>This option may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-exclude">
+<span class="sig-name descname"><span class="pre">exclude</span></span><a class="headerlink" href="#confval-exclude" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>regular expression</p>
+</dd>
+</dl>
+<p>A regular expression that matches file names, directory names and paths
+which mypy should ignore while recursively discovering files to check.
+Use forward slashes on all platforms.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[mypy]</span><span class="w"></span>
+<span class="na">exclude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">(?x)(</span><span class="w"></span>
+<span class="w">    </span><span class="na">^one\.py$    # files named &quot;one.py&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="na">| two\.pyi$  # or files ending with &quot;two.pyi&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="na">| ^three\.   # or files starting with &quot;three.&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="na">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Crafting a single regular expression that excludes multiple files while remaining
+human-readable can be a challenge. The above example demonstrates one approach.
+<code class="docutils literal notranslate"><span class="pre">(?x)</span></code> enables the <code class="docutils literal notranslate"><span class="pre">VERBOSE</span></code> flag for the subsequent regular expression, which
+<a class="reference external" href="https://docs.python.org/3/library/re.html#re.X">ignores most whitespace and supports comments</a>. The above is equivalent to:
+<code class="docutils literal notranslate"><span class="pre">(^one\.py$|two\.pyi$|^three\.)</span></code>.</p>
+<p>For more details, see <a class="reference internal" href="command_line.html#cmdoption-mypy-exclude"><code class="xref std std-option docutils literal notranslate"><span class="pre">--exclude</span></code></a>.</p>
+<p>This option may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>Note that the TOML equivalent differs slightly. It can be either a single string
+(including a multi-line string) – which is treated as a single regular
+expression – or an array of such strings. The following TOML examples are
+equivalent to the above INI example.</p>
+<p>Array of strings:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[tool.mypy]</span><span class="w"></span>
+<span class="n">exclude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="s">&quot;^one\.py$&quot;</span><span class="p">,</span><span class="w">  </span><span class="c1"># TOML&#39;s double-quoted strings require escaping backslashes</span><span class="w"></span>
+<span class="w">    </span><span class="s">&#39;two\.pyi$&#39;</span><span class="p">,</span><span class="w">  </span><span class="c1"># but TOML&#39;s single-quoted strings do not</span><span class="w"></span>
+<span class="w">    </span><span class="s">&#39;^three\.&#39;</span><span class="p">,</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+</pre></div>
+</div>
+<p>A single, multi-line string:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[tool.mypy]</span><span class="w"></span>
+<span class="n">exclude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;&#39;(?x)(</span>
+<span class="s">    ^one\.py$    # files named &quot;one.py&quot;</span>
+<span class="s">    | two\.pyi$  # or files ending with &quot;two.pyi&quot;</span>
+<span class="s">    | ^three\.   # or files starting with &quot;three.&quot;</span>
+<span class="s">)&#39;&#39;&#39;</span><span class="w">  </span><span class="c1"># TOML&#39;s single-quoted strings do not require escaping backslashes</span><span class="w"></span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="#using-a-pyproject-toml"><span class="std std-ref">Using a pyproject.toml file</span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-namespace_packages">
+<span class="sig-name descname"><span class="pre">namespace_packages</span></span><a class="headerlink" href="#confval-namespace_packages" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Enables <span class="target" id="index-0"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0420"><strong>PEP 420</strong></a> style namespace packages.  See the
+corresponding flag <a class="reference internal" href="command_line.html#cmdoption-mypy-namespace-packages"><code class="xref std std-option docutils literal notranslate"><span class="pre">--namespace-packages</span></code></a> for more information.</p>
+<p>This option may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-explicit_package_bases">
+<span class="sig-name descname"><span class="pre">explicit_package_bases</span></span><a class="headerlink" href="#confval-explicit_package_bases" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>This flag tells mypy that top-level packages will be based in either the
+current directory, or a member of the <code class="docutils literal notranslate"><span class="pre">MYPYPATH</span></code> environment variable or
+<a class="reference internal" href="#confval-mypy_path"><code class="xref std std-confval docutils literal notranslate"><span class="pre">mypy_path</span></code></a> config option. This option is only useful in
+conjunction with <a class="reference internal" href="#confval-namespace_packages"><code class="xref std std-confval docutils literal notranslate"><span class="pre">namespace_packages</span></code></a>. See <a class="reference internal" href="running_mypy.html#mapping-paths-to-modules"><span class="std std-ref">Mapping file
+paths to modules</span></a> for details.</p>
+<p>This option may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-ignore_missing_imports">
+<span class="sig-name descname"><span class="pre">ignore_missing_imports</span></span><a class="headerlink" href="#confval-ignore_missing_imports" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Suppresses error messages about imports that cannot be resolved.</p>
+<p>If this option is used in a per-module section, the module name should
+match the name of the <em>imported</em> module, not the module containing the
+import statement.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-follow_imports">
+<span class="sig-name descname"><span class="pre">follow_imports</span></span><a class="headerlink" href="#confval-follow_imports" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">normal</span></code></p>
+</dd>
+</dl>
+<p>Directs what to do with imports when the imported module is found
+as a <code class="docutils literal notranslate"><span class="pre">.py</span></code> file and not part of the files, modules and packages
+provided on the command line.</p>
+<p>The four possible values are <code class="docutils literal notranslate"><span class="pre">normal</span></code>, <code class="docutils literal notranslate"><span class="pre">silent</span></code>, <code class="docutils literal notranslate"><span class="pre">skip</span></code> and
+<code class="docutils literal notranslate"><span class="pre">error</span></code>.  For explanations see the discussion for the
+<a class="reference internal" href="command_line.html#cmdoption-mypy-follow-imports"><code class="xref std std-option docutils literal notranslate"><span class="pre">--follow-imports</span></code></a> command line flag.</p>
+<p>Using this option in a per-module section (potentially with a wildcard,
+as described at the top of this page) is a good way to prevent mypy from
+checking portions of your code.</p>
+<p>If this option is used in a per-module section, the module name should
+match the name of the <em>imported</em> module, not the module containing the
+import statement.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-follow_imports_for_stubs">
+<span class="sig-name descname"><span class="pre">follow_imports_for_stubs</span></span><a class="headerlink" href="#confval-follow_imports_for_stubs" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Determines whether to respect the <a class="reference internal" href="#confval-follow_imports"><code class="xref std std-confval docutils literal notranslate"><span class="pre">follow_imports</span></code></a> setting even for
+stub (<code class="docutils literal notranslate"><span class="pre">.pyi</span></code>) files.</p>
+<p>Used in conjunction with <a class="reference internal" href="#confval-follow_imports"><code class="xref std std-confval docutils literal notranslate"><span class="pre">follow_imports=skip</span></code></a>, this can be used
+to suppress the import of a module from <code class="docutils literal notranslate"><span class="pre">typeshed</span></code>, replacing it
+with <code class="docutils literal notranslate"><span class="pre">Any</span></code>.</p>
+<p>Used in conjunction with <a class="reference internal" href="#confval-follow_imports"><code class="xref std std-confval docutils literal notranslate"><span class="pre">follow_imports=error</span></code></a>, this can be used
+to make any use of a particular <code class="docutils literal notranslate"><span class="pre">typeshed</span></code> module an error.</p>
+<div class="admonition note">
+<p class="admonition-title">备注</p>
+<p>This is not supported by the mypy daemon.</p>
+</div>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-python_executable">
+<span class="sig-name descname"><span class="pre">python_executable</span></span><a class="headerlink" href="#confval-python_executable" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Specifies the path to the Python executable to inspect to collect
+a list of available <a class="reference internal" href="installed_packages.html#installed-packages"><span class="std std-ref">PEP 561 packages</span></a>. User
+home directory and environment variables will be expanded. Defaults to
+the executable used to run mypy.</p>
+<p>This option may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-no_site_packages">
+<span class="sig-name descname"><span class="pre">no_site_packages</span></span><a class="headerlink" href="#confval-no_site_packages" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disables using type information in installed packages (see <span class="target" id="index-1"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0561"><strong>PEP 561</strong></a>).
+This will also disable searching for a usable Python executable. This acts
+the same as <a class="reference internal" href="command_line.html#cmdoption-mypy-no-site-packages"><code class="xref std std-option docutils literal notranslate"><span class="pre">--no-site-packages</span></code></a> command
+line flag.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-no_silence_site_packages">
+<span class="sig-name descname"><span class="pre">no_silence_site_packages</span></span><a class="headerlink" href="#confval-no_silence_site_packages" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Enables reporting error messages generated within installed packages (see
+<span class="target" id="index-2"></span><a class="pep reference external" href="https://www.python.org/dev/peps/pep-0561"><strong>PEP 561</strong></a> for more details on distributing type information). Those error
+messages are suppressed by default, since you are usually not able to
+control errors in 3rd party code.</p>
+<p>This option may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+</dd></dl>
+
+</section>
+<section id="platform-configuration">
+<h2>Platform configuration<a class="headerlink" href="#platform-configuration" title="永久链接至标题">¶</a></h2>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-python_version">
+<span class="sig-name descname"><span class="pre">python_version</span></span><a class="headerlink" href="#confval-python_version" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Specifies the Python version used to parse and check the target
+program.  The string should be in the format <code class="docutils literal notranslate"><span class="pre">MAJOR.MINOR</span></code> –
+for example <code class="docutils literal notranslate"><span class="pre">2.7</span></code>.  The default is the version of the Python
+interpreter used to run mypy.</p>
+<p>This option may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-platform">
+<span class="sig-name descname"><span class="pre">platform</span></span><a class="headerlink" href="#confval-platform" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Specifies the OS platform for the target program, for example
+<code class="docutils literal notranslate"><span class="pre">darwin</span></code> or <code class="docutils literal notranslate"><span class="pre">win32</span></code> (meaning OS X or Windows, respectively).
+The default is the current platform as revealed by Python’s
+<a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.platform" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">sys.platform</span></code></a> variable.</p>
+<p>This option may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-always_true">
+<span class="sig-name descname"><span class="pre">always_true</span></span><a class="headerlink" href="#confval-always_true" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>comma-separated list of strings</p>
+</dd>
+</dl>
+<p>Specifies a list of variables that mypy will treat as
+compile-time constants that are always true.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-always_false">
+<span class="sig-name descname"><span class="pre">always_false</span></span><a class="headerlink" href="#confval-always_false" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>comma-separated list of strings</p>
+</dd>
+</dl>
+<p>Specifies a list of variables that mypy will treat as
+compile-time constants that are always false.</p>
+</dd></dl>
+
+</section>
+<section id="disallow-dynamic-typing">
+<h2>Disallow dynamic typing<a class="headerlink" href="#disallow-dynamic-typing" title="永久链接至标题">¶</a></h2>
+<p>For more information, see the <a class="reference internal" href="command_line.html#disallow-dynamic-typing"><span class="std std-ref">Disallow dynamic typing</span></a>
+section of the command line docs.</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disallow_any_unimported">
+<span class="sig-name descname"><span class="pre">disallow_any_unimported</span></span><a class="headerlink" href="#confval-disallow_any_unimported" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disallows usage of types that come from unfollowed imports (anything imported from
+an unfollowed import is automatically given a type of <code class="docutils literal notranslate"><span class="pre">Any</span></code>).</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disallow_any_expr">
+<span class="sig-name descname"><span class="pre">disallow_any_expr</span></span><a class="headerlink" href="#confval-disallow_any_expr" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disallows all expressions in the module that have type <code class="docutils literal notranslate"><span class="pre">Any</span></code>.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disallow_any_decorated">
+<span class="sig-name descname"><span class="pre">disallow_any_decorated</span></span><a class="headerlink" href="#confval-disallow_any_decorated" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disallows functions that have <code class="docutils literal notranslate"><span class="pre">Any</span></code> in their signature after decorator transformation.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disallow_any_explicit">
+<span class="sig-name descname"><span class="pre">disallow_any_explicit</span></span><a class="headerlink" href="#confval-disallow_any_explicit" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disallows explicit <code class="docutils literal notranslate"><span class="pre">Any</span></code> in type positions such as type annotations and generic
+type parameters.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disallow_any_generics">
+<span class="sig-name descname"><span class="pre">disallow_any_generics</span></span><a class="headerlink" href="#confval-disallow_any_generics" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disallows usage of generic types that do not specify explicit type parameters.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disallow_subclassing_any">
+<span class="sig-name descname"><span class="pre">disallow_subclassing_any</span></span><a class="headerlink" href="#confval-disallow_subclassing_any" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disallows subclassing a value of type <code class="docutils literal notranslate"><span class="pre">Any</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="untyped-definitions-and-calls">
+<h2>Untyped definitions and calls<a class="headerlink" href="#untyped-definitions-and-calls" title="永久链接至标题">¶</a></h2>
+<p>For more information, see the <a class="reference internal" href="command_line.html#untyped-definitions-and-calls"><span class="std std-ref">Untyped definitions and calls</span></a>
+section of the command line docs.</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disallow_untyped_calls">
+<span class="sig-name descname"><span class="pre">disallow_untyped_calls</span></span><a class="headerlink" href="#confval-disallow_untyped_calls" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disallows calling functions without type annotations from functions with type
+annotations.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disallow_untyped_defs">
+<span class="sig-name descname"><span class="pre">disallow_untyped_defs</span></span><a class="headerlink" href="#confval-disallow_untyped_defs" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disallows defining functions without type annotations or with incomplete type
+annotations.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disallow_incomplete_defs">
+<span class="sig-name descname"><span class="pre">disallow_incomplete_defs</span></span><a class="headerlink" href="#confval-disallow_incomplete_defs" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disallows defining functions with incomplete type annotations.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-check_untyped_defs">
+<span class="sig-name descname"><span class="pre">check_untyped_defs</span></span><a class="headerlink" href="#confval-check_untyped_defs" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Type-checks the interior of functions without type annotations.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disallow_untyped_decorators">
+<span class="sig-name descname"><span class="pre">disallow_untyped_decorators</span></span><a class="headerlink" href="#confval-disallow_untyped_decorators" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Reports an error whenever a function with type annotations is decorated with a
+decorator without annotations.</p>
+</dd></dl>
+
+</section>
+<section id="none-and-optional-handling">
+<span id="config-file-none-and-optional-handling"></span><h2>None and Optional handling<a class="headerlink" href="#none-and-optional-handling" title="永久链接至标题">¶</a></h2>
+<p>For more information, see the <a class="reference internal" href="command_line.html#none-and-optional-handling"><span class="std std-ref">None and Optional handling</span></a>
+section of the command line docs.</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-no_implicit_optional">
+<span class="sig-name descname"><span class="pre">no_implicit_optional</span></span><a class="headerlink" href="#confval-no_implicit_optional" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Changes the treatment of arguments with a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code> by not implicitly
+making their type <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(在 Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-strict_optional">
+<span class="sig-name descname"><span class="pre">strict_optional</span></span><a class="headerlink" href="#confval-strict_optional" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+<p>Enables or disables strict Optional checks. If False, mypy treats <code class="docutils literal notranslate"><span class="pre">None</span></code>
+as compatible with every type.</p>
+<p><strong>Note:</strong> This was False by default in mypy versions earlier than 0.600.</p>
+</dd></dl>
+
+</section>
+<section id="configuring-warnings">
+<h2>Configuring warnings<a class="headerlink" href="#configuring-warnings" title="永久链接至标题">¶</a></h2>
+<p>For more information, see the <a class="reference internal" href="command_line.html#configuring-warnings"><span class="std std-ref">Configuring warnings</span></a>
+section of the command line docs.</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-warn_redundant_casts">
+<span class="sig-name descname"><span class="pre">warn_redundant_casts</span></span><a class="headerlink" href="#confval-warn_redundant_casts" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Warns about casting an expression to its inferred type.</p>
+<p>This option may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-warn_unused_ignores">
+<span class="sig-name descname"><span class="pre">warn_unused_ignores</span></span><a class="headerlink" href="#confval-warn_unused_ignores" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Warns about unneeded <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">type:</span> <span class="pre">ignore</span></code> comments.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-warn_no_return">
+<span class="sig-name descname"><span class="pre">warn_no_return</span></span><a class="headerlink" href="#confval-warn_no_return" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+<p>Shows errors for missing return statements on some execution paths.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-warn_return_any">
+<span class="sig-name descname"><span class="pre">warn_return_any</span></span><a class="headerlink" href="#confval-warn_return_any" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Shows a warning when returning a value with type <code class="docutils literal notranslate"><span class="pre">Any</span></code> from a function
+declared with a non- <code class="docutils literal notranslate"><span class="pre">Any</span></code> return type.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-warn_unreachable">
+<span class="sig-name descname"><span class="pre">warn_unreachable</span></span><a class="headerlink" href="#confval-warn_unreachable" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Shows a warning when encountering any code inferred to be unreachable or
+redundant after performing type analysis.</p>
+</dd></dl>
+
+</section>
+<section id="suppressing-errors">
+<h2>Suppressing errors<a class="headerlink" href="#suppressing-errors" title="永久链接至标题">¶</a></h2>
+<p>Note: these configuration options are available in the config file only. There is
+no analog available via the command line options.</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-show_none_errors">
+<span class="sig-name descname"><span class="pre">show_none_errors</span></span><a class="headerlink" href="#confval-show_none_errors" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+<p>Shows errors related to strict <code class="docutils literal notranslate"><span class="pre">None</span></code> checking, if the global <a class="reference internal" href="#confval-strict_optional"><code class="xref std std-confval docutils literal notranslate"><span class="pre">strict_optional</span></code></a>
+flag is enabled.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-ignore_errors">
+<span class="sig-name descname"><span class="pre">ignore_errors</span></span><a class="headerlink" href="#confval-ignore_errors" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Ignores all non-fatal errors.</p>
+</dd></dl>
+
+</section>
+<section id="miscellaneous-strictness-flags">
+<h2>Miscellaneous strictness flags<a class="headerlink" href="#miscellaneous-strictness-flags" title="永久链接至标题">¶</a></h2>
+<p>For more information, see the <a class="reference internal" href="command_line.html#miscellaneous-strictness-flags"><span class="std std-ref">Miscellaneous strictness flags</span></a>
+section of the command line docs.</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-allow_untyped_globals">
+<span class="sig-name descname"><span class="pre">allow_untyped_globals</span></span><a class="headerlink" href="#confval-allow_untyped_globals" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Causes mypy to suppress errors caused by not being able to fully
+infer the types of global and class variables.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-allow_redefinition">
+<span class="sig-name descname"><span class="pre">allow_redefinition</span></span><a class="headerlink" href="#confval-allow_redefinition" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Allows variables to be redefined with an arbitrary type, as long as the redefinition
+is in the same block and nesting level as the original definition.
+Example where this can be useful:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># &#39;items&#39; has type list[str]</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
+    <span class="c1"># &#39;items&#39; now has type list[list[str]]</span>
+</pre></div>
+</div>
+<p>The variable must be used before it can be redefined:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+   <span class="n">items</span> <span class="o">=</span> <span class="s2">&quot;mypy&quot;</span>  <span class="c1"># invalid redefinition to str because the variable hasn&#39;t been used yet</span>
+   <span class="nb">print</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+   <span class="n">items</span> <span class="o">=</span> <span class="s2">&quot;100&quot;</span>  <span class="c1"># valid, items now has type str</span>
+   <span class="n">items</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>  <span class="c1"># valid, items now has type int</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-local_partial_types">
+<span class="sig-name descname"><span class="pre">local_partial_types</span></span><a class="headerlink" href="#confval-local_partial_types" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Disallows inferring variable type for <code class="docutils literal notranslate"><span class="pre">None</span></code> from two assignments in different scopes.
+This is always implicitly enabled when using the <a class="reference internal" href="mypy_daemon.html#mypy-daemon"><span class="std std-ref">mypy daemon</span></a>.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-disable_error_code">
+<span class="sig-name descname"><span class="pre">disable_error_code</span></span><a class="headerlink" href="#confval-disable_error_code" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>comma-separated list of strings</p>
+</dd>
+</dl>
+<p>Allows disabling one or multiple error codes globally.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-implicit_reexport">
+<span class="sig-name descname"><span class="pre">implicit_reexport</span></span><a class="headerlink" href="#confval-implicit_reexport" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+<p>By default, imported values to a module are treated as exported and mypy allows
+other modules to import them. When false, mypy will not re-export unless
+the item is imported using from-as or is included in <code class="docutils literal notranslate"><span class="pre">__all__</span></code>. Note that mypy
+treats stub files as if this is always disabled. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This won&#39;t re-export the value</span>
+<span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">bar</span>
+<span class="c1"># This will re-export it as bar and allow other modules to import it</span>
+<span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">bar</span> <span class="k">as</span> <span class="n">bar</span>
+<span class="c1"># This will also re-export bar</span>
+<span class="kn">from</span> <span class="nn">foo</span> <span class="kn">import</span> <span class="n">bar</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;bar&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-strict_equality">
+<span class="sig-name descname"><span class="pre">strict_equality</span></span><a class="headerlink" href="#confval-strict_equality" title="永久链接至目标">¶</a></dt>
+<dd><blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Prohibit equality checks, identity checks, and container checks between
+non-overlapping types.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-strict">
+<span class="sig-name descname"><span class="pre">strict</span></span><a class="headerlink" href="#confval-strict" title="永久链接至目标">¶</a></dt>
+<dd><blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Enable all optional error checking flags.  You can see the list of
+flags enabled by strict mode in the full <a class="reference internal" href="command_line.html#cmdoption-mypy-h"><code class="xref std std-option docutils literal notranslate"><span class="pre">mypy</span> <span class="pre">--help</span></code></a>
+output.</p>
+<p>Note: the exact list of flags enabled by <a class="reference internal" href="#confval-strict"><code class="xref std std-confval docutils literal notranslate"><span class="pre">strict</span></code></a> may
+change over time.</p>
+</dd></dl>
+
+</section>
+<section id="configuring-error-messages">
+<h2>Configuring error messages<a class="headerlink" href="#configuring-error-messages" title="永久链接至标题">¶</a></h2>
+<p>For more information, see the <a class="reference internal" href="command_line.html#configuring-error-messages"><span class="std std-ref">Configuring error messages</span></a>
+section of the command line docs.</p>
+<p>These options may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-show_error_context">
+<span class="sig-name descname"><span class="pre">show_error_context</span></span><a class="headerlink" href="#confval-show_error_context" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Prefixes each error with the relevant context.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-show_column_numbers">
+<span class="sig-name descname"><span class="pre">show_column_numbers</span></span><a class="headerlink" href="#confval-show_column_numbers" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Shows column numbers in error messages.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-show_error_codes">
+<span class="sig-name descname"><span class="pre">show_error_codes</span></span><a class="headerlink" href="#confval-show_error_codes" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Shows error codes in error messages. See <a class="reference internal" href="error_codes.html#error-codes"><span class="std std-ref">Error codes</span></a> for more information.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-pretty">
+<span class="sig-name descname"><span class="pre">pretty</span></span><a class="headerlink" href="#confval-pretty" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Use visually nicer output in error messages: use soft word wrap,
+show source code snippets, and show error location markers.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-color_output">
+<span class="sig-name descname"><span class="pre">color_output</span></span><a class="headerlink" href="#confval-color_output" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+<p>Shows error messages with color enabled.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-error_summary">
+<span class="sig-name descname"><span class="pre">error_summary</span></span><a class="headerlink" href="#confval-error_summary" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+<p>Shows a short summary line after error messages.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-show_absolute_path">
+<span class="sig-name descname"><span class="pre">show_absolute_path</span></span><a class="headerlink" href="#confval-show_absolute_path" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Show absolute paths to files.</p>
+</dd></dl>
+
+</section>
+<section id="incremental-mode">
+<h2>Incremental mode<a class="headerlink" href="#incremental-mode" title="永久链接至标题">¶</a></h2>
+<p>These options may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-incremental">
+<span class="sig-name descname"><span class="pre">incremental</span></span><a class="headerlink" href="#confval-incremental" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+<p>Enables <a class="reference internal" href="command_line.html#incremental"><span class="std std-ref">incremental mode</span></a>.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-cache_dir">
+<span class="sig-name descname"><span class="pre">cache_dir</span></span><a class="headerlink" href="#confval-cache_dir" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">.mypy_cache</span></code></p>
+</dd>
+</dl>
+<p>Specifies the location where mypy stores incremental cache info.
+User home directory and environment variables will be expanded.
+This setting will be overridden by the <code class="docutils literal notranslate"><span class="pre">MYPY_CACHE_DIR</span></code> environment
+variable.</p>
+<p>Note that the cache is only read when incremental mode is enabled
+but is always written to, unless the value is set to <code class="docutils literal notranslate"><span class="pre">/dev/null</span></code>
+(UNIX) or <code class="docutils literal notranslate"><span class="pre">nul</span></code> (Windows).</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-sqlite_cache">
+<span class="sig-name descname"><span class="pre">sqlite_cache</span></span><a class="headerlink" href="#confval-sqlite_cache" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Use an <a class="reference external" href="https://www.sqlite.org/">SQLite</a> database to store the cache.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-cache_fine_grained">
+<span class="sig-name descname"><span class="pre">cache_fine_grained</span></span><a class="headerlink" href="#confval-cache_fine_grained" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Include fine-grained dependency information in the cache for the mypy daemon.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-skip_version_check">
+<span class="sig-name descname"><span class="pre">skip_version_check</span></span><a class="headerlink" href="#confval-skip_version_check" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Makes mypy use incremental cache data even if it was generated by a
+different version of mypy. (By default, mypy will perform a version
+check and regenerate the cache if it was written by older versions of mypy.)</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-skip_cache_mtime_checks">
+<span class="sig-name descname"><span class="pre">skip_cache_mtime_checks</span></span><a class="headerlink" href="#confval-skip_cache_mtime_checks" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Skip cache internal consistency checks based on mtime.</p>
+</dd></dl>
+
+</section>
+<section id="advanced-options">
+<h2>Advanced options<a class="headerlink" href="#advanced-options" title="永久链接至标题">¶</a></h2>
+<p>These options may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-plugins">
+<span class="sig-name descname"><span class="pre">plugins</span></span><a class="headerlink" href="#confval-plugins" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>comma-separated list of strings</p>
+</dd>
+</dl>
+<p>A comma-separated list of mypy plugins. See <a class="reference internal" href="extending_mypy.html#extending-mypy-using-plugins"><span class="std std-ref">Extending mypy using plugins</span></a>.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-pdb">
+<span class="sig-name descname"><span class="pre">pdb</span></span><a class="headerlink" href="#confval-pdb" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Invokes <a class="reference external" href="https://docs.python.org/3/library/pdb.html#module-pdb" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pdb</span></code></a> on fatal error.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-show_traceback">
+<span class="sig-name descname"><span class="pre">show_traceback</span></span><a class="headerlink" href="#confval-show_traceback" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Shows traceback on fatal error.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-raise_exceptions">
+<span class="sig-name descname"><span class="pre">raise_exceptions</span></span><a class="headerlink" href="#confval-raise_exceptions" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Raise exception on fatal error.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-custom_typing_module">
+<span class="sig-name descname"><span class="pre">custom_typing_module</span></span><a class="headerlink" href="#confval-custom_typing_module" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Specifies a custom module to use as a substitute for the <a class="reference external" href="https://docs.python.org/3/library/typing.html#module-typing" title="(在 Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">typing</span></code></a> module.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-custom_typeshed_dir">
+<span class="sig-name descname"><span class="pre">custom_typeshed_dir</span></span><a class="headerlink" href="#confval-custom_typeshed_dir" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Specifies an alternative directory to look for stubs instead of the
+default <code class="docutils literal notranslate"><span class="pre">typeshed</span></code> directory. User home directory and environment
+variables will be expanded.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-warn_incomplete_stub">
+<span class="sig-name descname"><span class="pre">warn_incomplete_stub</span></span><a class="headerlink" href="#confval-warn_incomplete_stub" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Warns about missing type annotations in typeshed.  This is only relevant
+in combination with <a class="reference internal" href="#confval-disallow_untyped_defs"><code class="xref std std-confval docutils literal notranslate"><span class="pre">disallow_untyped_defs</span></code></a> or <a class="reference internal" href="#confval-disallow_incomplete_defs"><code class="xref std std-confval docutils literal notranslate"><span class="pre">disallow_incomplete_defs</span></code></a>.</p>
+</dd></dl>
+
+</section>
+<section id="report-generation">
+<h2>Report generation<a class="headerlink" href="#report-generation" title="永久链接至标题">¶</a></h2>
+<p>If these options are set, mypy will generate a report in the specified
+format into the specified directory.</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-any_exprs_report">
+<span class="sig-name descname"><span class="pre">any_exprs_report</span></span><a class="headerlink" href="#confval-any_exprs_report" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Causes mypy to generate a text file report documenting how many
+expressions of type <code class="docutils literal notranslate"><span class="pre">Any</span></code> are present within your codebase.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-cobertura_xml_report">
+<span class="sig-name descname"><span class="pre">cobertura_xml_report</span></span><a class="headerlink" href="#confval-cobertura_xml_report" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Causes mypy to generate a Cobertura XML type checking coverage report.</p>
+<p>To generate this report, you must either manually install the <a class="reference external" href="https://pypi.org/project/lxml/">lxml</a>
+library or specify mypy installation with the setuptools extra
+<code class="docutils literal notranslate"><span class="pre">mypy[reports]</span></code>.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-html_report-xslt_html_report">
+<span id="confval-html_report / xslt_html_report"></span><span class="sig-name descname"><span class="pre">html_report</span> <span class="pre">/</span> <span class="pre">xslt_html_report</span></span><a class="headerlink" href="#confval-html_report-xslt_html_report" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Causes mypy to generate an HTML type checking coverage report.</p>
+<p>To generate this report, you must either manually install the <a class="reference external" href="https://pypi.org/project/lxml/">lxml</a>
+library or specify mypy installation with the setuptools extra
+<code class="docutils literal notranslate"><span class="pre">mypy[reports]</span></code>.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-linecount_report">
+<span class="sig-name descname"><span class="pre">linecount_report</span></span><a class="headerlink" href="#confval-linecount_report" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Causes mypy to generate a text file report documenting the functions
+and lines that are typed and untyped within your codebase.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-linecoverage_report">
+<span class="sig-name descname"><span class="pre">linecoverage_report</span></span><a class="headerlink" href="#confval-linecoverage_report" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Causes mypy to generate a JSON file that maps each source file’s
+absolute filename to a list of line numbers that belong to typed
+functions in that file.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-lineprecision_report">
+<span class="sig-name descname"><span class="pre">lineprecision_report</span></span><a class="headerlink" href="#confval-lineprecision_report" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Causes mypy to generate a flat text file report with per-module
+statistics of how many lines are typechecked etc.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-txt_report-xslt_txt_report">
+<span id="confval-txt_report / xslt_txt_report"></span><span class="sig-name descname"><span class="pre">txt_report</span> <span class="pre">/</span> <span class="pre">xslt_txt_report</span></span><a class="headerlink" href="#confval-txt_report-xslt_txt_report" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Causes mypy to generate a text file type checking coverage report.</p>
+<p>To generate this report, you must either manually install the <a class="reference external" href="https://pypi.org/project/lxml/">lxml</a>
+library or specify mypy installation with the setuptools extra
+<code class="docutils literal notranslate"><span class="pre">mypy[reports]</span></code>.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-xml_report">
+<span class="sig-name descname"><span class="pre">xml_report</span></span><a class="headerlink" href="#confval-xml_report" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Causes mypy to generate an XML type checking coverage report.</p>
+<p>To generate this report, you must either manually install the <a class="reference external" href="https://pypi.org/project/lxml/">lxml</a>
+library or specify mypy installation with the setuptools extra
+<code class="docutils literal notranslate"><span class="pre">mypy[reports]</span></code>.</p>
+</dd></dl>
+
+</section>
+<section id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="永久链接至标题">¶</a></h2>
+<p>These options may only be set in the global section (<code class="docutils literal notranslate"><span class="pre">[mypy]</span></code>).</p>
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-junit_xml">
+<span class="sig-name descname"><span class="pre">junit_xml</span></span><a class="headerlink" href="#confval-junit_xml" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+<p>Causes mypy to generate a JUnit XML test result document with
+type checking results. This can make it easier to integrate mypy
+with continuous integration (CI) tools.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-scripts_are_modules">
+<span class="sig-name descname"><span class="pre">scripts_are_modules</span></span><a class="headerlink" href="#confval-scripts_are_modules" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Makes script <code class="docutils literal notranslate"><span class="pre">x</span></code> become module <code class="docutils literal notranslate"><span class="pre">x</span></code> instead of <code class="docutils literal notranslate"><span class="pre">__main__</span></code>.  This is
+useful when checking multiple scripts in a single run.</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-warn_unused_configs">
+<span class="sig-name descname"><span class="pre">warn_unused_configs</span></span><a class="headerlink" href="#confval-warn_unused_configs" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>False</p>
+</dd>
+</dl>
+<p>Warns about per-module sections in the config file that do not
+match any files processed when invoking mypy.
+(This requires turning off incremental mode using <a class="reference internal" href="#confval-incremental"><code class="xref std std-confval docutils literal notranslate"><span class="pre">incremental</span> <span class="pre">=</span> <span class="pre">False</span></code></a>.)</p>
+</dd></dl>
+
+<dl class="std confval">
+<dt class="sig sig-object std" id="confval-verbosity">
+<span class="sig-name descname"><span class="pre">verbosity</span></span><a class="headerlink" href="#confval-verbosity" title="永久链接至目标">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>integer</p>
+</dd>
+<dt class="field-even">Default</dt>
+<dd class="field-even"><p>0</p>
+</dd>
+</dl>
+<p>Controls how much debug output will be generated.  Higher numbers are more verbose.</p>
+</dd></dl>
+
+</section>
+<section id="using-a-pyproject-toml-file">
+<span id="using-a-pyproject-toml"></span><h2>Using a pyproject.toml file<a class="headerlink" href="#using-a-pyproject-toml-file" title="永久链接至标题">¶</a></h2>
+<p>Instead of using a <code class="docutils literal notranslate"><span class="pre">mypy.ini</span></code> file, a <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file (as specified by
+<a class="reference external" href="https://www.python.org/dev/peps/pep-0518/">PEP 518</a>) may be used instead. A few notes on doing so:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">[mypy]</span></code> section should have <code class="docutils literal notranslate"><span class="pre">tool.</span></code> prepended to its name:</p>
+<ul>
+<li><p>I.e., <code class="docutils literal notranslate"><span class="pre">[mypy]</span></code> would become <code class="docutils literal notranslate"><span class="pre">[tool.mypy]</span></code></p></li>
+</ul>
+</li>
+<li><p>The module specific sections should be moved into <code class="docutils literal notranslate"><span class="pre">[[tool.mypy.overrides]]</span></code> sections:</p>
+<ul>
+<li><p>For example, <code class="docutils literal notranslate"><span class="pre">[mypy-packagename]</span></code> would become:</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tool.mypy.overrides]]</span><span class="w"></span>
+<span class="n">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;packagename&#39;</span><span class="w"></span>
+<span class="p">...</span><span class="w"></span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Multi-module specific sections can be moved into a single <code class="docutils literal notranslate"><span class="pre">[[tool.mypy.overrides]]</span></code> section with a
+module property set to an array of modules:</p>
+<ul>
+<li><p>For example, <code class="docutils literal notranslate"><span class="pre">[mypy-packagename,packagename2]</span></code> would become:</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tool.mypy.overrides]]</span><span class="w"></span>
+<span class="n">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="s">&#39;packagename&#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s">&#39;packagename2&#39;</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+<span class="p">...</span><span class="w"></span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The following care should be given to values in the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> files as compared to <code class="docutils literal notranslate"><span class="pre">ini</span></code> files:</p>
+<ul>
+<li><p>Strings must be wrapped in double quotes, or single quotes if the string contains special characters</p></li>
+<li><p>Boolean values should be all lower case</p></li>
+</ul>
+</li>
+</ul>
+<p>Please see the <a class="reference external" href="https://toml.io/">TOML Documentation</a> for more details and information on
+what is allowed in a <code class="docutils literal notranslate"><span class="pre">toml</span></code> file. See <a class="reference external" href="https://www.python.org/dev/peps/pep-0518/">PEP 518</a> for more information on the layout
+and structure of the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file.</p>
+</section>
+<section id="example-pyproject-toml">
+<h2>Example <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code><a class="headerlink" href="#example-pyproject-toml" title="永久链接至标题">¶</a></h2>
+<p>Here is an example of a <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file. To use this config file, place it at the root
+of your repo (or append it to the end of an existing <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file) and run mypy.</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="c1"># mypy global options:</span><span class="w"></span>
+
+<span class="k">[tool.mypy]</span><span class="w"></span>
+<span class="n">python_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;2.7&quot;</span><span class="w"></span>
+<span class="n">warn_return_any</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
+<span class="n">warn_unused_configs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
+<span class="n">exclude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="s">&#39;^file1\.py$&#39;</span><span class="p">,</span><span class="w">  </span><span class="c1"># TOML literal string (single-quotes, no escaping necessary)</span><span class="w"></span>
+<span class="w">    </span><span class="s">&quot;^file2\\.py$&quot;</span><span class="p">,</span><span class="w">  </span><span class="c1"># TOML basic string (double-quotes, backslash and other characters need escaping)</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+
+<span class="c1"># mypy per-module options:</span><span class="w"></span>
+
+<span class="k">[[tool.mypy.overrides]]</span><span class="w"></span>
+<span class="n">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;mycode.foo.*&quot;</span><span class="w"></span>
+<span class="n">disallow_untyped_defs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
+
+<span class="k">[[tool.mypy.overrides]]</span><span class="w"></span>
+<span class="n">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;mycode.bar&quot;</span><span class="w"></span>
+<span class="n">warn_return_any</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="w"></span>
+
+<span class="k">[[tool.mypy.overrides]]</span><span class="w"></span>
+<span class="n">module</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="s">&quot;somelibrary&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s">&quot;some_other_library&quot;</span><span class="w"></span>
+<span class="p">]</span><span class="w"></span>
+<span class="n">ignore_missing_imports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">目录</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">The mypy configuration file</a><ul>
+<li><a class="reference internal" href="#config-file-format">Config file format</a></li>
+<li><a class="reference internal" href="#per-module-and-global-options">Per-module and global options</a></li>
+<li><a class="reference internal" href="#inverting-option-values">Inverting option values</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#import-discovery">Import discovery</a></li>
+<li><a class="reference internal" href="#platform-configuration">Platform configuration</a></li>
+<li><a class="reference internal" href="#disallow-dynamic-typing">Disallow dynamic typing</a></li>
+<li><a class="reference internal" href="#untyped-definitions-and-calls">Untyped definitions and calls</a></li>
+<li><a class="reference internal" href="#none-and-optional-handling">None and Optional handling</a></li>
+<li><a class="reference internal" href="#configuring-warnings">Configuring warnings</a></li>
+<li><a class="reference internal" href="#suppressing-errors">Suppressing errors</a></li>
+<li><a class="reference internal" href="#miscellaneous-strictness-flags">Miscellaneous strictness flags</a></li>
+<li><a class="reference internal" href="#configuring-error-messages">Configuring error messages</a></li>
+<li><a class="reference internal" href="#incremental-mode">Incremental mode</a></li>
+<li><a class="reference internal" href="#advanced-options">Advanced options</a></li>
+<li><a class="reference internal" href="#report-generation">Report generation</a></li>
+<li><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
+<li><a class="reference internal" href="#using-a-pyproject-toml-file">Using a pyproject.toml file</a></li>
+<li><a class="reference internal" href="#example-pyproject-toml">Example <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>上一个主题</h4>
+    <p class="topless"><a href="command_line.html"
+                          title="上一章">The mypy command line</a></p>
+  </div>
+  <div>
+    <h4>下一个主题</h4>
+    <p class="topless"><a href="inline_config.html"
+                          title="下一章">Inline configuration</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/config_file.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="inline_config.html" title="Inline configuration"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="command_line.html" title="The mypy command line"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Mypy 0.940+dev.d02f39d1f0317448dbbec1e7a5417a3780c278f2 文档</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The mypy configuration file</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2016, Jukka Lehtosalo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>
