@@ -1,0 +1,1022 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/more_types.rst:2
+msgid "More types"
+msgstr ""
+
+#: ../../source/more_types.rst:4
+msgid ""
+"This section introduces a few additional kinds of types, including "
+":py:data:`~typing.NoReturn`, :py:func:`NewType <typing.NewType>`, "
+"``TypedDict``, and types for async code. It also discusses how to give "
+"functions more precise types using overloads. All of these are only "
+"situationally useful, so feel free to skip this section and come back "
+"when you have a need for some of them."
+msgstr ""
+
+#: ../../source/more_types.rst:10
+msgid "Here's a quick summary of what's covered here:"
+msgstr ""
+
+#: ../../source/more_types.rst:12
+msgid ""
+":py:data:`~typing.NoReturn` lets you tell mypy that a function never "
+"returns normally."
+msgstr ""
+
+#: ../../source/more_types.rst:14
+msgid ""
+":py:func:`NewType <typing.NewType>` lets you define a variant of a type "
+"that is treated as a separate type by mypy but is identical to the "
+"original type at runtime. For example, you can have ``UserId`` as a "
+"variant of ``int`` that is just an ``int`` at runtime."
+msgstr ""
+
+#: ../../source/more_types.rst:19
+msgid ""
+":py:func:`@overload <typing.overload>` lets you define a function that "
+"can accept multiple distinct signatures. This is useful if you need to "
+"encode a relationship between the arguments and the return type that "
+"would be difficult to express normally."
+msgstr ""
+
+#: ../../source/more_types.rst:23
+msgid ""
+"``TypedDict`` lets you give precise types for dictionaries that represent"
+" objects with a fixed schema, such as ``{'id': 1, 'items': ['x']}``."
+msgstr ""
+
+#: ../../source/more_types.rst:26
+msgid "Async types let you type check programs using ``async`` and ``await``."
+msgstr ""
+
+#: ../../source/more_types.rst:31
+msgid "The NoReturn type"
+msgstr ""
+
+#: ../../source/more_types.rst:33
+msgid ""
+"Mypy provides support for functions that never return. For example, a "
+"function that unconditionally raises an exception:"
+msgstr ""
+
+#: ../../source/more_types.rst:43
+msgid ""
+"Mypy will ensure that functions annotated as returning "
+":py:data:`~typing.NoReturn` truly never return, either implicitly or "
+"explicitly. Mypy will also recognize that the code after calls to such "
+"functions is unreachable and will behave accordingly:"
+msgstr ""
+
+#: ../../source/more_types.rst:56
+msgid ""
+"In earlier Python versions you need to install ``typing_extensions`` "
+"using pip to use :py:data:`~typing.NoReturn` in your code. Python 3 "
+"command line:"
+msgstr ""
+
+#: ../../source/more_types.rst:63
+msgid "This works for Python 2:"
+msgstr ""
+
+#: ../../source/more_types.rst:72
+msgid "NewTypes"
+msgstr ""
+
+#: ../../source/more_types.rst:74
+msgid ""
+"There are situations where you may want to avoid programming errors by "
+"creating simple derived classes that are only used to distinguish certain"
+" values from base class instances. Example:"
+msgstr ""
+
+#: ../../source/more_types.rst:86
+msgid ""
+"However, this approach introduces some runtime overhead. To avoid this, "
+"the typing module provides a helper object :py:func:`NewType "
+"<typing.NewType>` that creates simple unique types with almost zero "
+"runtime overhead. Mypy will treat the statement ``Derived = "
+"NewType('Derived', Base)`` as being roughly equivalent to the following "
+"definition:"
+msgstr ""
+
+#: ../../source/more_types.rst:98
+msgid ""
+"However, at runtime, ``NewType('Derived', Base)`` will return a dummy "
+"callable that simply returns its argument:"
+msgstr ""
+
+#: ../../source/more_types.rst:106
+msgid ""
+"Mypy will require explicit casts from ``int`` where ``UserId`` is "
+"expected, while implicitly casting from ``UserId`` where ``int`` is "
+"expected. Examples:"
+msgstr ""
+
+#: ../../source/more_types.rst:125
+msgid ""
+":py:func:`NewType <typing.NewType>` accepts exactly two arguments. The "
+"first argument must be a string literal containing the name of the new "
+"type and must equal the name of the variable to which the new type is "
+"assigned. The second argument must be a properly subclassable class, "
+"i.e., not a type construct like :py:data:`~typing.Union`, etc."
+msgstr ""
+
+#: ../../source/more_types.rst:130
+msgid ""
+"The callable returned by :py:func:`NewType <typing.NewType>` accepts only"
+" one argument; this is equivalent to supporting only one constructor "
+"accepting an instance of the base class (see above). Example:"
+msgstr ""
+
+#: ../../source/more_types.rst:150
+msgid ""
+"You cannot use :py:func:`isinstance` or :py:func:`issubclass` on the "
+"object returned by :py:func:`~typing.NewType`, nor can you subclass an "
+"object returned by :py:func:`~typing.NewType`."
+msgstr ""
+
+#: ../../source/more_types.rst:155
+msgid ""
+"Unlike type aliases, :py:func:`NewType <typing.NewType>` will create an "
+"entirely new and unique type when used. The intended purpose of "
+":py:func:`NewType <typing.NewType>` is to help you detect cases where you"
+" accidentally mixed together the old base type and the new derived type."
+msgstr ""
+
+#: ../../source/more_types.rst:160
+msgid ""
+"For example, the following will successfully typecheck when using type "
+"aliases:"
+msgstr ""
+
+#: ../../source/more_types.rst:172
+msgid ""
+"But a similar example using :py:func:`NewType <typing.NewType>` will not "
+"typecheck:"
+msgstr ""
+
+#: ../../source/more_types.rst:188
+msgid "Function overloading"
+msgstr ""
+
+#: ../../source/more_types.rst:190
+msgid ""
+"Sometimes the arguments and types in a function depend on each other in "
+"ways that can't be captured with a :py:data:`~typing.Union`. For example,"
+" suppose we want to write a function that can accept x-y coordinates. If "
+"we pass in just a single x-y coordinate, we return a ``ClickEvent`` "
+"object. However, if we pass in two x-y coordinates, we return a "
+"``DragEvent`` object."
+msgstr ""
+
+#: ../../source/more_types.rst:196
+msgid "Our first attempt at writing this function might look like this:"
+msgstr ""
+
+#: ../../source/more_types.rst:213
+msgid ""
+"While this function signature works, it's too loose: it implies "
+"``mouse_event`` could return either object regardless of the number of "
+"arguments we pass in. It also does not prohibit a caller from passing in "
+"the wrong number of ints: mypy would treat calls like ``mouse_event(1, 2,"
+" 20)`` as being valid, for example."
+msgstr ""
+
+#: ../../source/more_types.rst:219
+msgid ""
+"We can do better by using :pep:`overloading <484#function-method-"
+"overloading>` which lets us give the same function multiple type "
+"annotations (signatures) to more accurately describe the function's "
+"behavior:"
+msgstr ""
+
+#: ../../source/more_types.rst:257
+msgid ""
+"This allows mypy to understand calls to ``mouse_event`` much more "
+"precisely. For example, mypy will understand that ``mouse_event(5, 25)`` "
+"will always have a return type of ``ClickEvent`` and will report errors "
+"for calls like ``mouse_event(5, 25, 2)``."
+msgstr ""
+
+#: ../../source/more_types.rst:262
+msgid ""
+"As another example, suppose we want to write a custom container class "
+"that implements the :py:meth:`__getitem__ <object.__getitem__>` method "
+"(``[]`` bracket indexing). If this method receives an integer we return a"
+" single item. If it receives a ``slice``, we return a "
+":py:class:`~typing.Sequence` of items."
+msgstr ""
+
+#: ../../source/more_types.rst:267
+msgid ""
+"We can precisely encode this relationship between the argument and the "
+"return type by using overloads like so:"
+msgstr ""
+
+#: ../../source/more_types.rst:293
+msgid ""
+"If you just need to constrain a type variable to certain types or "
+"subtypes, you can use a :ref:`value restriction <type-variable-value-"
+"restriction>`."
+msgstr ""
+
+#: ../../source/more_types.rst:297
+msgid ""
+"The default values of a function's arguments don't affect its signature "
+"-- only the absence or presence of a default value does. So in order to "
+"reduce redundancy, it's possible to replace default values in overload "
+"definitions with ``...`` as a placeholder:"
+msgstr ""
+
+#: ../../source/more_types.rst:318
+msgid "Runtime behavior"
+msgstr ""
+
+#: ../../source/more_types.rst:320
+msgid ""
+"An overloaded function must consist of two or more overload *variants* "
+"followed by an *implementation*. The variants and the implementations "
+"must be adjacent in the code: think of them as one indivisible unit."
+msgstr ""
+
+#: ../../source/more_types.rst:324
+msgid ""
+"The variant bodies must all be empty; only the implementation is allowed "
+"to contain code. This is because at runtime, the variants are completely "
+"ignored: they're overridden by the final implementation function."
+msgstr ""
+
+#: ../../source/more_types.rst:328
+msgid ""
+"This means that an overloaded function is still an ordinary Python "
+"function! There is no automatic dispatch handling and you must manually "
+"handle the different types in the implementation (e.g. by using ``if`` "
+"statements and :py:func:`isinstance <isinstance>` checks)."
+msgstr ""
+
+#: ../../source/more_types.rst:333
+msgid ""
+"If you are adding an overload within a stub file, the implementation "
+"function should be omitted: stubs do not contain runtime logic."
+msgstr ""
+
+#: ../../source/more_types.rst:338
+msgid ""
+"While we can leave the variant body empty using the ``pass`` keyword, the"
+" more common convention is to instead use the ellipsis (``...``) literal."
+msgstr ""
+
+#: ../../source/more_types.rst:342
+msgid "Type checking calls to overloads"
+msgstr ""
+
+#: ../../source/more_types.rst:344
+msgid ""
+"When you call an overloaded function, mypy will infer the correct return "
+"type by picking the best matching variant, after taking into "
+"consideration both the argument types and arity. However, a call is never"
+" type checked against the implementation. This is why mypy will report "
+"calls like ``mouse_event(5, 25, 3)`` as being invalid even though it "
+"matches the implementation signature."
+msgstr ""
+
+#: ../../source/more_types.rst:351
+msgid ""
+"If there are multiple equally good matching variants, mypy will select "
+"the variant that was defined first. For example, consider the following "
+"program:"
+msgstr ""
+
+#: ../../source/more_types.rst:378
+msgid ""
+"The ``summarize([])`` call matches both variants: an empty list could be "
+"either a ``list[int]`` or a ``list[str]``. In this case, mypy will break "
+"the tie by picking the first matching variant: ``output`` will have an "
+"inferred type of ``float``. The implementor is responsible for making "
+"sure ``summarize`` breaks ties in the same way at runtime."
+msgstr ""
+
+#: ../../source/more_types.rst:384
+msgid ""
+"However, there are two exceptions to the \"pick the first match\" rule. "
+"First, if multiple variants match due to an argument being of type "
+"``Any``, mypy will make the inferred type also be ``Any``:"
+msgstr ""
+
+#: ../../source/more_types.rst:395
+msgid ""
+"Second, if multiple variants match due to one or more of the arguments "
+"being a union, mypy will make the inferred type be the union of the "
+"matching variant returns:"
+msgstr ""
+
+#: ../../source/more_types.rst:408
+msgid ""
+"Due to the \"pick the first match\" rule, changing the order of your "
+"overload variants can change how mypy type checks your program."
+msgstr ""
+
+#: ../../source/more_types.rst:411
+msgid "To minimize potential issues, we recommend that you:"
+msgstr ""
+
+#: ../../source/more_types.rst:413
+msgid ""
+"Make sure your overload variants are listed in the same order as the "
+"runtime checks (e.g. :py:func:`isinstance <isinstance>` checks) in your "
+"implementation."
+msgstr ""
+
+#: ../../source/more_types.rst:415
+msgid ""
+"Order your variants and runtime checks from most to least specific. (See "
+"the following section for an example)."
+msgstr ""
+
+#: ../../source/more_types.rst:419
+msgid "Type checking the variants"
+msgstr ""
+
+#: ../../source/more_types.rst:421
+msgid ""
+"Mypy will perform several checks on your overload variant definitions to "
+"ensure they behave as expected. First, mypy will check and make sure that"
+" no overload variant is shadowing a subsequent one. For example, consider"
+" the following function which adds together two ``Expression`` objects, "
+"and contains a special-case to handle receiving two ``Literal`` types:"
+msgstr ""
+
+#: ../../source/more_types.rst:449
+msgid ""
+"While this code snippet is technically type-safe, it does contain an "
+"anti-pattern: the second variant will never be selected! If we try "
+"calling ``add(Literal(3), Literal(4))``, mypy will always pick the first "
+"variant and evaluate the function call to be of type ``Expression``, not "
+"``Literal``. This is because ``Literal`` is a subtype of ``Expression``, "
+"which means the \"pick the first match\" rule will always halt after "
+"considering the first overload."
+msgstr ""
+
+#: ../../source/more_types.rst:457
+msgid ""
+"Because having an overload variant that can never be matched is almost "
+"certainly a mistake, mypy will report an error. To fix the error, we can "
+"either 1) delete the second overload or 2) swap the order of the "
+"overloads:"
+msgstr ""
+
+#: ../../source/more_types.rst:475
+msgid ""
+"Mypy will also type check the different variants and flag any overloads "
+"that have inherently unsafely overlapping variants. For example, consider"
+" the following unsafe overload definition:"
+msgstr ""
+
+#: ../../source/more_types.rst:495
+msgid ""
+"On the surface, this function definition appears to be fine. However, it "
+"will result in a discrepancy between the inferred type and the actual "
+"runtime type when we try using it like so:"
+msgstr ""
+
+#: ../../source/more_types.rst:504
+msgid ""
+"Since ``some_obj`` is of type :py:class:`object`, mypy will decide that "
+"``unsafe_func`` must return something of type ``str`` and concludes the "
+"above will type check. But in reality, ``unsafe_func`` will return an "
+"int, causing the code to crash at runtime!"
+msgstr ""
+
+#: ../../source/more_types.rst:509
+msgid ""
+"To prevent these kinds of issues, mypy will detect and prohibit "
+"inherently unsafely overlapping overloads on a best-effort basis. Two "
+"variants are considered unsafely overlapping when both of the following "
+"are true:"
+msgstr ""
+
+#: ../../source/more_types.rst:513
+msgid "All of the arguments of the first variant are compatible with the second."
+msgstr ""
+
+#: ../../source/more_types.rst:514
+msgid ""
+"The return type of the first variant is *not* compatible with (e.g. is "
+"not a subtype of) the second."
+msgstr ""
+
+#: ../../source/more_types.rst:517
+msgid ""
+"So in this example, the ``int`` argument in the first variant is a "
+"subtype of the ``object`` argument in the second, yet the ``int`` return "
+"type is not a subtype of ``str``. Both conditions are true, so mypy will "
+"correctly flag ``unsafe_func`` as being unsafe."
+msgstr ""
+
+#: ../../source/more_types.rst:522
+msgid ""
+"However, mypy will not detect *all* unsafe uses of overloads. For "
+"example, suppose we modify the above snippet so it calls ``summarize`` "
+"instead of ``unsafe_func``:"
+msgstr ""
+
+#: ../../source/more_types.rst:531
+msgid ""
+"We run into a similar issue here. This program type checks if we look "
+"just at the annotations on the overloads. But since ``summarize(...)`` is"
+" designed to be biased towards returning a float when it receives an "
+"empty list, this program will actually crash during runtime."
+msgstr ""
+
+#: ../../source/more_types.rst:536
+msgid ""
+"The reason mypy does not flag definitions like ``summarize`` as being "
+"potentially unsafe is because if it did, it would be extremely difficult "
+"to write a safe overload. For example, suppose we define an overload with"
+" two variants that accept types ``A`` and ``B`` respectively. Even if "
+"those two types were completely unrelated, the user could still "
+"potentially trigger a runtime error similar to the ones above by passing "
+"in a value of some third type ``C`` that inherits from both ``A`` and "
+"``B``."
+msgstr ""
+
+#: ../../source/more_types.rst:543
+msgid ""
+"Thankfully, these types of situations are relatively rare. What this does"
+" mean, however, is that you should exercise caution when designing or "
+"using an overloaded function that can potentially receive values that are"
+" an instance of two seemingly unrelated types."
+msgstr ""
+
+#: ../../source/more_types.rst:550
+msgid "Type checking the implementation"
+msgstr ""
+
+#: ../../source/more_types.rst:552
+msgid ""
+"The body of an implementation is type-checked against the type hints "
+"provided on the implementation. For example, in the ``MyList`` example up"
+" above, the code in the body is checked with argument list ``index: "
+"Union[int, slice]`` and a return type of ``Union[T, Sequence[T]]``. If "
+"there are no annotations on the implementation, then the body is not type"
+" checked. If you want to force mypy to check the body anyways, use the "
+":option:`--check-untyped-defs <mypy --check-untyped-defs>` flag "
+"(:ref:`more details here <untyped-definitions-and-calls>`)."
+msgstr ""
+
+#: ../../source/more_types.rst:561
+msgid ""
+"The variants must also also be compatible with the implementation type "
+"hints. In the ``MyList`` example, mypy will check that the parameter type"
+" ``int`` and the return type ``T`` are compatible with ``Union[int, "
+"slice]`` and ``Union[T, Sequence]`` for the first variant. For the second"
+" variant it verifies the parameter type ``slice`` and the return type "
+"``Sequence[T]`` are compatible with ``Union[int, slice]`` and ``Union[T, "
+"Sequence]``."
+msgstr ""
+
+#: ../../source/more_types.rst:571
+msgid "The overload semantics documented above are new as of mypy 0.620."
+msgstr ""
+
+#: ../../source/more_types.rst:573
+msgid ""
+"Previously, mypy used to perform type erasure on all overload variants. "
+"For example, the ``summarize`` example from the previous section used to "
+"be illegal because ``list[str]`` and ``list[int]`` both erased to just "
+"``list[Any]``. This restriction was removed in mypy 0.620."
+msgstr ""
+
+#: ../../source/more_types.rst:578
+msgid ""
+"Mypy also previously used to select the best matching variant using a "
+"different algorithm. If this algorithm failed to find a match, it would "
+"default to returning ``Any``. The new algorithm uses the \"pick the first"
+" match\" rule and will fall back to returning ``Any`` only if the input "
+"arguments also contain ``Any``."
+msgstr ""
+
+#: ../../source/more_types.rst:585
+msgid "Conditional overloads"
+msgstr ""
+
+#: ../../source/more_types.rst:587
+msgid ""
+"Sometimes it is useful to define overloads conditionally. Common use "
+"cases include types that are unavailable at runtime or that only exist in"
+" a certain Python version. All existing overload rules still apply. For "
+"example, there must be at least two overloads."
+msgstr ""
+
+#: ../../source/more_types.rst:594
+msgid ""
+"Mypy can only infer a limited number of conditions. Supported ones "
+"currently include :py:data:`~typing.TYPE_CHECKING`, ``MYPY``, "
+":ref:`version_and_platform_checks`, :option:`--always-true <mypy "
+"--always-true>`, and :option:`--always-false <mypy --always-false>` "
+"values."
+msgstr ""
+
+#: ../../source/more_types.rst:662
+msgid ""
+"In the last example, mypy is executed with :option:`--python-version 3.10"
+" <mypy --python-version>`. Therefore, the condition ``sys.version_info >="
+" (3, 10)`` will match and the overload for ``B`` will be added. The "
+"overloads for ``A`` and ``C`` are ignored! The overload for ``D`` is not "
+"defined conditionally and thus is also added."
+msgstr ""
+
+#: ../../source/more_types.rst:669
+msgid ""
+"When mypy cannot infer a condition to be always ``True`` or always "
+"``False``, an error is emitted."
+msgstr ""
+
+#: ../../source/more_types.rst:696
+msgid "Advanced uses of self-types"
+msgstr ""
+
+#: ../../source/more_types.rst:698
+msgid ""
+"Normally, mypy doesn't require annotations for the first arguments of "
+"instance and class methods. However, they may be needed to have more "
+"precise static typing for certain programming patterns."
+msgstr ""
+
+#: ../../source/more_types.rst:703
+msgid "Restricted methods in generic classes"
+msgstr ""
+
+#: ../../source/more_types.rst:705
+msgid ""
+"In generic classes some methods may be allowed to be called only for "
+"certain values of type arguments:"
+msgstr ""
+
+#: ../../source/more_types.rst:722
+msgid ""
+"This pattern also allows matching on nested types in situations where the"
+" type argument is itself generic:"
+msgstr ""
+
+#: ../../source/more_types.rst:742
+msgid ""
+"Finally, one can use overloads on self-type to express precise types of "
+"some tricky methods:"
+msgstr ""
+
+#: ../../source/more_types.rst:760
+msgid ""
+"In particular, an :py:meth:`~object.__init__` method overloaded on self-"
+"type may be useful to annotate generic class constructors where type "
+"arguments depend on constructor parameters in a non-trivial way, see e.g."
+" :py:class:`~subprocess.Popen`."
+msgstr ""
+
+#: ../../source/more_types.rst:765
+msgid "Mixin classes"
+msgstr ""
+
+#: ../../source/more_types.rst:767
+msgid ""
+"Using host class protocol as a self-type in mixin methods allows more "
+"code re-usability for static typing of mixin classes. For example, one "
+"can define a protocol that defines common functionality for host classes "
+"instead of adding required abstract methods to every mixin:"
+msgstr ""
+
+#: ../../source/more_types.rst:800
+msgid ""
+"Note that the explicit self-type is *required* to be a protocol whenever "
+"it is not a supertype of the current class. In this case mypy will check "
+"the validity of the self-type only at the call site."
+msgstr ""
+
+#: ../../source/more_types.rst:805
+msgid "Precise typing of alternative constructors"
+msgstr ""
+
+#: ../../source/more_types.rst:807
+msgid ""
+"Some classes may define alternative constructors. If these classes are "
+"generic, self-type allows giving them precise signatures:"
+msgstr ""
+
+#: ../../source/more_types.rst:834
+msgid "Typing async/await"
+msgstr ""
+
+#: ../../source/more_types.rst:836
+msgid ""
+"Mypy supports the ability to type coroutines that use the ``async/await``"
+" syntax introduced in Python 3.5. For more information regarding "
+"coroutines and this new syntax, see :pep:`492`."
+msgstr ""
+
+#: ../../source/more_types.rst:840
+msgid ""
+"Functions defined using ``async def`` are typed just like normal "
+"functions. The return type annotation should be the same as the type of "
+"the value you expect to get back when ``await``-ing the coroutine."
+msgstr ""
+
+#: ../../source/more_types.rst:863
+msgid ""
+"The result of calling an ``async def`` function *without awaiting* will "
+"be a value of type :py:class:`Coroutine[Any, Any, T] <typing.Coroutine>`,"
+" which is a subtype of :py:class:`Awaitable[T] <typing.Awaitable>`:"
+msgstr ""
+
+#: ../../source/more_types.rst:874
+msgid ""
+":ref:`reveal_type() <reveal-type>` displays the inferred static type of "
+"an expression."
+msgstr ""
+
+#: ../../source/more_types.rst:877
+msgid ""
+"If you want to use coroutines in Python 3.4, which does not support the "
+"``async def`` syntax, you can instead use the "
+":py:func:`@asyncio.coroutine <asyncio.coroutine>` decorator to convert a "
+"generator into a coroutine."
+msgstr ""
+
+#: ../../source/more_types.rst:881
+msgid ""
+"Note that we set the ``YieldType`` of the generator to be ``Any`` in the "
+"following example. This is because the exact yield type is an "
+"implementation detail of the coroutine runner (e.g. the :py:mod:`asyncio`"
+" event loop) and your coroutine shouldn't have to know or care about what"
+" precisely that type is."
+msgstr ""
+
+#: ../../source/more_types.rst:903
+msgid ""
+"As before, the result of calling a generator decorated with "
+":py:func:`@asyncio.coroutine <asyncio.coroutine>` will be a value of type"
+" :py:class:`Awaitable[T] <typing.Awaitable>`."
+msgstr ""
+
+#: ../../source/more_types.rst:908
+msgid ""
+"At runtime, you are allowed to add the :py:func:`@asyncio.coroutine "
+"<asyncio.coroutine>` decorator to both functions and generators. This is "
+"useful when you want to mark a work-in-progress function as a coroutine, "
+"but have not yet added ``yield`` or ``yield from`` statements:"
+msgstr ""
+
+#: ../../source/more_types.rst:922
+msgid ""
+"However, mypy currently does not support converting functions into "
+"coroutines. Support for this feature will be added in a future version, "
+"but for now, you can manually force the function to be a generator by "
+"doing something like this:"
+msgstr ""
+
+#: ../../source/more_types.rst:939
+msgid ""
+"You may also choose to create a subclass of :py:class:`~typing.Awaitable`"
+" instead:"
+msgstr ""
+
+#: ../../source/more_types.rst:964
+msgid ""
+"To create an iterable coroutine, subclass "
+":py:class:`~typing.AsyncIterator`:"
+msgstr ""
+
+#: ../../source/more_types.rst:998
+msgid ""
+"For a more concrete example, the mypy repo has a toy webcrawler that "
+"demonstrates how to work with coroutines. One version `uses async/await "
+"<https://github.com/python/mypy/blob/master/test-"
+"data/samples/crawl2.py>`_ and one `uses yield from "
+"<https://github.com/python/mypy/blob/master/test-"
+"data/samples/crawl.py>`_."
+msgstr ""
+
+#: ../../source/more_types.rst:1007
+msgid "TypedDict"
+msgstr ""
+
+#: ../../source/more_types.rst:1009
+msgid ""
+"Python programs often use dictionaries with string keys to represent "
+"objects. Here is a typical example:"
+msgstr ""
+
+#: ../../source/more_types.rst:1016
+msgid ""
+"Only a fixed set of string keys is expected (``'name'`` and ``'year'`` "
+"above), and each key has an independent value type (``str`` for "
+"``'name'`` and ``int`` for ``'year'`` above). We've previously seen the "
+"``dict[K, V]`` type, which lets you declare uniform dictionary types, "
+"where every value has the same type, and arbitrary keys are supported. "
+"This is clearly not a good fit for ``movie`` above. Instead, you can use "
+"a ``TypedDict`` to give a precise type for objects like ``movie``, where "
+"the type of each dictionary value depends on the key:"
+msgstr ""
+
+#: ../../source/more_types.rst:1034
+msgid ""
+"``Movie`` is a ``TypedDict`` type with two items: ``'name'`` (with type "
+"``str``) and ``'year'`` (with type ``int``). Note that we used an "
+"explicit type annotation for the ``movie`` variable. This type annotation"
+" is important -- without it, mypy will try to infer a regular, uniform "
+":py:class:`dict` type for ``movie``, which is not what we want here."
+msgstr ""
+
+#: ../../source/more_types.rst:1042
+msgid ""
+"If you pass a ``TypedDict`` object as an argument to a function, no type "
+"annotation is usually necessary since mypy can infer the desired type "
+"based on the declared argument type. Also, if an assignment target has "
+"been previously defined, and it has a ``TypedDict`` type, mypy will treat"
+" the assigned value as a ``TypedDict``, not :py:class:`dict`."
+msgstr ""
+
+#: ../../source/more_types.rst:1049
+msgid "Now mypy will recognize these as valid:"
+msgstr ""
+
+#: ../../source/more_types.rst:1056
+msgid "Mypy will detect an invalid key as an error:"
+msgstr ""
+
+#: ../../source/more_types.rst:1062
+msgid ""
+"Mypy will also reject a runtime-computed expression as a key, as it can't"
+" verify that it's a valid key. You can only use string literals as "
+"``TypedDict`` keys."
+msgstr ""
+
+#: ../../source/more_types.rst:1066
+msgid ""
+"The ``TypedDict`` type object can also act as a constructor. It returns a"
+" normal :py:class:`dict` object at runtime -- a ``TypedDict`` does not "
+"define a new runtime type:"
+msgstr ""
+
+#: ../../source/more_types.rst:1074
+msgid ""
+"This is equivalent to just constructing a dictionary directly using ``{ "
+"... }`` or ``dict(key=value, ...)``. The constructor form is sometimes "
+"convenient, since it can be used without a type annotation, and it also "
+"makes the type of the object explicit."
+msgstr ""
+
+#: ../../source/more_types.rst:1079
+msgid ""
+"Like all types, ``TypedDict``\\s can be used as components to build "
+"arbitrarily complex types. For example, you can define nested "
+"``TypedDict``\\s and containers with ``TypedDict`` items. Unlike most "
+"other types, mypy uses structural compatibility checking (or structural "
+"subtyping) with ``TypedDict``\\s. A ``TypedDict`` object with extra items"
+" is compatible with (a subtype of) a narrower ``TypedDict``, assuming "
+"item types are compatible (*totality* also affects subtyping, as "
+"discussed below)."
+msgstr ""
+
+#: ../../source/more_types.rst:1088
+msgid ""
+"A ``TypedDict`` object is not a subtype of the regular ``dict[...]`` type"
+" (and vice versa), since :py:class:`dict` allows arbitrary keys to be "
+"added and removed, unlike ``TypedDict``. However, any ``TypedDict`` "
+"object is a subtype of (that is, compatible with) ``Mapping[str, "
+"object]``, since :py:class:`~typing.Mapping` only provides read-only "
+"access to the dictionary items:"
+msgstr ""
+
+#: ../../source/more_types.rst:1104
+msgid ""
+"Unless you are on Python 3.8 or newer (where ``TypedDict`` is available "
+"in standard library :py:mod:`typing` module) you need to install "
+"``typing_extensions`` using pip to use ``TypedDict``:"
+msgstr ""
+
+#: ../../source/more_types.rst:1112
+msgid "Or, if you are using Python 2:"
+msgstr ""
+
+#: ../../source/more_types.rst:1119
+msgid "Totality"
+msgstr ""
+
+#: ../../source/more_types.rst:1121
+msgid ""
+"By default mypy ensures that a ``TypedDict`` object has all the specified"
+" keys. This will be flagged as an error:"
+msgstr ""
+
+#: ../../source/more_types.rst:1129
+msgid ""
+"Sometimes you want to allow keys to be left out when creating a "
+"``TypedDict`` object. You can provide the ``total=False`` argument to "
+"``TypedDict(...)`` to achieve this:"
+msgstr ""
+
+#: ../../source/more_types.rst:1140
+msgid ""
+"You may need to use :py:meth:`~dict.get` to access items of a partial "
+"(non-total) ``TypedDict``, since indexing using ``[]`` could fail at "
+"runtime. However, mypy still lets use ``[]`` with a partial ``TypedDict``"
+" -- you just need to be careful with it, as it could result in a "
+":py:exc:`KeyError`. Requiring :py:meth:`~dict.get` everywhere would be "
+"too cumbersome. (Note that you are free to use :py:meth:`~dict.get` with "
+"total ``TypedDict``\\s as well.)"
+msgstr ""
+
+#: ../../source/more_types.rst:1147
+msgid "Keys that aren't required are shown with a ``?`` in error messages:"
+msgstr ""
+
+#: ../../source/more_types.rst:1155
+msgid ""
+"Totality also affects structural compatibility. You can't use a partial "
+"``TypedDict`` when a total one is expected. Also, a total ``TypedDict`` "
+"is not valid when a partial one is expected."
+msgstr ""
+
+#: ../../source/more_types.rst:1160
+msgid "Supported operations"
+msgstr ""
+
+#: ../../source/more_types.rst:1162
+msgid ""
+"``TypedDict`` objects support a subset of dictionary operations and "
+"methods. You must use string literals as keys when calling most of the "
+"methods, as otherwise mypy won't be able to check that the key is valid. "
+"List of supported operations:"
+msgstr ""
+
+#: ../../source/more_types.rst:1167
+msgid "Anything included in :py:class:`~typing.Mapping`:"
+msgstr ""
+
+#: ../../source/more_types.rst:1169
+msgid "``d[key]``"
+msgstr ""
+
+#: ../../source/more_types.rst:1170
+msgid "``key in d``"
+msgstr ""
+
+#: ../../source/more_types.rst:1171
+msgid "``len(d)``"
+msgstr ""
+
+#: ../../source/more_types.rst:1172
+msgid "``for key in d`` (iteration)"
+msgstr ""
+
+#: ../../source/more_types.rst:1173
+msgid ":py:meth:`d.get(key[, default]) <dict.get>`"
+msgstr ""
+
+#: ../../source/more_types.rst:1174
+msgid ":py:meth:`d.keys() <dict.keys>`"
+msgstr ""
+
+#: ../../source/more_types.rst:1175
+msgid ":py:meth:`d.values() <dict.values>`"
+msgstr ""
+
+#: ../../source/more_types.rst:1176
+msgid ":py:meth:`d.items() <dict.items>`"
+msgstr ""
+
+#: ../../source/more_types.rst:1178
+msgid ":py:meth:`d.copy() <dict.copy>`"
+msgstr ""
+
+#: ../../source/more_types.rst:1179
+msgid ":py:meth:`d.setdefault(key, default) <dict.setdefault>`"
+msgstr ""
+
+#: ../../source/more_types.rst:1180
+msgid ":py:meth:`d1.update(d2) <dict.update>`"
+msgstr ""
+
+#: ../../source/more_types.rst:1181
+msgid ""
+":py:meth:`d.pop(key[, default]) <dict.pop>` (partial ``TypedDict``\\s "
+"only)"
+msgstr ""
+
+#: ../../source/more_types.rst:1182
+msgid "``del d[key]`` (partial ``TypedDict``\\s only)"
+msgstr ""
+
+#: ../../source/more_types.rst:1184
+msgid "In Python 2 code, these methods are also supported:"
+msgstr ""
+
+#: ../../source/more_types.rst:1186
+msgid "``has_key(key)``"
+msgstr ""
+
+#: ../../source/more_types.rst:1187
+msgid "``viewitems()``"
+msgstr ""
+
+#: ../../source/more_types.rst:1188
+msgid "``viewkeys()``"
+msgstr ""
+
+#: ../../source/more_types.rst:1189
+msgid "``viewvalues()``"
+msgstr ""
+
+#: ../../source/more_types.rst:1193
+msgid ""
+":py:meth:`~dict.clear` and :py:meth:`~dict.popitem` are not supported "
+"since they are unsafe -- they could delete required ``TypedDict`` items "
+"that are not visible to mypy because of structural subtyping."
+msgstr ""
+
+#: ../../source/more_types.rst:1198
+msgid "Class-based syntax"
+msgstr ""
+
+#: ../../source/more_types.rst:1200
+msgid ""
+"An alternative, class-based syntax to define a ``TypedDict`` is supported"
+" in Python 3.6 and later:"
+msgstr ""
+
+#: ../../source/more_types.rst:1211
+msgid ""
+"The above definition is equivalent to the original ``Movie`` definition. "
+"It doesn't actually define a real class. This syntax also supports a form"
+" of inheritance -- subclasses can define additional items. However, this "
+"is primarily a notational shortcut. Since mypy uses structural "
+"compatibility with ``TypedDict``\\s, inheritance is not required for "
+"compatibility. Here is an example of inheritance:"
+msgstr ""
+
+#: ../../source/more_types.rst:1227
+msgid "Now ``BookBasedMovie`` has keys ``name``, ``year`` and ``based_on``."
+msgstr ""
+
+#: ../../source/more_types.rst:1230
+msgid "Mixing required and non-required items"
+msgstr ""
+
+#: ../../source/more_types.rst:1232
+msgid ""
+"In addition to allowing reuse across ``TypedDict`` types, inheritance "
+"also allows you to mix required and non-required (using ``total=False``) "
+"items in a single ``TypedDict``. Example:"
+msgstr ""
+
+#: ../../source/more_types.rst:1245
+msgid ""
+"Now ``Movie`` has required keys ``name`` and ``year``, while ``based_on``"
+" can be left out when constructing an object. A ``TypedDict`` with a mix "
+"of required and non-required keys, such as ``Movie`` above, will only be "
+"compatible with another ``TypedDict`` if all required keys in the other "
+"``TypedDict`` are required keys in the first ``TypedDict``, and all non-"
+"required keys of the other ``TypedDict`` are also non-required keys in "
+"the first ``TypedDict``."
+msgstr ""
+
+#: ../../source/more_types.rst:1253
+msgid "Unions of TypedDicts"
+msgstr ""
+
+#: ../../source/more_types.rst:1255
+msgid ""
+"Since TypedDicts are really just regular dicts at runtime, it is not "
+"possible to use ``isinstance`` checks to distinguish between different "
+"variants of a Union of TypedDict in the same way you can with regular "
+"objects."
+msgstr ""
+
+#: ../../source/more_types.rst:1259
+msgid ""
+"Instead, you can use the :ref:`tagged union pattern <tagged_unions>`. The"
+" referenced section of the docs has a full description with an example, "
+"but in short, you will need to give each TypedDict the same key where "
+"each value has a unique :ref:`Literal type <literal_types>`. Then, check "
+"that key to distinguish between your TypedDicts."
+msgstr ""
+

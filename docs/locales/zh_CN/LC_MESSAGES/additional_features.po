@@ -1,0 +1,467 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/additional_features.rst:2
+msgid "Additional features"
+msgstr ""
+
+#: ../../source/additional_features.rst:4
+msgid ""
+"This section discusses various features that did not fit in naturally in "
+"one of the previous sections."
+msgstr ""
+
+#: ../../source/additional_features.rst:10
+msgid "Dataclasses"
+msgstr ""
+
+#: ../../source/additional_features.rst:12
+msgid ""
+"In Python 3.7, a new :py:mod:`dataclasses` module has been added to the "
+"standard library. This module allows defining and customizing simple "
+"boilerplate-free classes. They can be defined using the "
+":py:func:`@dataclasses.dataclass <python:dataclasses.dataclass>` "
+"decorator:"
+msgstr ""
+
+#: ../../source/additional_features.rst:29
+msgid ""
+"Mypy will detect special methods (such as :py:meth:`__lt__ "
+"<object.__lt__>`) depending on the flags used to define dataclasses. For "
+"example:"
+msgstr ""
+
+#: ../../source/additional_features.rst:49
+msgid ""
+"Dataclasses can be generic and can be used in any other way a normal "
+"class can be used:"
+msgstr ""
+
+#: ../../source/additional_features.rst:69
+msgid ""
+"For more information see :doc:`official docs "
+"<python:library/dataclasses>` and :pep:`557`."
+msgstr ""
+
+#: ../../source/additional_features.rst:73
+#: ../../source/additional_features.rst:159
+msgid "Caveats/Known Issues"
+msgstr ""
+
+#: ../../source/additional_features.rst:75
+msgid ""
+"Some functions in the :py:mod:`dataclasses` module, such as "
+":py:func:`~dataclasses.replace` and :py:func:`~dataclasses.asdict`, have "
+"imprecise (too permissive) types. This will be fixed in future releases."
+msgstr ""
+
+#: ../../source/additional_features.rst:78
+msgid ""
+"Mypy does not yet recognize aliases of :py:func:`dataclasses.dataclass "
+"<dataclasses.dataclass>`, and will probably never recognize dynamically "
+"computed decorators. The following examples do **not** work:"
+msgstr ""
+
+#: ../../source/additional_features.rst:112
+msgid "The attrs package"
+msgstr ""
+
+#: ../../source/additional_features.rst:114
+msgid ""
+":doc:`attrs <attrs:index>` is a package that lets you define classes "
+"without writing boilerplate code. Mypy can detect uses of the package and"
+" will generate the necessary method definitions for decorated classes "
+"using the type annotations it finds. Type annotations can be added as "
+"follows:"
+msgstr ""
+
+#: ../../source/additional_features.rst:130
+msgid "If you're using ``auto_attribs=True`` you must use variable annotations."
+msgstr ""
+
+#: ../../source/additional_features.rst:142
+msgid ""
+"Typeshed has a couple of \"white lie\" annotations to make type checking "
+"easier. :py:func:`attr.ib` and :py:class:`attr.Factory` actually return "
+"objects, but the annotation says these return the types that they expect "
+"to be assigned to. That enables this to work:"
+msgstr ""
+
+#: ../../source/additional_features.rst:161
+msgid ""
+"The detection of attr classes and attributes works by function name only."
+" This means that if you have your own helper functions that, for example,"
+" ``return attr.ib()`` mypy will not see them."
+msgstr ""
+
+#: ../../source/additional_features.rst:165
+msgid ""
+"All boolean arguments that mypy cares about must be literal ``True`` or "
+"``False``. e.g the following will not work:"
+msgstr ""
+
+#: ../../source/additional_features.rst:176
+msgid ""
+"Currently, ``converter`` only supports named functions.  If mypy finds "
+"something else it will complain about not understanding the argument and "
+"the type annotation in :py:meth:`__init__ <object.__init__>` will be "
+"replaced by ``Any``."
+msgstr ""
+
+#: ../../source/additional_features.rst:180
+msgid ""
+":ref:`Validator decorators <attrs:examples_validators>` and `default "
+"decorators <http://www.attrs.org/en/stable/examples.html#defaults>`_ are "
+"not type-checked against the attribute they are setting/validating."
+msgstr ""
+
+#: ../../source/additional_features.rst:184
+msgid ""
+"Method definitions added by mypy currently overwrite any existing method "
+"definitions."
+msgstr ""
+
+#: ../../source/additional_features.rst:190
+msgid "Using a remote cache to speed up mypy runs"
+msgstr ""
+
+#: ../../source/additional_features.rst:192
+msgid ""
+"Mypy performs type checking *incrementally*, reusing results from "
+"previous runs to speed up successive runs. If you are type checking a "
+"large codebase, mypy can still be sometimes slower than desirable. For "
+"example, if you create a new branch based on a much more recent commit "
+"than the target of the previous mypy run, mypy may have to process almost"
+" every file, as a large fraction of source files may have changed. This "
+"can also happen after you've rebased a local branch."
+msgstr ""
+
+#: ../../source/additional_features.rst:201
+msgid ""
+"Mypy supports using a *remote cache* to improve performance in cases such"
+" as the above.  In a large codebase, remote caching can sometimes speed "
+"up mypy runs by a factor of 10, or more."
+msgstr ""
+
+#: ../../source/additional_features.rst:205
+msgid ""
+"Mypy doesn't include all components needed to set this up -- generally "
+"you will have to perform some simple integration with your Continuous "
+"Integration (CI) or build system to configure mypy to use a remote cache."
+" This discussion assumes you have a CI system set up for the mypy build "
+"you want to speed up, and that you are using a central git repository. "
+"Generalizing to different environments should not be difficult."
+msgstr ""
+
+#: ../../source/additional_features.rst:213
+msgid "Here are the main components needed:"
+msgstr ""
+
+#: ../../source/additional_features.rst:215
+msgid "A shared repository for storing mypy cache files for all landed commits."
+msgstr ""
+
+#: ../../source/additional_features.rst:217
+msgid ""
+"CI build that uploads mypy incremental cache files to the shared "
+"repository for each commit for which the CI build runs."
+msgstr ""
+
+#: ../../source/additional_features.rst:220
+msgid ""
+"A wrapper script around mypy that developers use to run mypy with remote "
+"caching enabled."
+msgstr ""
+
+#: ../../source/additional_features.rst:223
+msgid "Below we discuss each of these components in some detail."
+msgstr ""
+
+#: ../../source/additional_features.rst:226
+msgid "Shared repository for cache files"
+msgstr ""
+
+#: ../../source/additional_features.rst:228
+msgid ""
+"You need a repository that allows you to upload mypy cache files from "
+"your CI build and make the cache files available for download based on a "
+"commit id.  A simple approach would be to produce an archive of the "
+"``.mypy_cache`` directory (which contains the mypy cache data) as a "
+"downloadable *build artifact* from your CI build (depending on the "
+"capabilities of your CI system).  Alternatively, you could upload the "
+"data to a web server or to S3, for example."
+msgstr ""
+
+#: ../../source/additional_features.rst:237
+msgid "Continuous Integration build"
+msgstr ""
+
+#: ../../source/additional_features.rst:239
+msgid ""
+"The CI build would run a regular mypy build and create an archive "
+"containing the ``.mypy_cache`` directory produced by the build. Finally, "
+"it will produce the cache as a build artifact or upload it to a "
+"repository where it is accessible by the mypy wrapper script."
+msgstr ""
+
+#: ../../source/additional_features.rst:244
+msgid "Your CI script might work like this:"
+msgstr ""
+
+#: ../../source/additional_features.rst:246
+msgid ""
+"Run mypy normally. This will generate cache data under the "
+"``.mypy_cache`` directory."
+msgstr ""
+
+#: ../../source/additional_features.rst:249
+msgid "Create a tarball from the ``.mypy_cache`` directory."
+msgstr ""
+
+#: ../../source/additional_features.rst:251
+msgid ""
+"Determine the current git master branch commit id (say, using ``git rev-"
+"parse HEAD``)."
+msgstr ""
+
+#: ../../source/additional_features.rst:254
+msgid ""
+"Upload the tarball to the shared repository with a name derived from the "
+"commit id."
+msgstr ""
+
+#: ../../source/additional_features.rst:258
+msgid "Mypy wrapper script"
+msgstr ""
+
+#: ../../source/additional_features.rst:260
+msgid ""
+"The wrapper script is used by developers to run mypy locally during "
+"development instead of invoking mypy directly.  The wrapper first "
+"populates the local ``.mypy_cache`` directory from the shared repository "
+"and then runs a normal incremental build."
+msgstr ""
+
+#: ../../source/additional_features.rst:265
+msgid ""
+"The wrapper script needs some logic to determine the most recent central "
+"repository commit (by convention, the ``origin/master`` branch for git) "
+"the local development branch is based on. In a typical git setup you can "
+"do it like this:"
+msgstr ""
+
+#: ../../source/additional_features.rst:274
+msgid ""
+"The next step is to download the cache data (contents of the "
+"``.mypy_cache`` directory) from the shared repository based on the commit"
+" id of the merge base produced by the git command above. The script will "
+"decompress the data so that mypy will start with a fresh ``.mypy_cache``."
+" Finally, the script runs mypy normally. And that's all!"
+msgstr ""
+
+#: ../../source/additional_features.rst:281
+msgid "Caching with mypy daemon"
+msgstr ""
+
+#: ../../source/additional_features.rst:283
+msgid ""
+"You can also use remote caching with the :ref:`mypy daemon "
+"<mypy_daemon>`. The remote cache will significantly speed up the first "
+"``dmypy check`` run after starting or restarting the daemon."
+msgstr ""
+
+#: ../../source/additional_features.rst:287
+msgid ""
+"The mypy daemon requires extra fine-grained dependency data in the cache "
+"files which aren't included by default. To use caching with the mypy "
+"daemon, use the :option:`--cache-fine-grained <mypy --cache-fine-"
+"grained>` option in your CI build::"
+msgstr ""
+
+#: ../../source/additional_features.rst:294
+msgid ""
+"This flag adds extra information for the daemon to the cache. In order to"
+" use this extra information, you will also need to use the ``--use-fine-"
+"grained-cache`` option with ``dmypy start`` or ``dmypy restart``. "
+"Example::"
+msgstr ""
+
+#: ../../source/additional_features.rst:301
+msgid ""
+"Now your first ``dmypy check`` run should be much faster, as it can use "
+"cache information to avoid processing the whole program."
+msgstr ""
+
+#: ../../source/additional_features.rst:305
+msgid "Refinements"
+msgstr ""
+
+#: ../../source/additional_features.rst:307
+msgid ""
+"There are several optional refinements that may improve things further, "
+"at least if your codebase is hundreds of thousands of lines or more:"
+msgstr ""
+
+#: ../../source/additional_features.rst:310
+msgid ""
+"If the wrapper script determines that the merge base hasn't changed from "
+"a previous run, there's no need to download the cache data and it's "
+"better to instead reuse the existing local cache data."
+msgstr ""
+
+#: ../../source/additional_features.rst:314
+msgid ""
+"If you use the mypy daemon, you may want to restart the daemon each time "
+"after the merge base or local branch has changed to avoid processing a "
+"potentially large number of changes in an incremental build, as this can "
+"be much slower than downloading cache data and restarting the daemon."
+msgstr ""
+
+#: ../../source/additional_features.rst:319
+msgid ""
+"If the current local branch is based on a very recent master commit, the "
+"remote cache data may not yet be available for that commit, as there will"
+" necessarily be some latency to build the cache files. It may be a good "
+"idea to look for cache data for, say, the 5 latest master commits and use"
+" the most recent data that is available."
+msgstr ""
+
+#: ../../source/additional_features.rst:325
+msgid ""
+"If the remote cache is not accessible for some reason (say, from a public"
+" network), the script can still fall back to a normal incremental build."
+msgstr ""
+
+#: ../../source/additional_features.rst:328
+msgid ""
+"You can have multiple local cache directories for different local "
+"branches using the :option:`--cache-dir <mypy --cache-dir>` option. If "
+"the user switches to an existing branch where downloaded cache data is "
+"already available, you can continue to use the existing cache data "
+"instead of redownloading the data."
+msgstr ""
+
+#: ../../source/additional_features.rst:333
+msgid ""
+"You can set up your CI build to use a remote cache to speed up the CI "
+"build. This would be particularly useful if each CI build starts from a "
+"fresh state without access to cache files from previous builds. It's "
+"still recommended to run a full, non-incremental mypy build to create the"
+" cache data, as repeatedly updating cache data incrementally could result"
+" in drift over a long time period (due to a mypy caching issue, perhaps)."
+msgstr ""
+
+#: ../../source/additional_features.rst:344
+msgid "Extended Callable types"
+msgstr ""
+
+#: ../../source/additional_features.rst:348
+msgid ""
+"This feature is deprecated.  You can use :ref:`callback protocols "
+"<callback_protocols>` as a replacement."
+msgstr ""
+
+#: ../../source/additional_features.rst:351
+msgid ""
+"As an experimental mypy extension, you can specify "
+":py:data:`~typing.Callable` types that support keyword arguments, "
+"optional arguments, and more.  When you specify the arguments of a "
+":py:data:`~typing.Callable`, you can choose to supply just the type of a "
+"nameless positional argument, or an \"argument specifier\" representing a"
+" more complicated form of argument.  This allows one to more closely "
+"emulate the full range of possibilities given by the ``def`` statement in"
+" Python."
+msgstr ""
+
+#: ../../source/additional_features.rst:359
+msgid ""
+"As an example, here's a complicated function definition and the "
+"corresponding :py:data:`~typing.Callable`:"
+msgstr ""
+
+#: ../../source/additional_features.rst:388
+msgid ""
+"Argument specifiers are special function calls that can specify the "
+"following aspects of an argument:"
+msgstr ""
+
+#: ../../source/additional_features.rst:391
+msgid "its type (the only thing that the basic format supports)"
+msgstr ""
+
+#: ../../source/additional_features.rst:393
+msgid "its name (if it has one)"
+msgstr ""
+
+#: ../../source/additional_features.rst:395
+msgid "whether it may be omitted"
+msgstr ""
+
+#: ../../source/additional_features.rst:397
+msgid "whether it may or must be passed using a keyword"
+msgstr ""
+
+#: ../../source/additional_features.rst:399
+msgid ""
+"whether it is a ``*args`` argument (representing the remaining positional"
+" arguments)"
+msgstr ""
+
+#: ../../source/additional_features.rst:402
+msgid ""
+"whether it is a ``**kwargs`` argument (representing the remaining keyword"
+" arguments)"
+msgstr ""
+
+#: ../../source/additional_features.rst:405
+msgid ""
+"The following functions are available in ``mypy_extensions`` for this "
+"purpose:"
+msgstr ""
+
+#: ../../source/additional_features.rst:434
+msgid ""
+"In all cases, the ``type`` argument defaults to ``Any``, and if the "
+"``name`` argument is omitted the argument has no name (the name is "
+"required for ``NamedArg`` and ``DefaultNamedArg``).  A basic "
+":py:data:`~typing.Callable` such as"
+msgstr ""
+
+#: ../../source/additional_features.rst:443
+msgid "is equivalent to the following:"
+msgstr ""
+
+#: ../../source/additional_features.rst:449
+msgid "A :py:data:`~typing.Callable` with unspecified argument types, such as"
+msgstr ""
+
+#: ../../source/additional_features.rst:455
+msgid "is (roughly) equivalent to"
+msgstr ""
+
+#: ../../source/additional_features.rst:463
+msgid ""
+"Each of the functions above currently just returns its ``type`` argument "
+"at runtime, so the information contained in the argument specifiers is "
+"not available at runtime.  This limitation is necessary for backwards "
+"compatibility with the existing ``typing.py`` module as present in the "
+"Python 3.5+ standard library and distributed via PyPI."
+msgstr ""
+

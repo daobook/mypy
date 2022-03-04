@@ -1,0 +1,94 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/error_codes.rst:4
+msgid "Error codes"
+msgstr ""
+
+#: ../../source/error_codes.rst:6
+msgid ""
+"Mypy can optionally display an error code such as ``[attr-defined]`` "
+"after each error message. Error codes serve two purposes:"
+msgstr ""
+
+#: ../../source/error_codes.rst:9
+msgid ""
+"It's possible to silence specific error codes on a line using ``# type: "
+"ignore[code]``. This way you won't accidentally ignore other, potentially"
+" more serious errors."
+msgstr ""
+
+#: ../../source/error_codes.rst:13
+msgid ""
+"The error code can be used to find documentation about the error. The "
+"next two topics (:ref:`error-code-list` and :ref:`error-codes-optional`) "
+"document the various error codes mypy can report."
+msgstr ""
+
+#: ../../source/error_codes.rst:18
+msgid ""
+"Most error codes are shared between multiple related error messages. "
+"Error codes may change in future mypy releases."
+msgstr ""
+
+#: ../../source/error_codes.rst:24
+msgid "Displaying error codes"
+msgstr ""
+
+#: ../../source/error_codes.rst:26
+msgid ""
+"Error codes are not displayed by default.  Use :option:`--show-error-"
+"codes <mypy --show-error-codes>` or config `show_error_codes = True` to "
+"display error codes. Error codes are shown inside square brackets:"
+msgstr ""
+
+#: ../../source/error_codes.rst:34
+msgid ""
+"It's also possible to require error codes for ``type: ignore`` comments. "
+"See :ref:`ignore-without-code<ignore-without-code>` for more information."
+msgstr ""
+
+#: ../../source/error_codes.rst:41
+msgid "Silencing errors based on error codes"
+msgstr ""
+
+#: ../../source/error_codes.rst:43
+msgid ""
+"You can use a special comment ``# type: ignore[code, ...]`` to only "
+"ignore errors with a specific error code (or codes) on a particular line."
+"  This can be used even if you have not configured mypy to show error "
+"codes. Currently it's only possible to disable arbitrary error codes on "
+"individual lines using this comment."
+msgstr ""
+
+#: ../../source/error_codes.rst:51
+msgid ""
+"There are command-line flags and config file settings for enabling "
+"certain optional error codes, such as :option:`--disallow-untyped-defs "
+"<mypy --disallow-untyped-defs>`, which enables the ``no-untyped-def`` "
+"error code."
+msgstr ""
+
+#: ../../source/error_codes.rst:55
+msgid ""
+"This example shows how to ignore an error about an imported name mypy "
+"thinks is undefined:"
+msgstr ""
+

@@ -1,0 +1,253 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/builtin_types.rst:2
+msgid "Built-in types"
+msgstr ""
+
+#: ../../source/builtin_types.rst:4
+msgid ""
+"This chapter introduces some commonly used built-in types. We will cover "
+"many other kinds of types later."
+msgstr ""
+
+#: ../../source/builtin_types.rst:8
+msgid "Simple types"
+msgstr ""
+
+#: ../../source/builtin_types.rst:10
+msgid "Here are examples of some common built-in types:"
+msgstr ""
+
+#: ../../source/builtin_types.rst:13 ../../source/builtin_types.rst:32
+#: ../../source/builtin_types.rst:47 ../../source/builtin_types.rst:76
+msgid "Type"
+msgstr ""
+
+#: ../../source/builtin_types.rst:13 ../../source/builtin_types.rst:32
+#: ../../source/builtin_types.rst:47 ../../source/builtin_types.rst:76
+msgid "Description"
+msgstr ""
+
+#: ../../source/builtin_types.rst:15
+msgid "``int``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:15
+msgid "integer"
+msgstr ""
+
+#: ../../source/builtin_types.rst:16
+msgid "``float``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:16
+msgid "floating point number"
+msgstr ""
+
+#: ../../source/builtin_types.rst:17
+msgid "``bool``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:17
+msgid "boolean value (subclass of ``int``)"
+msgstr ""
+
+#: ../../source/builtin_types.rst:18
+msgid "``str``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:18
+msgid "string (unicode in Python 3)"
+msgstr ""
+
+#: ../../source/builtin_types.rst:19
+msgid "``bytes``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:19
+msgid "8-bit string"
+msgstr ""
+
+#: ../../source/builtin_types.rst:20
+msgid "``object``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:20
+msgid "an arbitrary object (``object`` is the common base class)"
+msgstr ""
+
+#: ../../source/builtin_types.rst:23
+msgid "All built-in classes can be used as types."
+msgstr ""
+
+#: ../../source/builtin_types.rst:26
+msgid "Any type"
+msgstr ""
+
+#: ../../source/builtin_types.rst:28
+msgid ""
+"If you can't find a good type for some value, you can always fall back to"
+" ``Any``:"
+msgstr ""
+
+#: ../../source/builtin_types.rst:34
+msgid "``Any``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:34
+msgid "dynamically typed value with an arbitrary type"
+msgstr ""
+
+#: ../../source/builtin_types.rst:37
+msgid ""
+"The type ``Any`` is defined in the :py:mod:`typing` module. See :ref"
+":`dynamic-typing` for more details."
+msgstr ""
+
+#: ../../source/builtin_types.rst:41
+msgid "Generic types"
+msgstr ""
+
+#: ../../source/builtin_types.rst:43
+msgid ""
+"In Python 3.9 and later, built-in collection type objects support "
+"indexing:"
+msgstr ""
+
+#: ../../source/builtin_types.rst:49
+msgid "``list[str]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:49 ../../source/builtin_types.rst:78
+msgid "list of ``str`` objects"
+msgstr ""
+
+#: ../../source/builtin_types.rst:50
+msgid "``tuple[int, int]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:50
+msgid "tuple of two ``int`` objects (``tuple[()]`` is the empty tuple)"
+msgstr ""
+
+#: ../../source/builtin_types.rst:51
+msgid "``tuple[int, ...]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:51 ../../source/builtin_types.rst:80
+msgid "tuple of an arbitrary number of ``int`` objects"
+msgstr ""
+
+#: ../../source/builtin_types.rst:52
+msgid "``dict[str, int]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:52 ../../source/builtin_types.rst:81
+msgid "dictionary from ``str`` keys to ``int`` values"
+msgstr ""
+
+#: ../../source/builtin_types.rst:53 ../../source/builtin_types.rst:82
+msgid "``Iterable[int]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:53 ../../source/builtin_types.rst:82
+msgid "iterable object containing ints"
+msgstr ""
+
+#: ../../source/builtin_types.rst:54 ../../source/builtin_types.rst:83
+msgid "``Sequence[bool]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:54 ../../source/builtin_types.rst:83
+msgid "sequence of booleans (read-only)"
+msgstr ""
+
+#: ../../source/builtin_types.rst:55 ../../source/builtin_types.rst:84
+msgid "``Mapping[str, int]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:55 ../../source/builtin_types.rst:84
+msgid "mapping from ``str`` keys to ``int`` values (read-only)"
+msgstr ""
+
+#: ../../source/builtin_types.rst:58
+msgid ""
+"The type ``dict`` is a *generic* class, signified by type arguments "
+"within ``[...]``. For example, ``dict[int, str]`` is a dictionary from "
+"integers to strings and ``dict[Any, Any]`` is a dictionary of dynamically"
+" typed (arbitrary) values and keys. ``list`` is another generic class."
+msgstr ""
+
+#: ../../source/builtin_types.rst:63
+msgid ""
+"``Iterable``, ``Sequence``, and ``Mapping`` are generic types that "
+"correspond to Python protocols. For example, a ``str`` object or a "
+"``list[str]`` object is valid when ``Iterable[str]`` or ``Sequence[str]``"
+" is expected. You can import them from :py:mod:`collections.abc` instead "
+"of importing from :py:mod:`typing` in Python 3.9."
+msgstr ""
+
+#: ../../source/builtin_types.rst:69
+msgid ""
+"See :ref:`generic-builtins` for more details, including how you can use "
+"these in annotations also in Python 3.7 and 3.8."
+msgstr ""
+
+#: ../../source/builtin_types.rst:72
+msgid ""
+"These legacy types defined in :py:mod:`typing` are needed if you need to "
+"support Python 3.8 and earlier:"
+msgstr ""
+
+#: ../../source/builtin_types.rst:78
+msgid "``List[str]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:79
+msgid "``Tuple[int, int]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:79
+msgid "tuple of two ``int`` objects (``Tuple[()]`` is the empty tuple)"
+msgstr ""
+
+#: ../../source/builtin_types.rst:80
+msgid "``Tuple[int, ...]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:81
+msgid "``Dict[str, int]``"
+msgstr ""
+
+#: ../../source/builtin_types.rst:87
+msgid ""
+"``List`` is an alias for the built-in type ``list`` that supports "
+"indexing (and similarly for ``dict``/``Dict`` and ``tuple``/``Tuple``)."
+msgstr ""
+
+#: ../../source/builtin_types.rst:91
+msgid ""
+"Note that even though ``Iterable``, ``Sequence`` and ``Mapping`` look "
+"similar to abstract base classes defined in :py:mod:`collections.abc` "
+"(formerly ``collections``), they are not identical, since the latter "
+"don't support indexing prior to Python 3.9."
+msgstr ""
+

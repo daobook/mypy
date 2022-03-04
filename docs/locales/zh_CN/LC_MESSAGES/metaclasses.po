@@ -1,0 +1,91 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/metaclasses.rst:4
+msgid "Metaclasses"
+msgstr ""
+
+#: ../../source/metaclasses.rst:6
+msgid ""
+"A :ref:`metaclass <python:metaclasses>` is a class that describes the "
+"construction and behavior of other classes, similarly to how classes "
+"describe the construction and behavior of objects. The default metaclass "
+"is :py:class:`type`, but it's possible to use other metaclasses. "
+"Metaclasses allows one to create \"a different kind of class\", such as "
+":py:class:`~enum.Enum`\\s, :py:class:`~typing.NamedTuple`\\s and "
+"singletons."
+msgstr ""
+
+#: ../../source/metaclasses.rst:13
+msgid ""
+"Mypy has some special understanding of :py:class:`~abc.ABCMeta` and "
+"``EnumMeta``."
+msgstr ""
+
+#: ../../source/metaclasses.rst:18
+msgid "Defining a metaclass"
+msgstr ""
+
+#: ../../source/metaclasses.rst:28
+msgid "In Python 2, the syntax for defining a metaclass is different:"
+msgstr ""
+
+#: ../../source/metaclasses.rst:35
+msgid ""
+"Mypy also supports using :py:func:`six.with_metaclass` and "
+":py:func:`@six.add_metaclass <six.add_metaclass>` to define metaclass in "
+"a portable way:"
+msgstr ""
+
+#: ../../source/metaclasses.rst:52
+msgid "Metaclass usage example"
+msgstr ""
+
+#: ../../source/metaclasses.rst:54
+msgid "Mypy supports the lookup of attributes in the metaclass:"
+msgstr ""
+
+#: ../../source/metaclasses.rst:83
+msgid "Gotchas and limitations of metaclass support"
+msgstr ""
+
+#: ../../source/metaclasses.rst:85
+msgid ""
+"Note that metaclasses pose some requirements on the inheritance "
+"structure, so it's better not to combine metaclasses and class "
+"hierarchies:"
+msgstr ""
+
+#: ../../source/metaclasses.rst:103
+msgid ""
+"Mypy does not understand dynamically-computed metaclasses, such as "
+"``class A(metaclass=f()): ...``"
+msgstr ""
+
+#: ../../source/metaclasses.rst:105
+msgid "Mypy does not and cannot understand arbitrary metaclass code."
+msgstr ""
+
+#: ../../source/metaclasses.rst:106
+msgid ""
+"Mypy only recognizes subclasses of :py:class:`type` as potential "
+"metaclasses."
+msgstr ""
+

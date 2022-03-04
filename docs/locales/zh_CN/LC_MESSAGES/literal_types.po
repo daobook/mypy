@@ -1,0 +1,339 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/literal_types.rst:2
+msgid "Literal types and Enums"
+msgstr ""
+
+#: ../../source/literal_types.rst:7
+msgid "Literal types"
+msgstr ""
+
+#: ../../source/literal_types.rst:9
+msgid ""
+"Literal types let you indicate that an expression is equal to some "
+"specific primitive value. For example, if we annotate a variable with "
+"type ``Literal[\"foo\"]``, mypy will understand that variable is not only"
+" of type ``str``, but is also equal to specifically the string "
+"``\"foo\"``."
+msgstr ""
+
+#: ../../source/literal_types.rst:14
+msgid ""
+"This feature is primarily useful when annotating functions that behave "
+"differently based on the exact value the caller provides. For example, "
+"suppose we have a function ``fetch_data(...)`` that returns ``bytes`` if "
+"the first argument is ``True``, and ``str`` if it's ``False``. We can "
+"construct a precise type signature for this function using "
+"``Literal[...]`` and overloads:"
+msgstr ""
+
+#: ../../source/literal_types.rst:53
+msgid ""
+"The examples in this page import ``Literal`` as well as ``Final`` and "
+"``TypedDict`` from the ``typing`` module. These types were added to "
+"``typing`` in Python 3.8, but are also available for use in Python 2.7 "
+"and 3.4 - 3.7 via the ``typing_extensions`` package."
+msgstr ""
+
+#: ../../source/literal_types.rst:59
+msgid "Parameterizing Literals"
+msgstr ""
+
+#: ../../source/literal_types.rst:61
+msgid ""
+"Literal types may contain one or more literal bools, ints, strs, bytes, "
+"and enum values. However, literal types **cannot** contain arbitrary "
+"expressions: types like ``Literal[my_string.trim()]``, ``Literal[x > "
+"3]``, or ``Literal[3j + 4]`` are all illegal."
+msgstr ""
+
+#: ../../source/literal_types.rst:66
+msgid ""
+"Literals containing two or more values are equivalent to the union of "
+"those values. So, ``Literal[-3, b\"foo\", MyEnum.A]`` is equivalent to "
+"``Union[Literal[-3], Literal[b\"foo\"], Literal[MyEnum.A]]``. This makes "
+"writing more complex types involving literals a little more convenient."
+msgstr ""
+
+#: ../../source/literal_types.rst:71
+msgid ""
+"Literal types may also contain ``None``. Mypy will treat "
+"``Literal[None]`` as being equivalent to just ``None``. This means that "
+"``Literal[4, None]``, ``Union[Literal[4], None]``, and "
+"``Optional[Literal[4]]`` are all equivalent."
+msgstr ""
+
+#: ../../source/literal_types.rst:75
+msgid ""
+"Literals may also contain aliases to other literal types. For example, "
+"the following program is legal:"
+msgstr ""
+
+#: ../../source/literal_types.rst:89
+msgid ""
+"Literals may not contain any other kind of type or expression. This means"
+" doing ``Literal[my_instance]``, ``Literal[Any]``, ``Literal[3.14]``, or "
+"``Literal[{\"foo\": 2, \"bar\": 5}]`` are all illegal."
+msgstr ""
+
+#: ../../source/literal_types.rst:94
+msgid "Declaring literal variables"
+msgstr ""
+
+#: ../../source/literal_types.rst:96
+msgid ""
+"You must explicitly add an annotation to a variable to declare that it "
+"has a literal type:"
+msgstr ""
+
+#: ../../source/literal_types.rst:104
+msgid ""
+"In order to preserve backwards-compatibility, variables without this "
+"annotation are **not** assumed to be literals:"
+msgstr ""
+
+#: ../../source/literal_types.rst:112
+msgid ""
+"If you find repeating the value of the variable in the type hint to be "
+"tedious, you can instead change the variable to be ``Final`` (see "
+":ref:`final_attrs`):"
+msgstr ""
+
+#: ../../source/literal_types.rst:126
+msgid ""
+"If you do not provide an explicit type in the ``Final``, the type of "
+"``c`` becomes *context-sensitive*: mypy will basically try "
+"\"substituting\" the original assigned value whenever it's used before "
+"performing type checking. This is why the revealed type of ``c`` is "
+"``Literal[19]?``: the question mark at the end reflects this context-"
+"sensitive nature."
+msgstr ""
+
+#: ../../source/literal_types.rst:132
+msgid ""
+"For example, mypy will type check the above program almost as if it were "
+"written like so:"
+msgstr ""
+
+#: ../../source/literal_types.rst:143
+msgid ""
+"This means that while changing a variable to be ``Final`` is not quite "
+"the same thing as adding an explicit ``Literal[...]`` annotation, it "
+"often leads to the same effect in practice."
+msgstr ""
+
+#: ../../source/literal_types.rst:147
+msgid ""
+"The main cases where the behavior of context-sensitive vs true literal "
+"types differ are when you try using those types in places that are not "
+"explicitly expecting a ``Literal[...]``. For example, compare and "
+"contrast what happens when you try appending these types to a list:"
+msgstr ""
+
+#: ../../source/literal_types.rst:171
+msgid "Intelligent indexing"
+msgstr ""
+
+#: ../../source/literal_types.rst:173
+msgid ""
+"We can use Literal types to more precisely index into structured "
+"heterogeneous types such as tuples, NamedTuples, and TypedDicts. This "
+"feature is known as *intelligent indexing*."
+msgstr ""
+
+#: ../../source/literal_types.rst:177
+msgid ""
+"For example, when we index into a tuple using some int, the inferred type"
+" is normally the union of the tuple item types. However, if we want just "
+"the type corresponding to some particular index, we can use Literal types"
+" like so:"
+msgstr ""
+
+#: ../../source/literal_types.rst:219
+msgid "Tagged unions"
+msgstr ""
+
+#: ../../source/literal_types.rst:221
+msgid ""
+"When you have a union of types, you can normally discriminate between "
+"each type in the union by using ``isinstance`` checks. For example, if "
+"you had a variable ``x`` of type ``Union[int, str]``, you could write "
+"some code that runs only if ``x`` is an int by doing ``if isinstance(x, "
+"int): ...``."
+msgstr ""
+
+#: ../../source/literal_types.rst:226
+msgid ""
+"However, it is not always possible or convenient to do this. For example,"
+" it is not possible to use ``isinstance`` to distinguish between two "
+"different TypedDicts since at runtime, your variable will simply be just "
+"a dict."
+msgstr ""
+
+#: ../../source/literal_types.rst:230
+msgid ""
+"Instead, what you can do is *label* or *tag* your TypedDicts with a "
+"distinct Literal type. Then, you can discriminate between each kind of "
+"TypedDict by checking the label:"
+msgstr ""
+
+#: ../../source/literal_types.rst:261
+msgid ""
+"While this feature is mostly useful when working with TypedDicts, you can"
+" also use the same technique with regular objects, tuples, or "
+"namedtuples."
+msgstr ""
+
+#: ../../source/literal_types.rst:264
+msgid ""
+"Similarly, tags do not need to be specifically str Literals: they can be "
+"any type you can normally narrow within ``if`` statements and the like. "
+"For example, you could have your tags be int or Enum Literals or even "
+"regular classes you narrow using ``isinstance()``:"
+msgstr ""
+
+#: ../../source/literal_types.rst:292
+msgid ""
+"This feature is sometimes called \"sum types\" or \"discriminated union "
+"types\" in other programming languages."
+msgstr ""
+
+#: ../../source/literal_types.rst:296
+msgid "Exhaustiveness checks"
+msgstr ""
+
+#: ../../source/literal_types.rst:298
+msgid ""
+"You may want to check that some code covers all possible ``Literal`` or "
+"``Enum`` cases. Example:"
+msgstr ""
+
+#: ../../source/literal_types.rst:317
+msgid ""
+"In the code above, it's easy to make a mistake. You can add a new literal"
+" value to ``PossibleValues`` but forget to handle it in the ``validate`` "
+"function:"
+msgstr ""
+
+#: ../../source/literal_types.rst:325
+msgid ""
+"Mypy won't catch that ``'three'`` is not covered.  If you want mypy to "
+"perform an exhaustiveness check, you need to update your code to use an "
+"``assert_never()`` check:"
+msgstr ""
+
+#: ../../source/literal_types.rst:346
+msgid ""
+"Now if you add a new value to ``PossibleValues`` but don't update "
+"``validate``, mypy will spot the error:"
+msgstr ""
+
+#: ../../source/literal_types.rst:363
+msgid "Limitations"
+msgstr ""
+
+#: ../../source/literal_types.rst:365
+msgid ""
+"Mypy will not understand expressions that use variables of type "
+"``Literal[..]`` on a deep level. For example, if you have a variable "
+"``a`` of type ``Literal[3]`` and another variable ``b`` of type "
+"``Literal[5]``, mypy will infer that ``a + b`` has type ``int``, **not** "
+"type ``Literal[8]``."
+msgstr ""
+
+#: ../../source/literal_types.rst:370
+msgid ""
+"The basic rule is that literal types are treated as just regular subtypes"
+" of whatever type the parameter has. For example, ``Literal[3]`` is "
+"treated as a subtype of ``int`` and so will inherit all of ``int``'s "
+"methods directly. This means that ``Literal[3].__add__`` accepts the same"
+" arguments and has the same return type as ``int.__add__``."
+msgstr ""
+
+#: ../../source/literal_types.rst:378
+msgid "Enums"
+msgstr ""
+
+#: ../../source/literal_types.rst:380
+msgid ""
+"Mypy has special support for :py:class:`enum.Enum` and its subclasses: "
+":py:class:`enum.IntEnum`, :py:class:`enum.Flag`, "
+":py:class:`enum.IntFlag`, and :py:class:`enum.StrEnum`."
+msgstr ""
+
+#: ../../source/literal_types.rst:395
+msgid "You can use enums to annotate types as you would expect:"
+msgstr ""
+
+#: ../../source/literal_types.rst:408
+msgid "Exhaustive checks"
+msgstr ""
+
+#: ../../source/literal_types.rst:410
+msgid ""
+"Similiar to ``Literal`` types ``Enum`` supports exhaustive checks. Let's "
+"start with a definition:"
+msgstr ""
+
+#: ../../source/literal_types.rst:426
+msgid "Now, let's define an exhaustive check:"
+msgstr ""
+
+#: ../../source/literal_types.rst:440
+msgid "And then test that it raises an error when some cases are not covered:"
+msgstr ""
+
+#: ../../source/literal_types.rst:451
+msgid "Extra Enum checks"
+msgstr ""
+
+#: ../../source/literal_types.rst:453
+msgid ""
+"Mypy also tries to support special features of ``Enum`` the same way "
+"Python's runtime does."
+msgstr ""
+
+#: ../../source/literal_types.rst:456
+msgid "Extra checks:"
+msgstr ""
+
+#: ../../source/literal_types.rst:458
+msgid ""
+"Any ``Enum`` class with values is implicitly :ref:`final <final_attrs>`. "
+"This is what happens in CPython:"
+msgstr ""
+
+#: ../../source/literal_types.rst:470
+msgid "We do the same thing:"
+msgstr ""
+
+#: ../../source/literal_types.rst:478
+msgid "All ``Enum`` fields are implictly ``final`` as well."
+msgstr ""
+
+#: ../../source/literal_types.rst:484
+msgid "All field names are checked to be unique."
+msgstr ""
+
+#: ../../source/literal_types.rst:492
+msgid "Base classes have no conflicts and mixin types are correct."
+msgstr ""
+

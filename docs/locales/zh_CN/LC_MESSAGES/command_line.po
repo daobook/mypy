@@ -1,0 +1,1098 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/command_line.rst:6
+msgid "The mypy command line"
+msgstr ""
+
+#: ../../source/command_line.rst:8
+msgid ""
+"This section documents mypy's command line interface. You can view a "
+"quick summary of the available flags by running :option:`mypy --help`."
+msgstr ""
+
+#: ../../source/command_line.rst:13
+msgid "Command line flags are liable to change between releases."
+msgstr ""
+
+#: ../../source/command_line.rst:17
+msgid "Specifying what to type check"
+msgstr ""
+
+#: ../../source/command_line.rst:19
+msgid ""
+"By default, you can specify what code you want mypy to type check by "
+"passing in the paths to what you want to have type checked::"
+msgstr ""
+
+#: ../../source/command_line.rst:24
+msgid "Note that directories are checked recursively."
+msgstr ""
+
+#: ../../source/command_line.rst:26
+msgid ""
+"Mypy also lets you specify what code to type check in several other ways."
+" A short summary of the relevant flags is included below: for full "
+"details, see :ref:`running-mypy`."
+msgstr ""
+
+#: ../../source/command_line.rst:32
+msgid ""
+"Asks mypy to type check the provided module. This flag may be repeated "
+"multiple times."
+msgstr ""
+
+#: ../../source/command_line.rst:35
+msgid ""
+"Mypy *will not* recursively type check any submodules of the provided "
+"module."
+msgstr ""
+
+#: ../../source/command_line.rst:40
+msgid ""
+"Asks mypy to type check the provided package. This flag may be repeated "
+"multiple times."
+msgstr ""
+
+#: ../../source/command_line.rst:43
+msgid ""
+"Mypy *will* recursively type check any submodules of the provided "
+"package. This flag is identical to :option:`--module` apart from this "
+"behavior."
+msgstr ""
+
+#: ../../source/command_line.rst:49
+msgid "Asks mypy to type check the provided string as a program."
+msgstr ""
+
+#: ../../source/command_line.rst:54
+msgid ""
+"A regular expression that matches file names, directory names and paths "
+"which mypy should ignore while recursively discovering files to check. "
+"Use forward slashes on all platforms."
+msgstr ""
+
+#: ../../source/command_line.rst:58
+msgid ""
+"For instance, to avoid discovering any files named `setup.py` you could "
+"pass ``--exclude '/setup\\.py$'``. Similarly, you can ignore discovering "
+"directories with a given name by e.g. ``--exclude /build/`` or those "
+"matching a subpath with ``--exclude /project/vendor/``. To ignore "
+"multiple files / directories / paths, you can provide the --exclude flag "
+"more than once, e.g ``--exclude '/setup\\.py$' --exclude '/build/'``."
+msgstr ""
+
+#: ../../source/command_line.rst:65
+msgid ""
+"Note that this flag only affects recursive directory tree discovery, that"
+" is, when mypy is discovering files within a directory tree or submodules"
+" of a package to check. If you pass a file or module explicitly it will "
+"still be checked. For instance, ``mypy --exclude '/setup.py$' "
+"but_still_check/setup.py``."
+msgstr ""
+
+#: ../../source/command_line.rst:71
+msgid ""
+"In particular, ``--exclude`` does not affect mypy's :ref:`import "
+"following <follow-imports>`. You can use a per-module "
+":confval:`follow_imports` config option to additionally avoid mypy from "
+"following imports and checking code you do not wish to be checked."
+msgstr ""
+
+#: ../../source/command_line.rst:76
+msgid ""
+"Note that mypy will never recursively discover files and directories "
+"named \"site-packages\", \"node_modules\" or \"__pycache__\", or those "
+"whose name starts with a period, exactly as ``--exclude '/(site-"
+"packages|node_modules|__pycache__|\\..*)/$'`` would. Mypy will also never"
+" recursively discover files with extensions other than ``.py`` or "
+"``.pyi``."
+msgstr ""
+
+#: ../../source/command_line.rst:85
+msgid "Optional arguments"
+msgstr ""
+
+#: ../../source/command_line.rst:89
+msgid "Show help message and exit."
+msgstr ""
+
+#: ../../source/command_line.rst:93
+msgid "More verbose messages."
+msgstr ""
+
+#: ../../source/command_line.rst:97
+msgid "Show program's version number and exit."
+msgstr ""
+
+#: ../../source/command_line.rst:102
+msgid "Config file"
+msgstr ""
+
+#: ../../source/command_line.rst:106
+msgid "This flag makes mypy read configuration settings from the given file."
+msgstr ""
+
+#: ../../source/command_line.rst:108
+msgid ""
+"By default settings are read from ``mypy.ini``, ``.mypy.ini``, "
+"``pyproject.toml``, or ``setup.cfg`` in the current directory. Settings "
+"override mypy's built-in defaults and command line flags can override "
+"settings."
+msgstr ""
+
+#: ../../source/command_line.rst:112
+msgid ""
+"Specifying :option:`--config-file= <--config-file>` (with no filename) "
+"will ignore *all* config files."
+msgstr ""
+
+#: ../../source/command_line.rst:115
+msgid "See :ref:`config-file` for the syntax of configuration files."
+msgstr ""
+
+#: ../../source/command_line.rst:119
+msgid ""
+"This flag makes mypy warn about unused ``[mypy-<pattern>]`` config file "
+"sections. (This requires turning off incremental mode using :option"
+":`--no-incremental`.)"
+msgstr ""
+
+#: ../../source/command_line.rst:127
+msgid "Import discovery"
+msgstr ""
+
+#: ../../source/command_line.rst:129
+msgid ""
+"The following flags customize how exactly mypy discovers and follows "
+"imports."
+msgstr ""
+
+#: ../../source/command_line.rst:134
+msgid ""
+"This flag enables import discovery to use namespace packages (see "
+":pep:`420`).  In particular, this allows discovery of imported packages "
+"that don't have an ``__init__.py`` (or ``__init__.pyi``) file."
+msgstr ""
+
+#: ../../source/command_line.rst:139
+msgid ""
+"Namespace packages are found (using the PEP 420 rules, which prefers "
+"\"classic\" packages over namespace packages) along the module search "
+"path -- this is primarily set from the source files passed on the command"
+" line, the ``MYPYPATH`` environment variable, and the "
+":confval:`mypy_path` config option."
+msgstr ""
+
+#: ../../source/command_line.rst:145
+msgid ""
+"This flag affects how mypy finds modules and packages explicitly passed "
+"on the command line. It also affects how mypy determines fully qualified "
+"module names for files passed on the command line. See :ref:`Mapping file"
+" paths to modules <mapping-paths-to-modules>` for details."
+msgstr ""
+
+#: ../../source/command_line.rst:152
+msgid ""
+"This flag tells mypy that top-level packages will be based in either the "
+"current directory, or a member of the ``MYPYPATH`` environment variable "
+"or :confval:`mypy_path` config option. This option is only useful in "
+"conjunction with :option:`--namespace-packages`. See :ref:`Mapping file "
+"paths to modules <mapping-paths-to-modules>` for details."
+msgstr ""
+
+#: ../../source/command_line.rst:160
+msgid ""
+"This flag makes mypy ignore all missing imports. It is equivalent to "
+"adding ``# type: ignore`` comments to all unresolved imports within your "
+"codebase."
+msgstr ""
+
+#: ../../source/command_line.rst:164
+msgid ""
+"Note that this flag does *not* suppress errors about missing names in "
+"successfully resolved modules. For example, if one has the following "
+"files::"
+msgstr ""
+
+#: ../../source/command_line.rst:171
+msgid ""
+"Then mypy will generate the following errors with :option:`--ignore-"
+"missing-imports`:"
+msgstr ""
+
+#: ../../source/command_line.rst:181
+msgid "For more details, see :ref:`ignore-missing-imports`."
+msgstr ""
+
+#: ../../source/command_line.rst:185
+msgid ""
+"This flag adjusts how mypy follows imported modules that were not "
+"explicitly passed in via the command line."
+msgstr ""
+
+#: ../../source/command_line.rst:188
+msgid ""
+"The default option is ``normal``: mypy will follow and type check all "
+"modules. For more information on what the other options do, see "
+":ref:`Following imports <follow-imports>`."
+msgstr ""
+
+#: ../../source/command_line.rst:194
+msgid ""
+"This flag will have mypy collect type information from :pep:`561` "
+"compliant packages installed for the Python executable ``EXECUTABLE``. If"
+" not provided, mypy will use PEP 561 compliant packages installed for the"
+" Python executable running mypy."
+msgstr ""
+
+#: ../../source/command_line.rst:199
+msgid ""
+"See :ref:`installed-packages` for more on making PEP 561 compliant "
+"packages."
+msgstr ""
+
+#: ../../source/command_line.rst:203
+msgid ""
+"This flag will disable searching for :pep:`561` compliant packages. This "
+"will also disable searching for a usable Python executable."
+msgstr ""
+
+#: ../../source/command_line.rst:206
+msgid ""
+"Use this  flag if mypy cannot find a Python executable for the version of"
+" Python being checked, and you don't need to use PEP 561 typed packages. "
+"Otherwise, use :option:`--python-executable`."
+msgstr ""
+
+#: ../../source/command_line.rst:212
+msgid ""
+"By default, mypy will suppress any error messages generated within "
+":pep:`561` compliant packages. Adding this flag will disable this "
+"behavior."
+msgstr ""
+
+#: ../../source/command_line.rst:219
+msgid "Platform configuration"
+msgstr ""
+
+#: ../../source/command_line.rst:221
+msgid ""
+"By default, mypy will assume that you intend to run your code using the "
+"same operating system and Python version you are using to run mypy "
+"itself. The following flags let you modify this behavior."
+msgstr ""
+
+#: ../../source/command_line.rst:225
+msgid ""
+"For more information on how to use these flags, see "
+":ref:`version_and_platform_checks`."
+msgstr ""
+
+#: ../../source/command_line.rst:229
+msgid ""
+"This flag will make mypy type check your code as if it were run under "
+"Python version X.Y. Without this option, mypy will default to using "
+"whatever version of Python is running mypy. Note that the :option:`-2` "
+"and :option:`--py2` flags are aliases for :option:`--python-version 2.7 "
+"<--python-version>`."
+msgstr ""
+
+#: ../../source/command_line.rst:234
+msgid ""
+"This flag will attempt to find a Python executable of the corresponding "
+"version to search for :pep:`561` compliant packages. If you'd like to "
+"disable this, use the :option:`--no-site-packages` flag (see :ref"
+":`import-discovery` for more details)."
+msgstr ""
+
+#: ../../source/command_line.rst:241
+msgid "Equivalent to running :option:`--python-version 2.7 <--python-version>`."
+msgstr ""
+
+#: ../../source/command_line.rst:245
+msgid ""
+"To check Python 2 code with mypy, you'll need to install mypy with ``pip "
+"install 'mypy[python2]'``."
+msgstr ""
+
+#: ../../source/command_line.rst:250
+msgid ""
+"This flag will make mypy type check your code as if it were run under the"
+" given operating system. Without this option, mypy will default to using "
+"whatever operating system you are currently using."
+msgstr ""
+
+#: ../../source/command_line.rst:254
+msgid ""
+"The ``PLATFORM`` parameter may be any string supported by "
+":py:data:`sys.platform`."
+msgstr ""
+
+#: ../../source/command_line.rst:261
+msgid ""
+"This flag will treat all variables named ``NAME`` as compile-time "
+"constants that are always true.  This flag may be repeated."
+msgstr ""
+
+#: ../../source/command_line.rst:267
+msgid ""
+"This flag will treat all variables named ``NAME`` as compile-time "
+"constants that are always false.  This flag may be repeated."
+msgstr ""
+
+#: ../../source/command_line.rst:275
+msgid "Disallow dynamic typing"
+msgstr ""
+
+#: ../../source/command_line.rst:277
+msgid ""
+"The ``Any`` type is used to represent a value that has a :ref:`dynamic "
+"type <dynamic-typing>`. The ``--disallow-any`` family of flags will "
+"disallow various uses of the ``Any`` type in a module -- this lets us "
+"strategically disallow the use of dynamic typing in a controlled way."
+msgstr ""
+
+#: ../../source/command_line.rst:281
+msgid "The following options are available:"
+msgstr ""
+
+#: ../../source/command_line.rst:285
+msgid ""
+"This flag disallows usage of types that come from unfollowed imports "
+"(such types become aliases for ``Any``). Unfollowed imports occur either "
+"when the imported module does not exist or when :option:`--follow-"
+"imports=skip <--follow-imports>` is set."
+msgstr ""
+
+#: ../../source/command_line.rst:292
+msgid ""
+"This flag disallows all expressions in the module that have type ``Any``."
+" If an expression of type ``Any`` appears anywhere in the module mypy "
+"will output an error unless the expression is immediately used as an "
+"argument to :py:func:`~typing.cast` or assigned to a variable with an "
+"explicit type annotation."
+msgstr ""
+
+#: ../../source/command_line.rst:298
+msgid ""
+"In addition, declaring a variable of type ``Any`` or casting to type "
+"``Any`` is not allowed. Note that calling functions that take parameters "
+"of type ``Any`` is still allowed."
+msgstr ""
+
+#: ../../source/command_line.rst:304
+msgid ""
+"This flag disallows functions that have ``Any`` in their signature after "
+"decorator transformation."
+msgstr ""
+
+#: ../../source/command_line.rst:309
+msgid ""
+"This flag disallows explicit ``Any`` in type positions such as type "
+"annotations and generic type parameters."
+msgstr ""
+
+#: ../../source/command_line.rst:314
+msgid ""
+"This flag disallows usage of generic types that do not specify explicit "
+"type parameters. For example, you can't use a bare ``x: list``. Instead, "
+"you must always write something like ``x: list[int]``."
+msgstr ""
+
+#: ../../source/command_line.rst:320
+msgid ""
+"This flag reports an error whenever a class subclasses a value of type "
+"``Any``.  This may occur when the base class is imported from a module "
+"that doesn't exist (when using :option:`--ignore-missing-imports`) or is "
+"ignored due to :option:`--follow-imports=skip <--follow-imports>` or a "
+"``# type: ignore`` comment on the ``import`` statement."
+msgstr ""
+
+#: ../../source/command_line.rst:327
+msgid ""
+"Since the module is silenced, the imported class is given a type of "
+"``Any``. By default mypy will assume that the subclass correctly "
+"inherited the base class even though that may not actually be the case.  "
+"This flag makes mypy raise an error instead."
+msgstr ""
+
+#: ../../source/command_line.rst:336
+msgid "Untyped definitions and calls"
+msgstr ""
+
+#: ../../source/command_line.rst:338
+msgid ""
+"The following flags configure how mypy handles untyped function "
+"definitions or calls."
+msgstr ""
+
+#: ../../source/command_line.rst:343
+msgid ""
+"This flag reports an error whenever a function with type annotations "
+"calls a function defined without annotations."
+msgstr ""
+
+#: ../../source/command_line.rst:348
+msgid ""
+"This flag reports an error whenever it encounters a function definition "
+"without type annotations."
+msgstr ""
+
+#: ../../source/command_line.rst:353
+msgid ""
+"This flag reports an error whenever it encounters a partly annotated "
+"function definition."
+msgstr ""
+
+#: ../../source/command_line.rst:358
+msgid ""
+"This flag is less severe than the previous two options -- it type checks "
+"the body of every function, regardless of whether it has type "
+"annotations. (By default the bodies of functions without annotations are "
+"not type checked.)"
+msgstr ""
+
+#: ../../source/command_line.rst:363
+msgid ""
+"It will assume all arguments have type ``Any`` and always infer ``Any`` "
+"as the return type."
+msgstr ""
+
+#: ../../source/command_line.rst:368
+msgid ""
+"This flag reports an error whenever a function with type annotations is "
+"decorated with a decorator without annotations."
+msgstr ""
+
+#: ../../source/command_line.rst:375
+msgid "None and Optional handling"
+msgstr ""
+
+#: ../../source/command_line.rst:377
+msgid ""
+"The following flags adjust how mypy handles values of type ``None``. For "
+"more details, see :ref:`no_strict_optional`."
+msgstr ""
+
+#: ../../source/command_line.rst:384
+msgid ""
+"This flag causes mypy to stop treating arguments with a ``None`` default "
+"value as having an implicit :py:data:`~typing.Optional` type."
+msgstr ""
+
+#: ../../source/command_line.rst:387
+msgid ""
+"For example, by default mypy will assume that the ``x`` parameter is of "
+"type ``Optional[int]`` in the code snippet below since the default "
+"parameter is ``None``:"
+msgstr ""
+
+#: ../../source/command_line.rst:396
+msgid ""
+"If this flag is set, the above snippet will no longer type check: we must"
+" now explicitly indicate that the type is ``Optional[int]``:"
+msgstr ""
+
+#: ../../source/command_line.rst:406
+msgid ""
+"This flag disables strict checking of :py:data:`~typing.Optional` types "
+"and ``None`` values. With this option, mypy doesn't generally check the "
+"use of ``None`` values -- they are valid everywhere. See "
+":ref:`no_strict_optional` for more about this feature."
+msgstr ""
+
+#: ../../source/command_line.rst:411
+msgid ""
+"**Note:** Strict optional checking was enabled by default starting in "
+"mypy 0.600, and in previous versions it had to be explicitly enabled "
+"using ``--strict-optional`` (which is still accepted)."
+msgstr ""
+
+#: ../../source/command_line.rst:419
+msgid "Configuring warnings"
+msgstr ""
+
+#: ../../source/command_line.rst:421
+msgid ""
+"The following flags enable warnings for code that is sound but is "
+"potentially problematic or redundant in some way."
+msgstr ""
+
+#: ../../source/command_line.rst:426
+msgid ""
+"This flag will make mypy report an error whenever your code uses an "
+"unnecessary cast that can safely be removed."
+msgstr ""
+
+#: ../../source/command_line.rst:431
+msgid ""
+"This flag will make mypy report an error whenever your code uses a ``# "
+"type: ignore`` comment on a line that is not actually generating an error"
+" message."
+msgstr ""
+
+#: ../../source/command_line.rst:435
+msgid ""
+"This flag, along with the :option:`--warn-redundant-casts` flag, are both"
+" particularly useful when you are upgrading mypy. Previously, you may "
+"have needed to add casts or ``# type: ignore`` annotations to work around"
+" bugs in mypy or missing stubs for 3rd party libraries."
+msgstr ""
+
+#: ../../source/command_line.rst:440
+msgid ""
+"These two flags let you discover cases where either workarounds are no "
+"longer necessary."
+msgstr ""
+
+#: ../../source/command_line.rst:445
+msgid ""
+"By default, mypy will generate errors when a function is missing return "
+"statements in some execution paths. The only exceptions are when:"
+msgstr ""
+
+#: ../../source/command_line.rst:449
+msgid "The function has a ``None`` or ``Any`` return type"
+msgstr ""
+
+#: ../../source/command_line.rst:450
+msgid ""
+"The function has an empty body or a body that is just ellipsis (``...``)."
+" Empty functions are often used for abstract methods."
+msgstr ""
+
+#: ../../source/command_line.rst:454
+msgid ""
+"Passing in :option:`--no-warn-no-return` will disable these error "
+"messages in all cases."
+msgstr ""
+
+#: ../../source/command_line.rst:459
+msgid ""
+"This flag causes mypy to generate a warning when returning a value with "
+"type ``Any`` from a function declared with a non-``Any`` return type."
+msgstr ""
+
+#: ../../source/command_line.rst:464
+msgid ""
+"This flag will make mypy report an error whenever it encounters code "
+"determined to be unreachable or redundant after performing type analysis."
+" This can be a helpful way of detecting certain kinds of bugs in your "
+"code."
+msgstr ""
+
+#: ../../source/command_line.rst:468
+msgid ""
+"For example, enabling this flag will make mypy report that the ``x > 7`` "
+"check is redundant and that the ``else`` block below is unreachable."
+msgstr ""
+
+#: ../../source/command_line.rst:482
+msgid ""
+"To help prevent mypy from generating spurious warnings, the \"Statement "
+"is unreachable\" warning will be silenced in exactly two cases:"
+msgstr ""
+
+#: ../../source/command_line.rst:485
+msgid ""
+"When the unreachable statement is a ``raise`` statement, is an ``assert "
+"False`` statement, or calls a function that has the "
+":py:data:`~typing.NoReturn` return type hint. In other words, when the "
+"unreachable statement throws an error or terminates the program in some "
+"way."
+msgstr ""
+
+#: ../../source/command_line.rst:489
+msgid ""
+"When the unreachable statement was *intentionally* marked as unreachable "
+"using :ref:`version_and_platform_checks`."
+msgstr ""
+
+#: ../../source/command_line.rst:494
+msgid ""
+"Mypy currently cannot detect and report unreachable or redundant code "
+"inside any functions using :ref:`type-variable-value-restriction`."
+msgstr ""
+
+#: ../../source/command_line.rst:497
+msgid "This limitation will be removed in future releases of mypy."
+msgstr ""
+
+#: ../../source/command_line.rst:503
+msgid "Miscellaneous strictness flags"
+msgstr ""
+
+#: ../../source/command_line.rst:505
+msgid ""
+"This section documents any other flags that do not neatly fall under any "
+"of the above sections."
+msgstr ""
+
+#: ../../source/command_line.rst:510
+msgid ""
+"This flag causes mypy to suppress errors caused by not being able to "
+"fully infer the types of global and class variables."
+msgstr ""
+
+#: ../../source/command_line.rst:515
+msgid ""
+"By default, mypy won't allow a variable to be redefined with an unrelated"
+" type. This flag enables redefinition of a variable with an arbitrary "
+"type *in some contexts*: only redefinitions within the same block and "
+"nesting depth as the original definition are allowed. Example where this "
+"can be useful:"
+msgstr ""
+
+#: ../../source/command_line.rst:528
+msgid "The variable must be used before it can be redefined:"
+msgstr ""
+
+#: ../../source/command_line.rst:540
+msgid ""
+"In mypy, the most common cases for partial types are variables "
+"initialized using ``None``, but without explicit ``Optional`` "
+"annotations. By default, mypy won't check partial types spanning module "
+"top level or class top level. This flag changes the behavior to only "
+"allow partial types at local level, therefore it disallows inferring "
+"variable type for ``None`` from two assignments in different scopes. For "
+"example:"
+msgstr ""
+
+#: ../../source/command_line.rst:562
+msgid ""
+"Note: this option is always implicitly enabled in mypy daemon and will "
+"become enabled by default for mypy in a future release."
+msgstr ""
+
+#: ../../source/command_line.rst:567
+msgid ""
+"By default, imported values to a module are treated as exported and mypy "
+"allows other modules to import them. This flag changes the behavior to "
+"not re-export unless the item is imported using from-as or is included in"
+" ``__all__``. Note this is always treated as enabled for stub files. For "
+"example:"
+msgstr ""
+
+#: ../../source/command_line.rst:590
+msgid ""
+"By default, mypy allows always-false comparisons like ``42 == 'no'``. Use"
+" this flag to prohibit such comparisons of non-overlapping types, and "
+"similar identity and container checks:"
+msgstr ""
+
+#: ../../source/command_line.rst:610
+msgid ""
+"This flag mode enables all optional error checking flags.  You can see "
+"the list of flags enabled by strict mode in the full :option:`mypy "
+"--help` output."
+msgstr ""
+
+#: ../../source/command_line.rst:613
+msgid ""
+"Note: the exact list of flags enabled by running :option:`--strict` may "
+"change over time."
+msgstr ""
+
+#: ../../source/command_line.rst:618
+msgid "This flag allows disabling one or multiple error codes globally."
+msgstr ""
+
+#: ../../source/command_line.rst:632
+msgid "This flag allows enabling one or multiple error codes globally."
+msgstr ""
+
+#: ../../source/command_line.rst:634
+msgid ""
+"Note: This flag will override disabled error codes from the --disable-"
+"error-code flag"
+msgstr ""
+
+#: ../../source/command_line.rst:650
+msgid "Configuring error messages"
+msgstr ""
+
+#: ../../source/command_line.rst:652
+msgid ""
+"The following flags let you adjust how much detail mypy displays in error"
+" messages."
+msgstr ""
+
+#: ../../source/command_line.rst:657
+msgid ""
+"This flag will precede all errors with \"note\" messages explaining the "
+"context of the error. For example, consider the following program:"
+msgstr ""
+
+#: ../../source/command_line.rst:666
+msgid "Mypy normally displays an error message that looks like this::"
+msgstr ""
+
+#: ../../source/command_line.rst:670
+msgid "If we enable this flag, the error message now looks like this::"
+msgstr ""
+
+#: ../../source/command_line.rst:677
+msgid ""
+"This flag will add column offsets to error messages. For example, the "
+"following indicates an error in line 12, column 9 (note that column "
+"offsets are 0-based)::"
+msgstr ""
+
+#: ../../source/command_line.rst:685
+msgid ""
+"This flag will add an error code ``[<code>]`` to error messages. The "
+"error code is shown after each error message::"
+msgstr ""
+
+#: ../../source/command_line.rst:690
+msgid "See :ref:`error-codes` for more information."
+msgstr ""
+
+#: ../../source/command_line.rst:694
+msgid ""
+"Use visually nicer output in error messages: use soft word wrap, show "
+"source code snippets, and show error location markers."
+msgstr ""
+
+#: ../../source/command_line.rst:699
+msgid "This flag will disable color output in error messages, enabled by default."
+msgstr ""
+
+#: ../../source/command_line.rst:703
+msgid ""
+"This flag will disable error summary. By default mypy shows a summary "
+"line including total number of errors, number of files with errors, and "
+"number of files checked."
+msgstr ""
+
+#: ../../source/command_line.rst:709
+msgid "Show absolute paths to files."
+msgstr ""
+
+#: ../../source/command_line.rst:713
+msgid ""
+"This flag will adjust the limit after which mypy will (sometimes) disable"
+" reporting most additional errors. The limit only applies if it seems "
+"likely that most of the remaining errors will not be useful or they may "
+"be overly noisy. If ``N`` is negative, there is no limit. The default "
+"limit is 200."
+msgstr ""
+
+#: ../../source/command_line.rst:723
+msgid "Incremental mode"
+msgstr ""
+
+#: ../../source/command_line.rst:725
+msgid ""
+"By default, mypy will store type information into a cache. Mypy will use "
+"this information to avoid unnecessary recomputation when it type checks "
+"your code again.  This can help speed up the type checking process, "
+"especially when most parts of your program have not changed since the "
+"previous mypy run."
+msgstr ""
+
+#: ../../source/command_line.rst:731
+msgid ""
+"If you want to speed up how long it takes to recheck your code beyond "
+"what incremental mode can offer, try running mypy in :ref:`daemon mode "
+"<mypy_daemon>`."
+msgstr ""
+
+#: ../../source/command_line.rst:737
+msgid ""
+"This flag disables incremental mode: mypy will no longer reference the "
+"cache when re-run."
+msgstr ""
+
+#: ../../source/command_line.rst:740
+msgid ""
+"Note that mypy will still write out to the cache even when incremental "
+"mode is disabled: see the :option:`--cache-dir` flag below for more "
+"details."
+msgstr ""
+
+#: ../../source/command_line.rst:746
+msgid ""
+"By default, mypy stores all cache data inside of a folder named "
+"``.mypy_cache`` in the current directory. This flag lets you change this "
+"folder. This flag can also be useful for controlling cache use when using"
+" :ref:`remote caching <remote-cache>`."
+msgstr ""
+
+#: ../../source/command_line.rst:751
+msgid ""
+"This setting will override the ``MYPY_CACHE_DIR`` environment variable if"
+" it is set."
+msgstr ""
+
+#: ../../source/command_line.rst:754
+msgid ""
+"Mypy will also always write to the cache even when incremental mode is "
+"disabled so it can \"warm up\" the cache. To disable writing to the "
+"cache, use ``--cache-dir=/dev/null`` (UNIX) or ``--cache-dir=nul`` "
+"(Windows)."
+msgstr ""
+
+#: ../../source/command_line.rst:761
+msgid "Use an `SQLite`_ database to store the cache."
+msgstr ""
+
+#: ../../source/command_line.rst:765
+msgid ""
+"Include fine-grained dependency information in the cache for the mypy "
+"daemon."
+msgstr ""
+
+#: ../../source/command_line.rst:769
+msgid ""
+"By default, mypy will ignore cache data generated by a different version "
+"of mypy. This flag disables that behavior."
+msgstr ""
+
+#: ../../source/command_line.rst:774
+msgid "Skip cache internal consistency checks based on mtime."
+msgstr ""
+
+#: ../../source/command_line.rst:778
+msgid "Advanced options"
+msgstr ""
+
+#: ../../source/command_line.rst:780
+msgid ""
+"The following flags are useful mostly for people who are interested in "
+"developing or debugging mypy internals."
+msgstr ""
+
+#: ../../source/command_line.rst:785
+msgid ""
+"This flag will invoke the Python debugger when mypy encounters a fatal "
+"error."
+msgstr ""
+
+#: ../../source/command_line.rst:790
+msgid ""
+"If set, this flag will display a full traceback when mypy encounters a "
+"fatal error."
+msgstr ""
+
+#: ../../source/command_line.rst:795
+msgid "Raise exception on fatal error."
+msgstr ""
+
+#: ../../source/command_line.rst:799
+msgid ""
+"This flag lets you use a custom module as a substitute for the "
+":py:mod:`typing` module."
+msgstr ""
+
+#: ../../source/command_line.rst:804
+msgid ""
+"This flag specifies the directory where mypy looks for standard library "
+"typeshed stubs, instead of the typeshed that ships with mypy.  This is "
+"primarily intended to make it easier to test typeshed changes before "
+"submitting them upstream, but also allows you to use a forked version of "
+"typeshed."
+msgstr ""
+
+#: ../../source/command_line.rst:810
+msgid "Note that this doesn't affect third-party library stubs."
+msgstr ""
+
+#: ../../source/command_line.rst:816
+msgid ""
+"This flag modifies both the :option:`--disallow-untyped-defs` and :option"
+":`--disallow-incomplete-defs` flags so they also report errors if stubs "
+"in typeshed are missing type annotations or has incomplete annotations. "
+"If both flags are missing, :option:`--warn-incomplete-stub` also does "
+"nothing."
+msgstr ""
+
+#: ../../source/command_line.rst:822
+msgid ""
+"This flag is mainly intended to be used by people who want contribute to "
+"typeshed and would like a convenient way to find gaps and omissions."
+msgstr ""
+
+#: ../../source/command_line.rst:825
+msgid ""
+"If you want mypy to report an error when your codebase *uses* an untyped "
+"function, whether that function is defined in typeshed or not, use the "
+":option:`--disallow-untyped-calls` flag. See :ref:`untyped-definitions-"
+"and-calls` for more details."
+msgstr ""
+
+#: ../../source/command_line.rst:834
+msgid ""
+"When mypy is asked to type check ``SOURCE_FILE``, this flag makes mypy "
+"read from and type check the contents of ``SHADOW_FILE`` instead. "
+"However, diagnostics will continue to refer to ``SOURCE_FILE``."
+msgstr ""
+
+#: ../../source/command_line.rst:838
+msgid ""
+"Specifying this argument multiple times (``--shadow-file X1 Y1 --shadow-"
+"file X2 Y2``) will allow mypy to perform multiple substitutions."
+msgstr ""
+
+#: ../../source/command_line.rst:841
+msgid ""
+"This allows tooling to create temporary files with helpful modifications "
+"without having to change the source file in place. For example, suppose "
+"we have a pipeline that adds ``reveal_type`` for certain variables. This "
+"pipeline is run on ``original.py`` to produce ``temp.py``. Running ``mypy"
+" --shadow-file original.py temp.py original.py`` will then cause mypy to "
+"type check the contents of ``temp.py`` instead of  ``original.py``, but "
+"error messages will still reference ``original.py``."
+msgstr ""
+
+#: ../../source/command_line.rst:851
+msgid "Report generation"
+msgstr ""
+
+#: ../../source/command_line.rst:853
+msgid ""
+"If these flags are set, mypy will generate a report in the specified "
+"format into the specified directory."
+msgstr ""
+
+#: ../../source/command_line.rst:858
+msgid ""
+"Causes mypy to generate a text file report documenting how many "
+"expressions of type ``Any`` are present within your codebase."
+msgstr ""
+
+#: ../../source/command_line.rst:863
+msgid "Causes mypy to generate a Cobertura XML type checking coverage report."
+msgstr ""
+
+#: ../../source/command_line.rst:865 ../../source/command_line.rst:873
+#: ../../source/command_line.rst:897 ../../source/command_line.rst:905
+msgid ""
+"To generate this report, you must either manually install the `lxml`_ "
+"library or specify mypy installation with the setuptools extra "
+"``mypy[reports]``."
+msgstr ""
+
+#: ../../source/command_line.rst:871
+msgid "Causes mypy to generate an HTML type checking coverage report."
+msgstr ""
+
+#: ../../source/command_line.rst:879
+msgid ""
+"Causes mypy to generate a text file report documenting the functions and "
+"lines that are typed and untyped within your codebase."
+msgstr ""
+
+#: ../../source/command_line.rst:884
+msgid ""
+"Causes mypy to generate a JSON file that maps each source file's absolute"
+" filename to a list of line numbers that belong to typed functions in "
+"that file."
+msgstr ""
+
+#: ../../source/command_line.rst:890
+msgid ""
+"Causes mypy to generate a flat text file report with per-module "
+"statistics of how many lines are typechecked etc."
+msgstr ""
+
+#: ../../source/command_line.rst:895
+msgid "Causes mypy to generate a text file type checking coverage report."
+msgstr ""
+
+#: ../../source/command_line.rst:903
+msgid "Causes mypy to generate an XML type checking coverage report."
+msgstr ""
+
+#: ../../source/command_line.rst:910
+msgid "Miscellaneous"
+msgstr ""
+
+#: ../../source/command_line.rst:914
+msgid ""
+"This flag causes mypy to install known missing stub packages for third-"
+"party libraries using pip.  It will display the pip command that will be "
+"run, and expects a confirmation before installing anything. For security "
+"reasons, these stubs are limited to only a small subset of manually "
+"selected packages that have been verified by the typeshed team. These "
+"packages include only stub files and no executable code."
+msgstr ""
+
+#: ../../source/command_line.rst:922
+msgid ""
+"If you use this option without providing any files or modules to type "
+"check, mypy will install stub packages suggested during the previous mypy"
+" run. If there are files or modules to type check, mypy first type checks"
+" those, and proposes to install missing stubs at the end of the run, but "
+"only if any missing modules were detected."
+msgstr ""
+
+#: ../../source/command_line.rst:931
+msgid ""
+"This is new in mypy 0.900. Previous mypy versions included a selection of"
+" third-party package stubs, instead of having them installed separately."
+msgstr ""
+
+#: ../../source/command_line.rst:937
+msgid ""
+"When used together with :option:`--install-types <mypy --install-types>`,"
+" this causes mypy to install all suggested stub packages using pip "
+"without asking for confirmation, and then continues to perform type "
+"checking using the installed stubs, if some files or modules are provided"
+" to type check."
+msgstr ""
+
+#: ../../source/command_line.rst:943
+msgid ""
+"This is implemented as up to two mypy runs internally. The first run is "
+"used to find missing stub packages, and output is shown from this run "
+"only if no missing stub packages were found. If missing stub packages "
+"were found, they are installed and then another run is performed."
+msgstr ""
+
+#: ../../source/command_line.rst:951
+msgid ""
+"Causes mypy to generate a JUnit XML test result document with type "
+"checking results. This can make it easier to integrate mypy with "
+"continuous integration (CI) tools."
+msgstr ""
+
+#: ../../source/command_line.rst:957
+msgid ""
+"This flag will make mypy print out all usages of a class member based on "
+"static type information. This feature is experimental."
+msgstr ""
+
+#: ../../source/command_line.rst:962
+msgid ""
+"This flag will give command line arguments that appear to be scripts "
+"(i.e. files whose name does not end in ``.py``) a module name derived "
+"from the script name rather than the fixed name :py:mod:`__main__`."
+msgstr ""
+
+#: ../../source/command_line.rst:967
+msgid ""
+"This lets you check more than one script in a single mypy invocation. "
+"(The default :py:mod:`__main__` is technically more correct, but if you "
+"have many scripts that import a large package, the behavior enabled by "
+"this flag is often more convenient.)"
+msgstr ""
+

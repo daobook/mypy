@@ -1,0 +1,561 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/generics.rst:2
+msgid "Generics"
+msgstr ""
+
+#: ../../source/generics.rst:4
+msgid ""
+"This section explains how you can define your own generic classes that "
+"take one or more type parameters, similar to built-in types such as "
+"``list[X]``. User-defined generics are a moderately advanced feature and "
+"you can get far without ever using them -- feel free to skip this section"
+" and come back later."
+msgstr ""
+
+#: ../../source/generics.rst:12
+msgid "Defining generic classes"
+msgstr ""
+
+#: ../../source/generics.rst:14
+msgid ""
+"The built-in collection classes are generic classes. Generic types have "
+"one or more type parameters, which can be arbitrary types. For example, "
+"``dict[int, str]`` has the type parameters ``int`` and ``str``, and "
+"``list[int]`` has a type parameter ``int``."
+msgstr ""
+
+#: ../../source/generics.rst:19
+msgid ""
+"Programs can also define new generic classes. Here is a very simple "
+"generic class that represents a stack:"
+msgstr ""
+
+#: ../../source/generics.rst:42
+msgid ""
+"The ``Stack`` class can be used to represent a stack of any type: "
+"``Stack[int]``, ``Stack[tuple[int, str]]``, etc."
+msgstr ""
+
+#: ../../source/generics.rst:45
+msgid "Using ``Stack`` is similar to built-in container types:"
+msgstr ""
+
+#: ../../source/generics.rst:55
+msgid "Type inference works for user-defined generic types as well:"
+msgstr ""
+
+#: ../../source/generics.rst:63
+msgid "Construction of instances of generic types is also type checked:"
+msgstr ""
+
+#: ../../source/generics.rst:77
+msgid "Generic class internals"
+msgstr ""
+
+#: ../../source/generics.rst:79
+msgid ""
+"You may wonder what happens at runtime when you index ``Stack``. Indexing"
+" ``Stack`` returns a *generic alias* to ``Stack`` that returns instances "
+"of the original class on instantiation:"
+msgstr ""
+
+#: ../../source/generics.rst:93
+msgid ""
+"Generic aliases can be instantiated or subclassed, similar to real "
+"classes, but the above examples illustrate that type variables are erased"
+" at runtime. Generic ``Stack`` instances are just ordinary Python "
+"objects, and they have no extra runtime overhead or magic due to being "
+"generic, other than a metaclass that overloads the indexing operator."
+msgstr ""
+
+#: ../../source/generics.rst:100
+msgid ""
+"Note that in Python 3.8 and lower, the built-in types :py:class:`list`, "
+":py:class:`dict` and others do not support indexing. This is why we have "
+"the aliases :py:class:`~typing.List`, :py:class:`~typing.Dict` and so on "
+"in the :py:mod:`typing` module. Indexing these aliases gives you a "
+"generic alias that resembles generic aliases constructed by directly "
+"indexing the target class in more recent versions of Python:"
+msgstr ""
+
+#: ../../source/generics.rst:116
+msgid ""
+"Note that the generic aliases in ``typing`` don't support constructing "
+"instances:"
+msgstr ""
+
+#: ../../source/generics.rst:129
+msgid ""
+"In Python 3.6 indexing generic types or type aliases results in actual "
+"type objects. This means that generic types in type annotations can have "
+"a significant runtime cost. This was changed in Python 3.7, and indexing "
+"generic types became a cheap operation."
+msgstr ""
+
+#: ../../source/generics.rst:137
+msgid "Defining sub-classes of generic classes"
+msgstr ""
+
+#: ../../source/generics.rst:139
+msgid ""
+"User-defined generic classes and generic classes defined in "
+":py:mod:`typing` can be used as base classes for another classes, both "
+"generic and non-generic. For example:"
+msgstr ""
+
+#: ../../source/generics.rst:176
+msgid ""
+"You have to add an explicit :py:class:`~typing.Mapping` base class if you"
+" want mypy to consider a user-defined class as a mapping (and "
+":py:class:`~typing.Sequence` for sequences, etc.). This is because mypy "
+"doesn't use *structural subtyping* for these ABCs, unlike simpler "
+"protocols like :py:class:`~typing.Iterable`, which use :ref:`structural "
+"subtyping <protocol-types>`."
+msgstr ""
+
+#: ../../source/generics.rst:182
+msgid ""
+":py:class:`Generic <typing.Generic>` can be omitted from bases if there "
+"are other base classes that include type variables, such as ``Mapping[KT,"
+" VT]`` in the above example. If you include ``Generic[...]`` in bases, "
+"then it should list all type variables present in other bases (or more, "
+"if needed). The order of type variables is defined by the following "
+"rules:"
+msgstr ""
+
+#: ../../source/generics.rst:189
+msgid ""
+"If ``Generic[...]`` is present, then the order of variables is always "
+"determined by their order in ``Generic[...]``."
+msgstr ""
+
+#: ../../source/generics.rst:191
+msgid ""
+"If there are no ``Generic[...]`` in bases, then all type variables are "
+"collected in the lexicographic order (i.e. by first appearance)."
+msgstr ""
+
+#: ../../source/generics.rst:194
+msgid "For example:"
+msgstr ""
+
+#: ../../source/generics.rst:216
+msgid "Generic functions"
+msgstr ""
+
+#: ../../source/generics.rst:218
+msgid "Generic type variables can also be used to define generic functions:"
+msgstr ""
+
+#: ../../source/generics.rst:229
+msgid ""
+"As with generic classes, the type variable can be replaced with any type."
+" That means ``first`` can be used with any sequence type, and the return "
+"type is derived from the sequence item type. For example:"
+msgstr ""
+
+#: ../../source/generics.rst:240
+msgid ""
+"Note also that a single definition of a type variable (such as ``T`` "
+"above) can be used in multiple generic functions or classes. In this "
+"example we use the same type variable in two generic functions:"
+msgstr ""
+
+#: ../../source/generics.rst:256
+msgid ""
+"A variable cannot have a type variable in its type unless the type "
+"variable is bound in a containing generic class or function."
+msgstr ""
+
+#: ../../source/generics.rst:262
+msgid "Generic methods and generic self"
+msgstr ""
+
+#: ../../source/generics.rst:264
+msgid ""
+"You can also define generic methods — just use a type variable in the "
+"method signature that is different from class type variables. In "
+"particular, ``self`` may also be generic, allowing a method to return the"
+" most precise type known at the point of access."
+msgstr ""
+
+#: ../../source/generics.rst:271
+msgid ""
+"This feature is experimental. Checking code with type annotations for "
+"self arguments is still not fully implemented. Mypy may disallow valid "
+"code or allow unsafe code."
+msgstr ""
+
+#: ../../source/generics.rst:275
+msgid "In this way, for example, you can typecheck chaining of setter methods:"
+msgstr ""
+
+#: ../../source/generics.rst:301
+msgid ""
+"Without using generic ``self``, the last two lines could not be type-"
+"checked properly."
+msgstr ""
+
+#: ../../source/generics.rst:303
+msgid ""
+"Other uses are factory methods, such as copy and deserialization. For "
+"class methods, you can also define generic ``cls``, using "
+":py:class:`Type[T] <typing.Type>`:"
+msgstr ""
+
+#: ../../source/generics.rst:327
+msgid ""
+"Note that when overriding a method with generic ``self``, you must either"
+" return a generic ``self`` too, or return an instance of the current "
+"class. In the latter case, you must implement this method in all future "
+"subclasses."
+msgstr ""
+
+#: ../../source/generics.rst:331
+msgid ""
+"Note also that mypy cannot always verify that the implementation of a "
+"copy or a deserialization method returns the actual type of self. "
+"Therefore you may need to silence mypy inside these methods (but not at "
+"the call site), possibly by making use of the ``Any`` type."
+msgstr ""
+
+#: ../../source/generics.rst:336
+msgid ""
+"For some advanced uses of self-types see :ref:`additional examples "
+"<advanced_self>`."
+msgstr ""
+
+#: ../../source/generics.rst:341
+msgid "Variance of generic types"
+msgstr ""
+
+#: ../../source/generics.rst:343
+msgid ""
+"There are three main kinds of generic types with respect to subtype "
+"relations between them: invariant, covariant, and contravariant. Assuming"
+" that we have a pair of types ``A`` and ``B``, and ``B`` is a subtype of "
+"``A``, these are defined as follows:"
+msgstr ""
+
+#: ../../source/generics.rst:348
+msgid ""
+"A generic class ``MyCovGen[T, ...]`` is called covariant in type variable"
+" ``T`` if ``MyCovGen[B, ...]`` is always a subtype of ``MyCovGen[A, "
+"...]``."
+msgstr ""
+
+#: ../../source/generics.rst:350
+msgid ""
+"A generic class ``MyContraGen[T, ...]`` is called contravariant in type "
+"variable ``T`` if ``MyContraGen[A, ...]`` is always a subtype of "
+"``MyContraGen[B, ...]``."
+msgstr ""
+
+#: ../../source/generics.rst:353
+msgid ""
+"A generic class ``MyInvGen[T, ...]`` is called invariant in ``T`` if "
+"neither of the above is true."
+msgstr ""
+
+#: ../../source/generics.rst:356
+msgid "Let us illustrate this by few simple examples:"
+msgstr ""
+
+#: ../../source/generics.rst:358
+msgid ""
+":py:data:`~typing.Union` is covariant in all variables: ``Union[Cat, "
+"int]`` is a subtype of ``Union[Animal, int]``, ``Union[Dog, int]`` is "
+"also a subtype of ``Union[Animal, int]``, etc. Most immutable containers "
+"such as :py:class:`~typing.Sequence` and :py:class:`~typing.FrozenSet` "
+"are also covariant."
+msgstr ""
+
+#: ../../source/generics.rst:363
+msgid ""
+":py:data:`~typing.Callable` is an example of type that behaves "
+"contravariant in types of arguments, namely ``Callable[[Employee], int]``"
+" is a subtype of ``Callable[[Manager], int]``. To understand this, "
+"consider a function:"
+msgstr ""
+
+#: ../../source/generics.rst:372
+msgid ""
+"This function needs a callable that can calculate a salary for managers, "
+"and if we give it a callable that can calculate a salary for an arbitrary"
+" employee, it's still safe."
+msgstr ""
+
+#: ../../source/generics.rst:375
+msgid ""
+":py:class:`~typing.List` is an invariant generic type. Naively, one would"
+" think that it is covariant, but let us consider this code:"
+msgstr ""
+
+#: ../../source/generics.rst:394
+msgid ""
+"Another example of invariant type is :py:class:`~typing.Dict`. Most "
+"mutable containers are invariant."
+msgstr ""
+
+#: ../../source/generics.rst:397
+msgid ""
+"By default, mypy assumes that all user-defined generics are invariant. To"
+" declare a given generic class as covariant or contravariant use type "
+"variables defined with special keyword arguments ``covariant`` or "
+"``contravariant``. For example:"
+msgstr ""
+
+#: ../../source/generics.rst:423
+msgid "Type variables with value restriction"
+msgstr ""
+
+#: ../../source/generics.rst:425
+msgid ""
+"By default, a type variable can be replaced with any type. However, "
+"sometimes it's useful to have a type variable that can only have some "
+"specific types as its value. A typical example is a type variable that "
+"can only have values ``str`` and ``bytes``:"
+msgstr ""
+
+#: ../../source/generics.rst:436
+msgid ""
+"This is actually such a common type variable that "
+":py:data:`~typing.AnyStr` is defined in :py:mod:`typing` and we don't "
+"need to define it ourselves."
+msgstr ""
+
+#: ../../source/generics.rst:439
+msgid ""
+"We can use :py:data:`~typing.AnyStr` to define a function that can "
+"concatenate two strings or bytes objects, but it can't be called with "
+"other argument types:"
+msgstr ""
+
+#: ../../source/generics.rst:454
+msgid ""
+"Note that this is different from a union type, since combinations of "
+"``str`` and ``bytes`` are not accepted:"
+msgstr ""
+
+#: ../../source/generics.rst:461
+msgid ""
+"In this case, this is exactly what we want, since it's not possible to "
+"concatenate a string and a bytes object! The type checker will reject "
+"this function:"
+msgstr ""
+
+#: ../../source/generics.rst:470
+msgid ""
+"Another interesting special case is calling ``concat()`` with a subtype "
+"of ``str``:"
+msgstr ""
+
+#: ../../source/generics.rst:479
+msgid ""
+"You may expect that the type of ``ss`` is ``S``, but the type is actually"
+" ``str``: a subtype gets promoted to one of the valid values for the type"
+" variable, which in this case is ``str``. This is thus subtly different "
+"from *bounded quantification* in languages such as Java, where the return"
+" type would be ``S``. The way mypy implements this is correct for "
+"``concat``, since ``concat`` actually returns a ``str`` instance in the "
+"above example:"
+msgstr ""
+
+#: ../../source/generics.rst:492
+msgid ""
+"You can also use a :py:class:`~typing.TypeVar` with a restricted set of "
+"possible values when defining a generic class. For example, mypy uses the"
+" type :py:class:`Pattern[AnyStr] <typing.Pattern>` for the return value "
+"of :py:func:`re.compile`, since regular expressions can be based on a "
+"string or a bytes pattern."
+msgstr ""
+
+#: ../../source/generics.rst:500
+msgid "Type variables with upper bounds"
+msgstr ""
+
+#: ../../source/generics.rst:502
+msgid ""
+"A type variable can also be restricted to having values that are subtypes"
+" of a specific type. This type is called the upper bound of the type "
+"variable, and is specified with the ``bound=...`` keyword argument to "
+":py:class:`~typing.TypeVar`."
+msgstr ""
+
+#: ../../source/generics.rst:513
+msgid ""
+"In the definition of a generic function that uses such a type variable "
+"``T``, the type represented by ``T`` is assumed to be a subtype of its "
+"upper bound, so the function can use methods of the upper bound on values"
+" of type ``T``."
+msgstr ""
+
+#: ../../source/generics.rst:523
+msgid ""
+"In a call to such a function, the type ``T`` must be replaced by a type "
+"that is a subtype of its upper bound. Continuing the example above,"
+msgstr ""
+
+#: ../../source/generics.rst:533
+msgid ""
+"Type parameters of generic classes may also have upper bounds, which "
+"restrict the valid values for the type parameter in the same way."
+msgstr ""
+
+#: ../../source/generics.rst:536
+msgid ""
+"A type variable may not have both a value restriction (see :ref:`type-"
+"variable-value-restriction`) and an upper bound."
+msgstr ""
+
+#: ../../source/generics.rst:542
+msgid "Declaring decorators"
+msgstr ""
+
+#: ../../source/generics.rst:544
+msgid ""
+"One common application of type variable upper bounds is in declaring a "
+"decorator that preserves the signature of the function it decorates, "
+"regardless of that signature."
+msgstr ""
+
+#: ../../source/generics.rst:548
+msgid ""
+"Note that class decorators are handled differently than function "
+"decorators in mypy: decorating a class does not erase its type, even if "
+"the decorator has incomplete type annotations."
+msgstr ""
+
+#: ../../source/generics.rst:552
+msgid "Here's a complete example of a function decorator:"
+msgstr ""
+
+#: ../../source/generics.rst:576
+msgid ""
+"From the final block we see that the signatures of the decorated "
+"functions ``foo()`` and ``bar()`` are the same as those of the original "
+"functions (before the decorator is applied)."
+msgstr ""
+
+#: ../../source/generics.rst:580
+msgid ""
+"The bound on ``F`` is used so that calling the decorator on a non-"
+"function (e.g. ``my_decorator(1)``) will be rejected."
+msgstr ""
+
+#: ../../source/generics.rst:583
+msgid ""
+"Also note that the ``wrapper()`` function is not type-checked. Wrapper "
+"functions are typically small enough that this is not a big problem. This"
+" is also the reason for the :py:func:`~typing.cast` call in the "
+"``return`` statement in ``my_decorator()``. See :ref:`casts <casts>`."
+msgstr ""
+
+#: ../../source/generics.rst:591
+msgid "Decorator factories"
+msgstr ""
+
+#: ../../source/generics.rst:593
+msgid ""
+"Functions that take arguments and return a decorator (also called second-"
+"order decorators), are similarly supported via generics:"
+msgstr ""
+
+#: ../../source/generics.rst:609
+msgid ""
+"Sometimes the same decorator supports both bare calls and calls with "
+"arguments. This can be achieved by combining with :py:func:`@overload "
+"<typing.overload>`:"
+msgstr ""
+
+#: ../../source/generics.rst:642
+msgid "Generic protocols"
+msgstr ""
+
+#: ../../source/generics.rst:644
+msgid ""
+"Mypy supports generic protocols (see also :ref:`protocol-types`). Several"
+" :ref:`predefined protocols <predefined_protocols>` are generic, such as "
+":py:class:`Iterable[T] <typing.Iterable>`, and you can define additional "
+"generic protocols. Generic protocols mostly follow the normal rules for "
+"generic classes. Example:"
+msgstr ""
+
+#: ../../source/generics.rst:676
+msgid ""
+"Per :pep:`PEP 544: Generic protocols <544#generic-protocols>`, ``class "
+"ClassName(Protocol[T])`` is allowed as a shorthand for ``class "
+"ClassName(Protocol, Generic[T])``."
+msgstr ""
+
+#: ../../source/generics.rst:680
+msgid ""
+"The main difference between generic protocols and ordinary generic "
+"classes is that mypy checks that the declared variances of generic type "
+"variables in a protocol match how they are used in the protocol "
+"definition.  The protocol in this example is rejected, since the type "
+"variable ``T`` is used covariantly as a return type, but the type "
+"variable is invariant:"
+msgstr ""
+
+#: ../../source/generics.rst:697
+msgid "This example correctly uses a covariant type variable:"
+msgstr ""
+
+#: ../../source/generics.rst:713
+msgid "See :ref:`variance-of-generics` for more about variance."
+msgstr ""
+
+#: ../../source/generics.rst:715
+msgid "Generic protocols can also be recursive. Example:"
+msgstr ""
+
+#: ../../source/generics.rst:741
+msgid "Generic type aliases"
+msgstr ""
+
+#: ../../source/generics.rst:743
+msgid ""
+"Type aliases can be generic. In this case they can be used in two ways: "
+"Subscripted aliases are equivalent to original types with substituted "
+"type variables, so the number of type arguments must match the number of "
+"free type variables in the generic type alias. Unsubscripted aliases are "
+"treated as original types with free variables replaced with ``Any``. "
+"Examples (following :pep:`PEP 484: Type aliases <484#type-aliases>`):"
+msgstr ""
+
+#: ../../source/generics.rst:780
+msgid ""
+"Type aliases can be imported from modules just like other names. An alias"
+" can also target another alias, although building complex chains of "
+"aliases is not recommended -- this impedes code readability, thus "
+"defeating the purpose of using aliases.  Example:"
+msgstr ""
+
+#: ../../source/generics.rst:808
+msgid ""
+"A type alias does not define a new type. For generic type aliases this "
+"means that variance of type variables used for alias definition does not "
+"apply to aliases. A parameterized generic alias is treated simply as an "
+"original type with the corresponding type variables substituted."
+msgstr ""
+

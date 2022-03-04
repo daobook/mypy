@@ -1,0 +1,206 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/installed_packages.rst:4
+msgid "Using installed packages"
+msgstr ""
+
+#: ../../source/installed_packages.rst:6
+msgid ""
+"Packages installed with pip can declare that they support type checking. "
+"For example, the `aiohttp <https://docs.aiohttp.org/en/stable/>`_ package"
+" has built-in support for type checking."
+msgstr ""
+
+#: ../../source/installed_packages.rst:11
+msgid ""
+"Packages can also provide stubs for a library. For example, ``types-"
+"requests`` is a stub-only package that provides stubs for the `requests "
+"<https://requests.readthedocs.io/en/master/>`_ package. Stub packages are"
+" usually published from `typeshed <https://github.com/python/typeshed>`_,"
+" a shared repository for Python library stubs, and have a name of form "
+"``types-<library>``. Note that many stub packages are not maintained by "
+"the original maintainers of the package."
+msgstr ""
+
+#: ../../source/installed_packages.rst:20
+msgid ""
+"The sections below explain how mypy can use these packages, and how you "
+"can create such packages."
+msgstr ""
+
+#: ../../source/installed_packages.rst:25
+msgid ""
+":pep:`561` specifies how a package can declare that it supports type "
+"checking."
+msgstr ""
+
+#: ../../source/installed_packages.rst:29
+msgid "Using installed packages with mypy (PEP 561)"
+msgstr ""
+
+#: ../../source/installed_packages.rst:31
+msgid ""
+"Typically mypy will automatically find and use installed packages that "
+"support type checking or provide stubs. This requires that you install "
+"the packages in the Python environment that you use to run mypy.  As many"
+" packages don't support type checking yet, you may also have to install a"
+" separate stub package, usually named ``types-<library>``. (See :ref"
+":`fix-missing-imports` for how to deal with libraries that don't support "
+"type checking and are also missing stubs.)"
+msgstr ""
+
+#: ../../source/installed_packages.rst:40
+msgid ""
+"If you have installed typed packages in another Python installation or "
+"environment, mypy won't automatically find them. One option is to install"
+" another copy of those packages in the environment in which you use to "
+"run mypy. Alternatively, you can use the :option:`--python-executable "
+"<mypy --python-executable>` flag to point to the target Python "
+"executable, and mypy will find packages installed for that Python "
+"executable."
+msgstr ""
+
+#: ../../source/installed_packages.rst:48
+msgid ""
+"Note that mypy does not support some more advanced import features, such "
+"as zip imports and custom import hooks."
+msgstr ""
+
+#: ../../source/installed_packages.rst:51
+msgid ""
+"If you don't want to use installed packages that provide type information"
+" at all, use the :option:`--no-site-packages <mypy --no-site-packages>` "
+"flag to disable searching for installed packages."
+msgstr ""
+
+#: ../../source/installed_packages.rst:55
+msgid ""
+"Note that stub-only packages cannot be used with ``MYPYPATH``. If you "
+"want mypy to find the package, it must be installed. For a package "
+"``foo``, the name of the stub-only package (``foo-stubs``) is not a legal"
+" package name, so mypy will not find it, unless it is installed (see "
+":pep:`PEP 561: Stub-only Packages <561#stub-only-packages>` for more "
+"information)."
+msgstr ""
+
+#: ../../source/installed_packages.rst:63
+msgid "Creating PEP 561 compatible packages"
+msgstr ""
+
+#: ../../source/installed_packages.rst:67
+msgid ""
+"You can generally ignore this section unless you maintain a package on "
+"PyPI, or want to publish type information for an existing PyPI package."
+msgstr ""
+
+#: ../../source/installed_packages.rst:71
+msgid ":pep:`561` describes three main ways to distribute type information:"
+msgstr ""
+
+#: ../../source/installed_packages.rst:74
+msgid "A package has inline type annotations in the Python implementation."
+msgstr ""
+
+#: ../../source/installed_packages.rst:76
+msgid ""
+"A package ships :ref:`stub files <stub-files>` with type information "
+"alongside the Python implementation."
+msgstr ""
+
+#: ../../source/installed_packages.rst:79
+msgid ""
+"A package ships type information for another package separately as stub "
+"files (also known as a \"stub-only package\")."
+msgstr ""
+
+#: ../../source/installed_packages.rst:82
+msgid ""
+"If you want to create a stub-only package for an existing library, the "
+"simplest way is to contribute stubs to the `typeshed "
+"<https://github.com/python/typeshed>`_ repository, and a stub package "
+"will automatically be uploaded to PyPI."
+msgstr ""
+
+#: ../../source/installed_packages.rst:87
+msgid ""
+"If you would like to publish a library package to a package repository "
+"yourself (e.g. on PyPI) for either internal or external use in type "
+"checking, packages that supply type information via type comments or "
+"annotations in the code should put a ``py.typed`` file in their package "
+"directory. For example, here is a typical directory structure:"
+msgstr ""
+
+#: ../../source/installed_packages.rst:101
+msgid "The ``setup.py`` file could look like this:"
+msgstr ""
+
+#: ../../source/installed_packages.rst:117
+msgid ""
+"If you use :doc:`setuptools <setuptools:index>`, you must pass the option"
+" ``zip_safe=False`` to ``setup()``, or mypy will not be able to find the "
+"installed package."
+msgstr ""
+
+#: ../../source/installed_packages.rst:120
+msgid ""
+"Some packages have a mix of stub files and runtime files. These packages "
+"also require a ``py.typed`` file. An example can be seen below:"
+msgstr ""
+
+#: ../../source/installed_packages.rst:132
+msgid "The ``setup.py`` file might look like this:"
+msgstr ""
+
+#: ../../source/installed_packages.rst:146
+msgid ""
+"In this example, both ``lib.py`` and the ``lib.pyi`` stub file exist. At "
+"runtime, the Python interpreter will use ``lib.py``, but mypy will use "
+"``lib.pyi`` instead."
+msgstr ""
+
+#: ../../source/installed_packages.rst:150
+msgid ""
+"If the package is stub-only (not imported at runtime), the package should"
+" have a prefix of the runtime package name and a suffix of ``-stubs``. A "
+"``py.typed`` file is not needed for stub-only packages. For example, if "
+"we had stubs for ``package_c``, we might do the following:"
+msgstr ""
+
+#: ../../source/installed_packages.rst:162
+msgid "The ``setup.py`` might look like this:"
+msgstr ""
+
+#: ../../source/installed_packages.rst:176
+msgid ""
+"If you have separate stubs for Python 2 and Python 3, you can place the "
+"Python 2 stubs in a directory with the suffix ``-python2-stubs``. We "
+"recommend that Python 2 and Python 3 stubs are bundled together for "
+"simplicity, instead of distributing them separately."
+msgstr ""
+
+#: ../../source/installed_packages.rst:181
+msgid ""
+"The instructions above are enough to ensure that the built wheels contain"
+" the appropriate files. However, to ensure inclusion inside the ``sdist``"
+" (``.tar.gz`` archive), you may also need to modify the inclusion rules "
+"in your ``MANIFEST.in``:"
+msgstr ""
+

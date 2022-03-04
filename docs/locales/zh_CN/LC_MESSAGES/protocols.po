@@ -1,0 +1,427 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/protocols.rst:4
+msgid "Protocols and structural subtyping"
+msgstr ""
+
+#: ../../source/protocols.rst:6
+msgid ""
+"Mypy supports two ways of deciding whether two classes are compatible as "
+"types: nominal subtyping and structural subtyping. *Nominal* subtyping is"
+" strictly based on the class hierarchy. If class ``D`` inherits class "
+"``C``, it's also a subtype of ``C``, and instances of ``D`` can be used "
+"when ``C`` instances are expected. This form of subtyping is used by "
+"default in mypy, since it's easy to understand and produces clear and "
+"concise error messages, and since it matches how the native "
+":py:func:`isinstance <isinstance>` check works -- based on class "
+"hierarchy. *Structural* subtyping can also be useful. Class ``D`` is a "
+"structural subtype of class ``C`` if the former has all attributes and "
+"methods of the latter, and with compatible types."
+msgstr ""
+
+#: ../../source/protocols.rst:18
+msgid ""
+"Structural subtyping can be seen as a static equivalent of duck typing, "
+"which is well known to Python programmers. Mypy provides support for "
+"structural subtyping via protocol classes described below.  See "
+":pep:`544` for the detailed specification of protocols and structural "
+"subtyping in Python."
+msgstr ""
+
+#: ../../source/protocols.rst:27
+msgid "Predefined protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:29
+msgid ""
+"The :py:mod:`typing` module defines various protocol classes that "
+"correspond to common Python protocols, such as :py:class:`Iterable[T] "
+"<typing.Iterable>`. If a class defines a suitable :py:meth:`__iter__ "
+"<object.__iter__>` method, mypy understands that it implements the "
+"iterable protocol and is compatible with :py:class:`Iterable[T] "
+"<typing.Iterable>`. For example, ``IntList`` below is iterable, over "
+"``int`` values:"
+msgstr ""
+
+#: ../../source/protocols.rst:58
+msgid ""
+"The subsections below introduce all built-in protocols defined in "
+":py:mod:`typing` and the signatures of the corresponding methods you need"
+" to define to implement each protocol (the signatures can be left out, as"
+" always, but mypy won't type check unannotated methods)."
+msgstr ""
+
+#: ../../source/protocols.rst:64
+msgid "Iteration protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:66
+msgid ""
+"The iteration protocols are useful in many contexts. For example, they "
+"allow iteration of objects in for loops."
+msgstr ""
+
+#: ../../source/protocols.rst:70
+msgid "Iterable[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:72
+msgid ""
+"The :ref:`example above <predefined_protocols>` has a simple "
+"implementation of an :py:meth:`__iter__ <object.__iter__>` method."
+msgstr ""
+
+#: ../../source/protocols.rst:79
+msgid "See also :py:class:`~typing.Iterable`."
+msgstr ""
+
+#: ../../source/protocols.rst:82
+msgid "Iterator[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:89
+msgid "See also :py:class:`~typing.Iterator`."
+msgstr ""
+
+#: ../../source/protocols.rst:92
+msgid "Collection protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:94
+msgid ""
+"Many of these are implemented by built-in container types such as "
+":py:class:`list` and :py:class:`dict`, and these are also useful for "
+"user-defined collection objects."
+msgstr ""
+
+#: ../../source/protocols.rst:99
+msgid "Sized"
+msgstr ""
+
+#: ../../source/protocols.rst:101
+msgid "This is a type for objects that support :py:func:`len(x) <len>`."
+msgstr ""
+
+#: ../../source/protocols.rst:107
+msgid "See also :py:class:`~typing.Sized`."
+msgstr ""
+
+#: ../../source/protocols.rst:110
+msgid "Container[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:112
+msgid "This is a type for objects that support the ``in`` operator."
+msgstr ""
+
+#: ../../source/protocols.rst:118
+msgid "See also :py:class:`~typing.Container`."
+msgstr ""
+
+#: ../../source/protocols.rst:121
+msgid "Collection[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:129
+msgid "See also :py:class:`~typing.Collection`."
+msgstr ""
+
+#: ../../source/protocols.rst:132
+msgid "One-off protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:134
+msgid ""
+"These protocols are typically only useful with a single standard library "
+"function or class."
+msgstr ""
+
+#: ../../source/protocols.rst:138
+msgid "Reversible[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:140
+msgid "This is a type for objects that support :py:func:`reversed(x) <reversed>`."
+msgstr ""
+
+#: ../../source/protocols.rst:146
+msgid "See also :py:class:`~typing.Reversible`."
+msgstr ""
+
+#: ../../source/protocols.rst:149
+msgid "SupportsAbs[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:151
+msgid ""
+"This is a type for objects that support :py:func:`abs(x) <abs>`. ``T`` is"
+" the type of value returned by :py:func:`abs(x) <abs>`."
+msgstr ""
+
+#: ../../source/protocols.rst:158
+msgid "See also :py:class:`~typing.SupportsAbs`."
+msgstr ""
+
+#: ../../source/protocols.rst:161
+msgid "SupportsBytes"
+msgstr ""
+
+#: ../../source/protocols.rst:163
+msgid "This is a type for objects that support :py:class:`bytes(x) <bytes>`."
+msgstr ""
+
+#: ../../source/protocols.rst:169
+msgid "See also :py:class:`~typing.SupportsBytes`."
+msgstr ""
+
+#: ../../source/protocols.rst:174
+msgid "SupportsComplex"
+msgstr ""
+
+#: ../../source/protocols.rst:176
+msgid ""
+"This is a type for objects that support :py:class:`complex(x) <complex>`."
+" Note that no arithmetic operations are supported."
+msgstr ""
+
+#: ../../source/protocols.rst:183
+msgid "See also :py:class:`~typing.SupportsComplex`."
+msgstr ""
+
+#: ../../source/protocols.rst:186
+msgid "SupportsFloat"
+msgstr ""
+
+#: ../../source/protocols.rst:188
+msgid ""
+"This is a type for objects that support :py:class:`float(x) <float>`. "
+"Note that no arithmetic operations are supported."
+msgstr ""
+
+#: ../../source/protocols.rst:195
+msgid "See also :py:class:`~typing.SupportsFloat`."
+msgstr ""
+
+#: ../../source/protocols.rst:198
+msgid "SupportsInt"
+msgstr ""
+
+#: ../../source/protocols.rst:200
+msgid ""
+"This is a type for objects that support :py:class:`int(x) <int>`. Note "
+"that no arithmetic operations are supported."
+msgstr ""
+
+#: ../../source/protocols.rst:207
+msgid "See also :py:class:`~typing.SupportsInt`."
+msgstr ""
+
+#: ../../source/protocols.rst:210
+msgid "SupportsRound[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:212
+msgid "This is a type for objects that support :py:func:`round(x) <round>`."
+msgstr ""
+
+#: ../../source/protocols.rst:218
+msgid "See also :py:class:`~typing.SupportsRound`."
+msgstr ""
+
+#: ../../source/protocols.rst:221
+msgid "Async protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:223
+msgid ""
+"These protocols can be useful in async code. See :ref:`async-and-await` "
+"for more information."
+msgstr ""
+
+#: ../../source/protocols.rst:227
+msgid "Awaitable[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:233
+msgid "See also :py:class:`~typing.Awaitable`."
+msgstr ""
+
+#: ../../source/protocols.rst:236
+msgid "AsyncIterable[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:242
+msgid "See also :py:class:`~typing.AsyncIterable`."
+msgstr ""
+
+#: ../../source/protocols.rst:245
+msgid "AsyncIterator[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:252
+msgid "See also :py:class:`~typing.AsyncIterator`."
+msgstr ""
+
+#: ../../source/protocols.rst:255
+msgid "Context manager protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:257
+msgid ""
+"There are two protocols for context managers -- one for regular context "
+"managers and one for async ones. These allow defining objects that can be"
+" used in ``with`` and ``async with`` statements."
+msgstr ""
+
+#: ../../source/protocols.rst:262
+msgid "ContextManager[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:272
+msgid "See also :py:class:`~typing.ContextManager`."
+msgstr ""
+
+#: ../../source/protocols.rst:275
+msgid "AsyncContextManager[T]"
+msgstr ""
+
+#: ../../source/protocols.rst:285
+msgid "See also :py:class:`~typing.AsyncContextManager`."
+msgstr ""
+
+#: ../../source/protocols.rst:288
+msgid "Simple user-defined protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:290
+msgid ""
+"You can define your own protocol class by inheriting the special "
+"``Protocol`` class:"
+msgstr ""
+
+#: ../../source/protocols.rst:314
+msgid ""
+"``Resource`` is a subtype of the ``SupportsClose`` protocol since it "
+"defines a compatible ``close`` method. Regular file objects returned by "
+":py:func:`open` are similarly compatible with the protocol, as they "
+"support ``close()``."
+msgstr ""
+
+#: ../../source/protocols.rst:320
+msgid ""
+"The ``Protocol`` base class is provided in the ``typing_extensions`` "
+"package for Python 2.7 and 3.4-3.7. Starting with Python 3.8, "
+"``Protocol`` is included in the ``typing`` module."
+msgstr ""
+
+#: ../../source/protocols.rst:325
+msgid "Defining subprotocols and subclassing protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:327
+msgid ""
+"You can also define subprotocols. Existing protocols can be extended and "
+"merged using multiple inheritance. Example:"
+msgstr ""
+
+#: ../../source/protocols.rst:351
+msgid ""
+"Note that inheriting from an existing protocol does not automatically "
+"turn the subclass into a protocol -- it just creates a regular (non-"
+"protocol) class or ABC that implements the given protocol (or protocols)."
+" The ``Protocol`` base class must always be explicitly present if you are"
+" defining a protocol:"
+msgstr ""
+
+#: ../../source/protocols.rst:371
+msgid ""
+"You can also include default implementations of methods in protocols. If "
+"you explicitly subclass these protocols you can inherit these default "
+"implementations. Explicitly including a protocol as a base class is also "
+"a way of documenting that your class implements a particular protocol, "
+"and it forces mypy to verify that your class implementation is actually "
+"compatible with the protocol."
+msgstr ""
+
+#: ../../source/protocols.rst:380
+msgid ""
+"You can use Python 3.6 variable annotations (:pep:`526`) to declare "
+"protocol attributes.  On Python 2.7 and earlier Python 3 versions you can"
+" use type comments and properties."
+msgstr ""
+
+#: ../../source/protocols.rst:385
+msgid "Recursive protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:387
+msgid ""
+"Protocols can be recursive (self-referential) and mutually recursive. "
+"This is useful for declaring abstract recursive collections such as trees"
+" and linked lists:"
+msgstr ""
+
+#: ../../source/protocols.rst:414
+msgid "Using isinstance() with protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:416
+msgid ""
+"You can use a protocol class with :py:func:`isinstance` if you decorate "
+"it with the ``@runtime_checkable`` class decorator. The decorator adds "
+"support for basic runtime structural checks:"
+msgstr ""
+
+#: ../../source/protocols.rst:438
+msgid ""
+":py:func:`isinstance` also works with the :ref:`predefined protocols "
+"<predefined_protocols>` in :py:mod:`typing` such as "
+":py:class:`~typing.Iterable`."
+msgstr ""
+
+#: ../../source/protocols.rst:442
+msgid ""
+":py:func:`isinstance` with protocols is not completely safe at runtime. "
+"For example, signatures of methods are not checked. The runtime "
+"implementation only checks that all protocol members are defined."
+msgstr ""
+
+#: ../../source/protocols.rst:449
+msgid "Callback protocols"
+msgstr ""
+
+#: ../../source/protocols.rst:451
+msgid ""
+"Protocols can be used to define flexible callback types that are hard (or"
+" even impossible) to express using the :py:data:`Callable[...] "
+"<typing.Callable>` syntax, such as variadic, overloaded, and complex "
+"generic callbacks. They are defined with a special :py:meth:`__call__ "
+"<object.__call__>` member:"
+msgstr ""
+
+#: ../../source/protocols.rst:477
+msgid ""
+"Callback protocols and :py:data:`~typing.Callable` types can be used "
+"interchangeably. Keyword argument names in :py:meth:`__call__ "
+"<object.__call__>` methods must be identical, unless a double underscore "
+"prefix is used. For example:"
+msgstr ""
+

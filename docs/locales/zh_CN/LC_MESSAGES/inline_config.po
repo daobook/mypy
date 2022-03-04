@@ -1,0 +1,64 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/inline_config.rst:4
+msgid "Inline configuration"
+msgstr ""
+
+#: ../../source/inline_config.rst:6
+msgid ""
+"Mypy supports setting per-file configuration options inside files "
+"themselves using ``# mypy:`` comments. For example:"
+msgstr ""
+
+#: ../../source/inline_config.rst:13
+msgid ""
+"Inline configuration comments take precedence over all other "
+"configuration mechanisms."
+msgstr ""
+
+#: ../../source/inline_config.rst:17
+msgid "Configuration comment format"
+msgstr ""
+
+#: ../../source/inline_config.rst:19
+msgid ""
+"Flags correspond to :ref:`config file flags <config-file>` but allow "
+"hyphens to be substituted for underscores."
+msgstr ""
+
+#: ../../source/inline_config.rst:22
+msgid "Values are specified using ``=``, but ``= True`` may be omitted:"
+msgstr ""
+
+#: ../../source/inline_config.rst:29
+msgid ""
+"Multiple flags can be separated by commas or placed on separate lines. To"
+" include a comma as part of an option's value, place the value inside "
+"quotes:"
+msgstr ""
+
+#: ../../source/inline_config.rst:37
+msgid ""
+"Like in the configuration file, options that take a boolean value may be "
+"inverted by adding ``no-`` to their name or by (when applicable) swapping"
+" their prefix from ``disallow`` to ``allow`` (and vice versa):"
+msgstr ""
+

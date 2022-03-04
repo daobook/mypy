@@ -1,0 +1,166 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/python2.rst:4
+msgid "Type checking Python 2 code"
+msgstr ""
+
+#: ../../source/python2.rst:6
+msgid ""
+"For code that needs to be Python 2.7 compatible, function type "
+"annotations are given in comments, since the function annotation syntax "
+"was introduced in Python 3. The comment-based syntax is specified in "
+":pep:`484`."
+msgstr ""
+
+#: ../../source/python2.rst:11
+msgid ""
+"Mypy requires typed-ast in order to check Python 2 code. You can install "
+"it using ``pip install 'mypy[python2]'``."
+msgstr ""
+
+#: ../../source/python2.rst:14
+msgid ""
+"Run mypy in Python 2 mode by using the :option:`--py2 <mypy --py2>` "
+"option::"
+msgstr ""
+
+#: ../../source/python2.rst:18
+msgid ""
+"To run your program, you must have the ``typing`` module in your Python 2"
+" module search path. Use ``pip install typing`` to install the module. "
+"This also works for Python 3 versions prior to 3.5 that don't include "
+":py:mod:`typing` in the standard library."
+msgstr ""
+
+#: ../../source/python2.rst:23
+msgid ""
+"The example below illustrates the Python 2 function type annotation "
+"syntax. This syntax is also valid in Python 3 mode:"
+msgstr ""
+
+#: ../../source/python2.rst:39
+msgid "It's worth going through these details carefully to avoid surprises:"
+msgstr ""
+
+#: ../../source/python2.rst:41
+msgid ""
+"You don't provide an annotation for the ``self`` / ``cls`` variable of "
+"methods."
+msgstr ""
+
+#: ../../source/python2.rst:44
+msgid "Docstring always comes *after* the type comment."
+msgstr ""
+
+#: ../../source/python2.rst:46
+msgid ""
+"For ``*args`` and ``**kwargs`` the type should be prefixed with ``*`` or "
+"``**``, respectively (except when using the multi-line annotation syntax "
+"described below). Again, the above example illustrates this."
+msgstr ""
+
+#: ../../source/python2.rst:51
+msgid ""
+"Things like ``Any`` must be imported from ``typing``, even if they are "
+"only used in comments."
+msgstr ""
+
+#: ../../source/python2.rst:54
+msgid ""
+"In Python 2 mode ``str`` is implicitly promoted to ``unicode``, similar "
+"to how ``int`` is compatible with ``float``. This is unlike ``bytes`` and"
+" ``str`` in Python 3, which are incompatible. ``bytes`` in Python 2 is "
+"equivalent to ``str``. (This might change in the future.)"
+msgstr ""
+
+#: ../../source/python2.rst:62
+msgid "Multi-line Python 2 function annotations"
+msgstr ""
+
+#: ../../source/python2.rst:64
+msgid ""
+"Mypy also supports a multi-line comment annotation syntax. You can "
+"provide a separate annotation for each argument using the variable "
+"annotation syntax. When using the single-line annotation syntax described"
+" above, functions with long argument lists tend to result in overly long "
+"type comments and it's often tricky to see which argument type "
+"corresponds to which argument. The alternative, multi-line annotation "
+"syntax makes long annotations easier to read and write."
+msgstr ""
+
+#: ../../source/python2.rst:72
+msgid "Here is an example (from :pep:`484`):"
+msgstr ""
+
+#: ../../source/python2.rst:87
+msgid ""
+"You write a separate annotation for each function argument on the same "
+"line as the argument. Each annotation must be on a separate line. If you "
+"leave out an annotation for an argument, it defaults to ``Any``. You "
+"provide a return type annotation in the body of the function using the "
+"form ``# type: (...) -> rt``, where ``rt`` is the return type. Note that "
+"the  return type annotation contains literal three dots."
+msgstr ""
+
+#: ../../source/python2.rst:95
+msgid ""
+"When using multi-line comments, you do not need to prefix the types of "
+"your ``*arg`` and ``**kwarg`` parameters with ``*`` or ``**``. For "
+"example, here is how you would annotate the first example using multi-"
+"line comments:"
+msgstr ""
+
+#: ../../source/python2.rst:117
+msgid "Additional notes"
+msgstr ""
+
+#: ../../source/python2.rst:119
+msgid ""
+"You should include types for arguments with default values in the "
+"annotation. The ``opt`` argument of ``method`` in the example at the "
+"beginning of this section is an example of this."
+msgstr ""
+
+#: ../../source/python2.rst:123
+msgid ""
+"The annotation can be on the same line as the function header or on the "
+"following line."
+msgstr ""
+
+#: ../../source/python2.rst:126
+msgid ""
+"Variables use a comment-based type syntax (explained in :ref:`explicit-"
+"var-types`)."
+msgstr ""
+
+#: ../../source/python2.rst:129
+msgid ""
+"You don't need to use string literal escapes for forward references "
+"within comments (string literal escapes are explained later)."
+msgstr ""
+
+#: ../../source/python2.rst:132
+msgid ""
+"Mypy uses a separate set of library stub files in `typeshed "
+"<https://github.com/python/typeshed>`_ for Python 2. Library support may "
+"vary between Python 2 and Python 3."
+msgstr ""
+

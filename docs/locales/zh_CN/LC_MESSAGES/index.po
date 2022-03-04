@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/index.rst:11
+msgid "First steps"
+msgstr ""
+
+#: ../../source/index.rst:21
+msgid "Cheat sheets"
+msgstr ""
+
+#: ../../source/index.rst:30
+msgid "Type system reference"
+msgstr ""
+
+#: ../../source/index.rst:51
+msgid "Configuring and running mypy"
+msgstr ""
+
+#: ../../source/index.rst:65
+msgid "Miscellaneous"
+msgstr ""
+
+#: ../../source/index.rst:7
+msgid "Welcome to mypy documentation!"
+msgstr ""
+
+#: ../../source/index.rst:9
+msgid "Mypy is a static type checker for Python 3 and Python 2.7."
+msgstr ""
+
+#: ../../source/index.rst:78
+msgid "Indices and tables"
+msgstr ""
+
+#: ../../source/index.rst:80
+msgid ":ref:`genindex`"
+msgstr ""
+
+#: ../../source/index.rst:81
+msgid ":ref:`search`"
+msgstr ""
+

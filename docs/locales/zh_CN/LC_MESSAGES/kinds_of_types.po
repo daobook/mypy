@@ -1,0 +1,660 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/kinds_of_types.rst:2
+msgid "Kinds of types"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:4
+msgid ""
+"We've mostly restricted ourselves to built-in types until now. This "
+"section introduces several additional kinds of types. You are likely to "
+"need at least some of them to type check any non-trivial programs."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:9
+msgid "Class types"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:11
+msgid ""
+"Every class is also a valid type. Any instance of a subclass is also "
+"compatible with all superclasses -- it follows that every value is "
+"compatible with the :py:class:`object` type (and incidentally also the "
+"``Any`` type, discussed below). Mypy analyzes the bodies of classes to "
+"determine which methods and attributes are available in instances. This "
+"example uses subclassing:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:36
+msgid "The Any type"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:38
+msgid ""
+"A value with the ``Any`` type is dynamically typed. Mypy doesn't know "
+"anything about the possible runtime types of such value. Any operations "
+"are permitted on the value, and the operations are only checked at "
+"runtime. You can use ``Any`` as an \"escape hatch\" when you can't use a "
+"more precise type for some reason."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:44
+msgid ""
+"``Any`` is compatible with every other type, and vice versa. You can "
+"freely assign a value of type ``Any`` to a variable with a more precise "
+"type:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:54
+msgid ""
+"Declared (and inferred) types are ignored (or *erased*) at runtime. They "
+"are basically treated as comments, and thus the above code does not "
+"generate a runtime error, even though ``s`` gets an ``int`` value when "
+"the program is run, while the declared type of ``s`` is actually ``str``!"
+" You need to be careful with ``Any`` types, since they let you lie to "
+"mypy, and this could easily hide bugs."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:61
+msgid ""
+"If you do not define a function return value or argument types, these "
+"default to ``Any``:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:71
+msgid ""
+"You should give a statically typed function an explicit ``None`` return "
+"type even if it doesn't return a value, as this lets mypy catch "
+"additional type errors:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:84
+msgid ""
+"If we had used an explicit ``None`` return type, mypy would have caught "
+"the error:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:96
+msgid ""
+"The ``Any`` type is discussed in more detail in section :ref:`dynamic-"
+"typing`."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:100
+msgid ""
+"A function without any types in the signature is dynamically typed. The "
+"body of a dynamically typed function is not checked statically, and local"
+" variables have implicit ``Any`` types. This makes it easier to migrate "
+"legacy Python code to mypy, as mypy won't complain about dynamically "
+"typed functions."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:109
+msgid "Tuple types"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:111
+msgid ""
+"The type ``tuple[T1, ..., Tn]`` represents a tuple with the item types "
+"``T1``, ..., ``Tn``:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:120
+msgid ""
+"A tuple type of this kind has exactly a specific number of items (2 in "
+"the above example). Tuples can also be used as immutable, varying-length "
+"sequences. You can use the type ``tuple[T, ...]`` (with a literal ``...``"
+" -- it's part of the syntax) for this purpose. Example:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:138
+msgid ""
+"Usually it's a better idea to use ``Sequence[T]`` instead of ``tuple[T, "
+"...]``, as :py:class:`~typing.Sequence` is also compatible with lists and"
+" other non-tuple sequences."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:143
+msgid ""
+"``tuple[...]`` is valid as a base class in Python 3.6 and later, and "
+"always in stub files. In earlier Python versions you can sometimes work "
+"around this limitation by using a named tuple as a base class (see "
+"section :ref:`named-tuples`)."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:150
+msgid "Callable types (and lambdas)"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:152
+msgid ""
+"You can pass around function objects and bound methods in statically "
+"typed code. The type of a function that accepts arguments ``A1``, ..., "
+"``An`` and returns ``Rt`` is ``Callable[[A1, ..., An], Rt]``. Example:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:168
+msgid ""
+"You can only have positional arguments, and only ones without default "
+"values, in callable types. These cover the vast majority of uses of "
+"callable types, but sometimes this isn't quite enough. Mypy recognizes a "
+"special form ``Callable[..., T]`` (with a literal ``...``) which can be "
+"used in less typical cases. It is compatible with arbitrary callable "
+"objects that return a type compatible with ``T``, independent of the "
+"number, types or kinds of arguments. Mypy lets you call such callable "
+"values with arbitrary arguments, without any checking -- in this respect "
+"they are treated similar to a ``(*args: Any, **kwargs: Any)`` function "
+"signature. Example:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:190
+msgid ""
+"In situations where more precise or complex types of callbacks are "
+"necessary one can use flexible :ref:`callback protocols "
+"<callback_protocols>`. Lambdas are also supported. The lambda argument "
+"and return value types cannot be given explicitly; they are always "
+"inferred based on context using bidirectional type inference:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:200
+msgid ""
+"If you want to give the argument or return value types explicitly, use an"
+" ordinary, perhaps nested function definition."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:206
+msgid "Union types"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:208
+msgid ""
+"Python functions often accept values of two or more different types. You "
+"can use :ref:`overloading <function-overloading>` to represent this, but "
+"union types are often more convenient."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:212
+msgid ""
+"Use the ``Union[T1, ..., Tn]`` type constructor to construct a union "
+"type. For example, if an argument has type ``Union[int, str]``, both "
+"integers and strings are valid argument values."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:216
+msgid ""
+"You can use an :py:func:`isinstance` check to narrow down a union type to"
+" a more specific type:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:238
+msgid ""
+"Operations are valid for union types only if they are valid for *every* "
+"union item. This is why it's often necessary to use an "
+":py:func:`isinstance` check to first narrow down a union type to a non-"
+"union type. This also means that it's recommended to avoid union types as"
+" function return types, since the caller may have to use "
+":py:func:`isinstance` before doing anything interesting with the value."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:248
+msgid "Optional types and the None type"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:250
+msgid ""
+"You can use the :py:data:`~typing.Optional` type modifier to define a "
+"type variant that allows ``None``, such as ``Optional[int]`` "
+"(``Optional[X]`` is the preferred shorthand for ``Union[X, None]``):"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:268
+msgid ""
+"Most operations will not be allowed on unguarded ``None`` or "
+":py:data:`~typing.Optional` values:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:276
+msgid ""
+"Instead, an explicit ``None`` check is required. Mypy has powerful type "
+"inference that lets you use regular Python idioms to guard against "
+"``None`` values. For example, mypy recognizes ``is None`` checks:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:290
+msgid ""
+"Mypy will infer the type of ``x`` to be ``int`` in the else block due to "
+"the check against ``None`` in the if condition."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:293
+msgid ""
+"Other supported checks for guarding against a ``None`` value include ``if"
+" x is not None``, ``if x`` and ``if not x``. Additionally, mypy "
+"understands ``None`` checks within logical expressions:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:306
+msgid ""
+"Sometimes mypy doesn't realize that a value is never ``None``. This "
+"notably happens when a class instance can exist in a partially defined "
+"state, where some attribute is initialized to ``None`` during object "
+"construction, but a method assumes that the attribute is no longer "
+"``None``. Mypy will complain about the possible ``None`` value. You can "
+"use ``assert x is not None`` to work around this in the method:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:331
+msgid ""
+"When initializing a variable as ``None``, ``None`` is usually an empty "
+"place-holder value, and the actual value has a different type. This is "
+"why you need to annotate an attribute in cases like the class "
+"``Resource`` above:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:342
+msgid "This also works for attributes defined within methods:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:350
+msgid ""
+"As a special case, you can use a non-optional type when initializing an "
+"attribute to ``None`` inside a class body *and* using a type comment, "
+"since when using a type comment, an initializer is syntactically "
+"required, and ``None`` is used as a dummy, placeholder initializer:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:360
+msgid ""
+"This is not a problem when using variable annotations, since no "
+"initializer is needed:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:368
+msgid ""
+"Mypy generally uses the first assignment to a variable to infer the type "
+"of the variable. However, if you assign both a ``None`` value and a "
+"non-``None`` value in the same scope, mypy can usually do the right thing"
+" without an annotation:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:381
+msgid ""
+"Sometimes you may get the error \"Cannot determine type of <something>\"."
+" In this case you should add an explicit ``Optional[...]`` annotation (or"
+" type comment)."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:386
+msgid ""
+"``None`` is a type with only one value, ``None``. ``None`` is also used "
+"as the return type for functions that don't return a value, i.e. "
+"functions that implicitly return ``None``."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:392
+msgid ""
+"The Python interpreter internally uses the name ``NoneType`` for the type"
+" of ``None``, but ``None`` is always used in type annotations. The latter"
+" is shorter and reads better. (Besides, ``NoneType`` is not even defined "
+"in the standard library.)"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:399
+msgid ""
+"``Optional[...]`` *does not* mean a function argument with a default "
+"value. However, if the default value of an argument is ``None``, you can "
+"use an optional type for the argument, but it's not enforced by default. "
+"You can use the :option:`--no-implicit-optional <mypy --no-implicit-"
+"optional>` command-line option to stop treating arguments with a ``None``"
+" default value as having an implicit ``Optional[...]`` type. It's "
+"possible that this will become the default behavior in the future."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:410
+msgid "X | Y syntax for Unions"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:412
+msgid ""
+":pep:`604` introduced an alternative way for spelling union types. In "
+"Python 3.10 and later, you can write ``Union[int, str]`` as ``int | "
+"str``. It is possible to use this syntax in versions of Python where it "
+"isn't supported by the runtime with some limitations (see "
+":ref:`runtime_troubles`)."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:429
+msgid "Disabling strict optional checking"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:431
+msgid ""
+"Mypy also has an option to treat ``None`` as a valid value for every type"
+" (in case you know Java, it's useful to think of it as similar to the "
+"Java ``null``). In this mode ``None`` is also valid for primitive types "
+"such as ``int`` and ``float``, and :py:data:`~typing.Optional` types are "
+"not required."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:437
+msgid ""
+"The mode is enabled through the :option:`--no-strict-optional <mypy --no-"
+"strict-optional>` command-line option. In mypy versions before 0.600 this"
+" was the default mode. You can enable this option explicitly for backward"
+" compatibility with earlier mypy versions, in case you don't want to "
+"introduce optional types to your codebase yet."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:443
+msgid ""
+"It will cause mypy to silently accept some buggy code, such as this "
+"example -- it's not recommended if you can avoid it:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:453
+msgid ""
+"However, making code \"optional clean\" can take some work! You can also "
+"use :ref:`the mypy configuration file <config-file>` to migrate your code"
+" to strict optional checking one file at a time, since there exists the "
+"per-module flag :confval:`strict_optional` to control strict optional "
+"mode."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:459
+msgid ""
+"Often it's still useful to document whether a variable can be ``None``. "
+"For example, this function accepts a ``None`` argument, but it's not "
+"obvious from its signature:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:474
+msgid ""
+"You can still use :py:data:`Optional[t] <typing.Optional>` to document "
+"that ``None`` is a valid argument type, even if strict ``None`` checking "
+"is not enabled:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:488
+msgid ""
+"Mypy treats this as semantically equivalent to the previous example if "
+"strict optional checking is disabled, since ``None`` is implicitly valid "
+"for any type, but it's much more useful for a programmer who is reading "
+"the code. This also makes it easier to migrate to strict ``None`` "
+"checking in the future."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:497
+msgid "Type aliases"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:499
+msgid ""
+"In certain situations, type names may end up being long and painful to "
+"type:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:506
+msgid ""
+"When cases like this arise, you can define a type alias by simply "
+"assigning the type to a variable:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:520
+msgid ""
+"A type alias does not create a new type. It's just a shorthand notation "
+"for another type -- it's equivalent to the target type except for "
+":ref:`generic aliases <generic-type-aliases>`."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:524
+msgid ""
+"Since Mypy 0.930 you can also use *explicit type aliases*, which were "
+"introduced in :pep:`613`."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:527
+msgid ""
+"There can be confusion about exactly when an assignment defines an "
+"implicit type alias -- for example, when the alias contains forward "
+"references, invalid types, or violates some other restrictions on type "
+"alias declarations.  Because the distinction between an unannotated "
+"variable and a type alias is implicit, ambiguous or incorrect type alias "
+"declarations default to defining a normal variable instead of a type "
+"alias."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:534
+msgid ""
+"Explicit type aliases are unambiguous and can also improve readability by"
+" making the intent clear:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:546
+msgid "Named tuples"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:548
+msgid ""
+"Mypy recognizes named tuples and can type check code that defines or uses"
+" them.  In this example, we can detect code trying to access a missing "
+"attribute:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:558
+msgid ""
+"If you use :py:func:`namedtuple <collections.namedtuple>` to define your "
+"named tuple, all the items are assumed to have ``Any`` types. That is, "
+"mypy doesn't know anything about item types. You can use "
+":py:class:`~typing.NamedTuple` to also define item types:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:571
+msgid ""
+"Python 3.6 introduced an alternative, class-based syntax for named tuples"
+" with types:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:585
+msgid ""
+"You can use the raw ``NamedTuple`` \"pseudo-class\" in type annotations "
+"if any ``NamedTuple`` object is valid."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:588
+msgid "For example, it can be useful for deserialization:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:605
+msgid ""
+"Note that this behavior is highly experimental, non-standard, and may not"
+" be supported by other type checkers and IDEs."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:611
+msgid "The type of class objects"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:613
+msgid ""
+"(Freely after :pep:`PEP 484: The type of class objects <484#the-type-of-"
+"class-objects>`.)"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:616
+msgid ""
+"Sometimes you want to talk about class objects that inherit from a given "
+"class.  This can be spelled as :py:class:`Type[C] <typing.Type>` where "
+"``C`` is a class.  In other words, when ``C`` is the name of a class, "
+"using ``C`` to annotate an argument declares that the argument is an "
+"instance of ``C`` (or of a subclass of ``C``), but using "
+":py:class:`Type[C] <typing.Type>` as an argument annotation declares that"
+" the argument is a class object deriving from ``C`` (or ``C`` itself)."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:624
+msgid "For example, assume the following classes:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:639
+msgid "Note that ``ProUser`` doesn't inherit from ``BasicUser``."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:641
+msgid ""
+"Here's a function that creates an instance of one of these classes if you"
+" pass it the right class object:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:651
+msgid ""
+"How would we annotate this function?  Without :py:class:`~typing.Type` "
+"the best we could do would be:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:659
+msgid ""
+"This seems reasonable, except that in the following example, mypy doesn't"
+" see that the ``buyer`` variable has type ``ProUser``:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:667
+msgid ""
+"However, using :py:class:`~typing.Type` and a type variable with an upper"
+" bound (see :ref:`type-variable-upper-bound`) we can do better:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:677
+msgid ""
+"Now mypy will infer the correct type of the result when we call "
+"``new_user()`` with a specific subclass of ``User``:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:687
+msgid ""
+"The value corresponding to :py:class:`Type[C] <typing.Type>` must be an "
+"actual class object that's a subtype of ``C``.  Its constructor must be "
+"compatible with the constructor of ``C``.  If ``C`` is a type variable, "
+"its upper bound must be a class object."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:692
+msgid ""
+"For more details about ``Type[]`` see :pep:`PEP 484: The type of class "
+"objects <484#the-type-of-class-objects>`."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:698
+msgid "Text and AnyStr"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:700
+msgid ""
+"Sometimes you may want to write a function which will accept only unicode"
+" strings. This can be challenging to do in a codebase intended to run in "
+"both Python 2 and Python 3 since ``str`` means something different in "
+"both versions and ``unicode`` is not a keyword in Python 3."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:705
+msgid ""
+"To help solve this issue, use :py:class:`~typing.Text` which is aliased "
+"to ``unicode`` in Python 2 and to ``str`` in Python 3. This allows you to"
+" indicate that a function should accept only unicode strings in a cross-"
+"compatible way:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:717
+msgid ""
+"In other cases, you may want to write a function that will work with any "
+"kind of string but will not let you mix two different string types. To do"
+" so use :py:data:`~typing.AnyStr`:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:732
+msgid "For more details, see :ref:`type-variable-value-restriction`."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:736
+msgid ""
+"How ``bytes``, ``str``, and ``unicode`` are handled between Python 2 and "
+"Python 3 may change in future versions of mypy."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:742
+msgid "Generators"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:744
+msgid ""
+"A basic generator that only yields values can be succinctly annotated as "
+"having a return type of either :py:class:`Iterator[YieldType] "
+"<typing.Iterator>` or :py:class:`Iterable[YieldType] <typing.Iterable>`. "
+"For example:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:753
+msgid ""
+"A good rule of thumb is to annotate functions with the most specific "
+"return type possible. However, you should also take care to avoid leaking"
+" implementation details into a function's public API. In keeping with "
+"these two principles, prefer :py:class:`Iterator[YieldType] "
+"<typing.Iterator>` over :py:class:`Iterable[YieldType] <typing.Iterable>`"
+" as the return-type annotation for a generator function, as it lets mypy "
+"know that users are able to call :py:func:`next` on the object returned "
+"by the function. Nonetheless, bear in mind that ``Iterable`` may "
+"sometimes be the better option, if you consider it an implementation "
+"detail that ``next()`` can be called on the object returned by your "
+"function."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:763
+msgid ""
+"If you want your generator to accept values via the "
+":py:meth:`~generator.send` method or return a value, on the other hand, "
+"you should use the :py:class:`Generator[YieldType, SendType, ReturnType] "
+"<typing.Generator>` generic type instead of either ``Iterator`` or "
+"``Iterable``. For example:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:776
+msgid ""
+"Note that unlike many other generics in the typing module, the "
+"``SendType`` of :py:class:`~typing.Generator` behaves contravariantly, "
+"not covariantly or invariantly."
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:779
+msgid ""
+"If you do not plan on receiving or returning values, then set the "
+"``SendType`` or ``ReturnType`` to ``None``, as appropriate. For example, "
+"we could have annotated the first example as the following:"
+msgstr ""
+
+#: ../../source/kinds_of_types.rst:789
+msgid ""
+"This is slightly different from using ``Iterator[int]`` or "
+"``Iterable[int]``, since generators have :py:meth:`~generator.close`, "
+":py:meth:`~generator.send`, and :py:meth:`~generator.throw` methods that "
+"generic iterators and iterables don't. If you plan to call these methods "
+"on the returned generator, use the :py:class:`~typing.Generator` type "
+"instead of :py:class:`~typing.Iterator` or :py:class:`~typing.Iterable`."
+msgstr ""
+

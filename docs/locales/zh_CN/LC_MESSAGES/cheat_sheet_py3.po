@@ -1,0 +1,109 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/cheat_sheet_py3.rst:4
+msgid "Type hints cheat sheet (Python 3)"
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:6
+msgid ""
+"This document is a quick cheat sheet showing how the :pep:`484` type "
+"annotation notation represents various common types in Python 3."
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:11
+msgid ""
+"Technically many of the type annotations shown below are redundant, "
+"because mypy can derive them from the type of the expression.  So many of"
+" the examples have a dual purpose: show how to write the annotation, and "
+"show the inferred types."
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:18
+msgid "Variables"
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:20
+msgid ""
+"Python 3.6 introduced a syntax for annotating variables in :pep:`526` and"
+" we use it in most examples."
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:44
+msgid "Built-in types"
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:93
+msgid "Functions"
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:95
+msgid "Python 3 supports an annotation syntax for function declarations."
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:143
+msgid "When you're puzzled or when things are complicated"
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:203
+msgid "Standard \"duck types\""
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:205
+msgid ""
+"In typical Python code, many functions that can take a list or a dict as "
+"an argument only need their argument to be somehow \"list-like\" or "
+"\"dict-like\".  A specific meaning of \"list-like\" or \"dict-like\" (or "
+"something-else-like) is called a \"duck type\", and several duck types "
+"that are common in idiomatic Python are standardized."
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:238
+msgid "You can even make your own duck types using :ref:`protocol-types`."
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:241
+msgid "Classes"
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:275
+msgid "Coroutines and asyncio"
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:277
+msgid ""
+"See :ref:`async-and-await` for the full detail on typing coroutines and "
+"asynchronous code."
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:293
+msgid "Miscellaneous"
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:330
+msgid "Decorators"
+msgstr ""
+
+#: ../../source/cheat_sheet_py3.rst:332
+msgid ""
+"Decorator functions can be expressed via generics. See :ref:`declaring-"
+"decorators` for more details."
+msgstr ""
+

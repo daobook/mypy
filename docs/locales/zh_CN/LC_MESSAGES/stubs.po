@@ -1,0 +1,177 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/stubs.rst:4
+msgid "Stub files"
+msgstr ""
+
+#: ../../source/stubs.rst:6
+msgid ""
+"Mypy uses stub files stored in the `typeshed "
+"<https://github.com/python/typeshed>`_ repository to determine the types "
+"of standard library and third-party library functions, classes, and other"
+" definitions. You can also create your own stubs that will be used to "
+"type check your code. The basic properties of stubs were introduced back "
+"in :ref:`stubs-intro`."
+msgstr ""
+
+#: ../../source/stubs.rst:14
+msgid "Creating a stub"
+msgstr ""
+
+#: ../../source/stubs.rst:16
+msgid "Here is an overview of how to create a stub file:"
+msgstr ""
+
+#: ../../source/stubs.rst:18
+msgid ""
+"Write a stub file for the library (or an arbitrary module) and store it "
+"as a ``.pyi`` file in the same directory as the library module."
+msgstr ""
+
+#: ../../source/stubs.rst:20
+msgid ""
+"Alternatively, put your stubs (``.pyi`` files) in a directory reserved "
+"for stubs (e.g., :file:`myproject/stubs`). In this case you have to set "
+"the environment variable ``MYPYPATH`` to refer to the directory.  For "
+"example::"
+msgstr ""
+
+#: ../../source/stubs.rst:27
+msgid ""
+"Use the normal Python file name conventions for modules, e.g. "
+":file:`csv.pyi` for module ``csv``. Use a subdirectory with "
+":file:`__init__.pyi` for packages. Note that :pep:`561` stub-only "
+"packages must be installed, and may not be pointed at through the "
+"``MYPYPATH`` (see :ref:`PEP 561 support <installed-packages>`)."
+msgstr ""
+
+#: ../../source/stubs.rst:32
+msgid ""
+"If a directory contains both a ``.py`` and a ``.pyi`` file for the same "
+"module, the ``.pyi`` file takes precedence. This way you can easily add "
+"annotations for a module even if you don't want to modify the source "
+"code. This can be useful, for example, if you use 3rd party open source "
+"libraries in your program (and there are no stubs in typeshed yet)."
+msgstr ""
+
+#: ../../source/stubs.rst:39
+msgid "That's it!"
+msgstr ""
+
+#: ../../source/stubs.rst:41
+msgid ""
+"Now you can access the module in mypy programs and type check code that "
+"uses the library. If you write a stub for a library module, consider "
+"making it available for other programmers that use mypy by contributing "
+"it back to the typeshed repo."
+msgstr ""
+
+#: ../../source/stubs.rst:46
+msgid ""
+"Mypy also ships with two tools for making it easier to create and "
+"maintain stubs: :ref:`stubgen` and :ref:`stubtest`."
+msgstr ""
+
+#: ../../source/stubs.rst:49
+msgid ""
+"The following sections explain the kinds of type annotations you can use "
+"in your programs and stub files."
+msgstr ""
+
+#: ../../source/stubs.rst:54
+msgid ""
+"You may be tempted to point ``MYPYPATH`` to the standard library or to "
+"the :file:`site-packages` directory where your 3rd party packages are "
+"installed. This is almost always a bad idea -- you will likely get tons "
+"of error messages about code you didn't write and that mypy can't analyze"
+" all that well yet, and in the worst case scenario mypy may crash due to "
+"some construct in a 3rd party package that it didn't expect."
+msgstr ""
+
+#: ../../source/stubs.rst:63
+msgid "Stub file syntax"
+msgstr ""
+
+#: ../../source/stubs.rst:65
+msgid ""
+"Stub files are written in normal Python 3 syntax, but generally leaving "
+"out runtime logic like variable initializers, function bodies, and "
+"default arguments."
+msgstr ""
+
+#: ../../source/stubs.rst:69
+msgid ""
+"If it is not possible to completely leave out some piece of runtime "
+"logic, the recommended convention is to replace or elide them with "
+"ellipsis expressions (``...``). Each ellipsis below is literally written "
+"in the stub file as three dots:"
+msgstr ""
+
+#: ../../source/stubs.rst:89
+msgid ""
+"The ellipsis ``...`` is also used with a different meaning in "
+":ref:`callable types <callable-types>` and :ref:`tuple types <tuple-"
+"types>`."
+msgstr ""
+
+#: ../../source/stubs.rst:95
+msgid ""
+"It is always legal to use Python 3 syntax in stub files, even when "
+"writing Python 2 code. The example above is a valid stub file for both "
+"Python 2 and 3."
+msgstr ""
+
+#: ../../source/stubs.rst:100
+msgid "Using stub file syntax at runtime"
+msgstr ""
+
+#: ../../source/stubs.rst:102
+msgid ""
+"You may also occasionally need to elide actual logic in regular Python "
+"code -- for example, when writing methods in :ref:`overload variants "
+"<function-overloading>` or :ref:`custom protocols <protocol-types>`."
+msgstr ""
+
+#: ../../source/stubs.rst:107
+msgid ""
+"The recommended style is to use ellipses to do so, just like in stub "
+"files. It is also considered stylistically acceptable to throw a "
+":py:exc:`NotImplementedError` in cases where the user of the code may "
+"accidentally call functions with no actual logic."
+msgstr ""
+
+#: ../../source/stubs.rst:112
+msgid ""
+"You can also elide default arguments as long as the function body also "
+"contains no runtime logic: the function body only contains a single "
+"ellipsis, the pass statement, or a ``raise NotImplementedError()``. It is"
+" also acceptable for the function body to contain a docstring. For "
+"example:"
+msgstr ""
+
+#: ../../source/stubs.rst:139
+msgid ""
+"Ellipsis expressions are legal syntax in Python 3 only. This means it is "
+"not possible to elide default arguments in Python 2 code. You can still "
+"elide function bodies in Python 2 by using either the ``pass`` statement "
+"or by throwing a :py:exc:`NotImplementedError`."
+msgstr ""
+

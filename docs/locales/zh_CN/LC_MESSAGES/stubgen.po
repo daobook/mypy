@@ -1,0 +1,234 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/stubgen.rst:6
+msgid "Automatic stub generation (stubgen)"
+msgstr ""
+
+#: ../../source/stubgen.rst:8
+msgid ""
+"A stub file (see :pep:`484`) contains only type hints for the public "
+"interface of a module, with empty function bodies. Mypy can use a stub "
+"file instead of the real implementation to provide type information for "
+"the module. They are useful for third-party modules whose authors have "
+"not yet added type hints (and when no stubs are available in typeshed) "
+"and C extension modules (which mypy can't directly process)."
+msgstr ""
+
+#: ../../source/stubgen.rst:15
+msgid ""
+"Mypy includes the ``stubgen`` tool that can automatically generate stub "
+"files (``.pyi`` files) for Python modules and C extension modules. For "
+"example, consider this source file:"
+msgstr ""
+
+#: ../../source/stubgen.rst:34
+msgid "Stubgen can generate this stub file based on the above file:"
+msgstr ""
+
+#: ../../source/stubgen.rst:50
+msgid ""
+"Stubgen generates *draft* stubs. The auto-generated stub files often "
+"require some manual updates, and most types will default to ``Any``. The "
+"stubs will be much more useful if you add more precise type annotations, "
+"at least for the most commonly used functionality."
+msgstr ""
+
+#: ../../source/stubgen.rst:55
+msgid ""
+"The rest of this section documents the command line interface of stubgen."
+" Run :option:`stubgen --help` for a quick summary of options."
+msgstr ""
+
+#: ../../source/stubgen.rst:60
+msgid "The command-line flags may change between releases."
+msgstr ""
+
+#: ../../source/stubgen.rst:63
+msgid "Specifying what to stub"
+msgstr ""
+
+#: ../../source/stubgen.rst:65
+msgid ""
+"You can give stubgen paths of the source files for which you want to "
+"generate stubs::"
+msgstr ""
+
+#: ../../source/stubgen.rst:70
+msgid ""
+"This generates stubs ``out/foo.pyi`` and ``out/bar.pyi``. The default "
+"output directory ``out`` can be overridden with :option:`-o DIR <-o>`."
+msgstr ""
+
+#: ../../source/stubgen.rst:73
+msgid ""
+"You can also pass directories, and stubgen will recursively search them "
+"for any ``.py`` files and generate stubs for all of them::"
+msgstr ""
+
+#: ../../source/stubgen.rst:78
+msgid ""
+"Alternatively, you can give module or package names using the "
+":option:`-m` or :option:`-p` options::"
+msgstr ""
+
+#: ../../source/stubgen.rst:83
+msgid "Details of the options:"
+msgstr ""
+
+#: ../../source/stubgen.rst:87
+msgid ""
+"Generate a stub file for the given module. This flag may be repeated "
+"multiple times."
+msgstr ""
+
+#: ../../source/stubgen.rst:90
+msgid ""
+"Stubgen *will not* recursively generate stubs for any submodules of the "
+"provided module."
+msgstr ""
+
+#: ../../source/stubgen.rst:95
+msgid ""
+"Generate stubs for the given package. This flag maybe repeated multiple "
+"times."
+msgstr ""
+
+#: ../../source/stubgen.rst:98
+msgid ""
+"Stubgen *will* recursively generate stubs for all submodules of the "
+"provided package. This flag is identical to :option:`--module` apart from"
+" this behavior."
+msgstr ""
+
+#: ../../source/stubgen.rst:104
+msgid ""
+"You can't mix paths and :option:`-m`/:option:`-p` options in the same "
+"stubgen invocation."
+msgstr ""
+
+#: ../../source/stubgen.rst:107
+msgid ""
+"Stubgen applies heuristics to avoid generating stubs for submodules that "
+"include tests or vendored third-party packages."
+msgstr ""
+
+#: ../../source/stubgen.rst:111
+msgid "Specifying how to generate stubs"
+msgstr ""
+
+#: ../../source/stubgen.rst:113
+msgid ""
+"By default stubgen will try to import the target modules and packages. "
+"This allows stubgen to use runtime introspection to generate stubs for C "
+"extension modules and to improve the quality of the generated stubs. By "
+"default, stubgen will also use mypy to perform light-weight semantic "
+"analysis of any Python modules. Use the following flags to alter the "
+"default behavior:"
+msgstr ""
+
+#: ../../source/stubgen.rst:122
+msgid ""
+"Don't try to import modules. Instead only use mypy's normal search "
+"mechanism to find sources. This does not support C extension modules. "
+"This flag also disables runtime introspection functionality, which mypy "
+"uses to find the value of ``__all__``. As result the set of exported "
+"imported names in stubs may be incomplete. This flag is generally only "
+"useful when importing a module causes unwanted side effects, such as the "
+"running of tests. Stubgen tries to skip test modules even without this "
+"option, but this does not always work."
+msgstr ""
+
+#: ../../source/stubgen.rst:132
+msgid ""
+"Don't perform semantic analysis of source files. This may generate worse "
+"stubs -- in particular, some module, class, and function aliases may be "
+"represented as variables with the ``Any`` type. This is generally only "
+"useful if semantic analysis causes a critical mypy error."
+msgstr ""
+
+#: ../../source/stubgen.rst:139
+msgid ""
+"Try to infer better signatures by parsing .rst documentation in ``PATH``."
+" This may result in better stubs, but currently it only works for C "
+"extension modules."
+msgstr ""
+
+#: ../../source/stubgen.rst:144
+msgid "Additional flags"
+msgstr ""
+
+#: ../../source/stubgen.rst:148
+msgid "Show help message and exit."
+msgstr ""
+
+#: ../../source/stubgen.rst:152
+msgid "Run stubgen in Python 2 mode (the default is Python 3 mode)."
+msgstr ""
+
+#: ../../source/stubgen.rst:156
+msgid ""
+"If an exception was raised during stub generation, continue to process "
+"any remaining modules instead of immediately failing with an error."
+msgstr ""
+
+#: ../../source/stubgen.rst:161
+msgid ""
+"Include definitions that are considered private in stubs (with names such"
+" as ``_foo`` with single leading underscore and no trailing underscores)."
+msgstr ""
+
+#: ../../source/stubgen.rst:166
+msgid ""
+"Don't export all names imported from other modules within the same "
+"package. Instead, only export imported names that are not referenced in "
+"the module that contains the import."
+msgstr ""
+
+#: ../../source/stubgen.rst:172
+msgid ""
+"Specify module search directories, separated by colons (only used if "
+":option:`--no-import` is given)."
+msgstr ""
+
+#: ../../source/stubgen.rst:177
+msgid ""
+"Use Python interpreter at ``PATH`` for importing modules and runtime "
+"introspection. This has no effect with :option:`--no-import`, and this "
+"only works in Python 2 mode. In Python 3 mode the Python interpreter used"
+" to run stubgen will always be used."
+msgstr ""
+
+#: ../../source/stubgen.rst:184
+msgid ""
+"Change the output directory. By default the stubs are written in the "
+"``./out`` directory. The output directory will be created if it doesn't "
+"exist. Existing stubs in the output directory will be overwritten without"
+" warning."
+msgstr ""
+
+#: ../../source/stubgen.rst:191
+msgid "Produce more verbose output."
+msgstr ""
+
+#: ../../source/stubgen.rst:195
+msgid "Produce less verbose output."
+msgstr ""
+

@@ -1,0 +1,248 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/final_attrs.rst:4
+msgid "Final names, methods and classes"
+msgstr ""
+
+#: ../../source/final_attrs.rst:6
+msgid "This section introduces these related features:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:8
+msgid ""
+"*Final names* are variables or attributes that should not be reassigned "
+"after initialization. They are useful for declaring constants."
+msgstr ""
+
+#: ../../source/final_attrs.rst:10
+msgid "*Final methods* should not be overridden in a subclass."
+msgstr ""
+
+#: ../../source/final_attrs.rst:11
+msgid "*Final classes* should not be subclassed."
+msgstr ""
+
+#: ../../source/final_attrs.rst:13
+msgid ""
+"All of these are only enforced by mypy, and only in annotated code. There"
+" is no runtime enforcement by the Python runtime."
+msgstr ""
+
+#: ../../source/final_attrs.rst:18
+msgid ""
+"The examples in this page import ``Final`` and ``final`` from the "
+"``typing`` module. These types were added to ``typing`` in Python 3.8, "
+"but are also available for use in Python 2.7 and 3.4 - 3.7 via the "
+"``typing_extensions`` package."
+msgstr ""
+
+#: ../../source/final_attrs.rst:24
+msgid "Final names"
+msgstr ""
+
+#: ../../source/final_attrs.rst:26
+msgid ""
+"You can use the ``typing.Final`` qualifier to indicate that a name or "
+"attribute should not be reassigned, redefined, or overridden.  This is "
+"often useful for module and class level constants as a way to prevent "
+"unintended modification.  Mypy will prevent further assignments to final "
+"names in type-checked code:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:44
+msgid ""
+"Another use case for final attributes is to protect certain attributes "
+"from being overridden in a subclass:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:58
+msgid ""
+"You can use :py:class:`@property <property>` to make an attribute read-"
+"only, but unlike ``Final``, it doesn't work with module attributes, and "
+"it doesn't prevent overriding in subclasses."
+msgstr ""
+
+#: ../../source/final_attrs.rst:63
+msgid "Syntax variants"
+msgstr ""
+
+#: ../../source/final_attrs.rst:65
+msgid "You can use ``Final`` in one of these forms:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:67
+msgid ""
+"You can provide an explicit type using the syntax ``Final[<type>]``. "
+"Example:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:73
+msgid "Here mypy will infer type ``int`` for ``ID``."
+msgstr ""
+
+#: ../../source/final_attrs.rst:75
+msgid "You can omit the type:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:81
+msgid ""
+"Here mypy will infer type ``Literal[1]`` for ``ID``. Note that unlike for"
+" generic classes this is *not* the same as ``Final[Any]``."
+msgstr ""
+
+#: ../../source/final_attrs.rst:84
+msgid ""
+"In class bodies and stub files you can omit the right hand side and just "
+"write ``ID: Final[int]``."
+msgstr ""
+
+#: ../../source/final_attrs.rst:87
+msgid ""
+"Finally, you can write ``self.id: Final = 1`` (also optionally with a "
+"type in square brackets). This is allowed *only* in :py:meth:`__init__ "
+"<object.__init__>` methods, so that the final instance attribute is "
+"assigned only once when an instance is created."
+msgstr ""
+
+#: ../../source/final_attrs.rst:93
+msgid "Details of using ``Final``"
+msgstr ""
+
+#: ../../source/final_attrs.rst:95
+msgid "These are the two main rules for defining a final name:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:97
+msgid ""
+"There can be *at most one* final declaration per module or class for a "
+"given attribute. There can't be separate class-level and instance-level "
+"constants with the same name."
+msgstr ""
+
+#: ../../source/final_attrs.rst:101
+msgid "There must be *exactly one* assignment to a final name."
+msgstr ""
+
+#: ../../source/final_attrs.rst:103
+msgid ""
+"A final attribute declared in a class body without an initializer must be"
+" initialized in the :py:meth:`__init__ <object.__init__>` method (you can"
+" skip the initializer in stub files):"
+msgstr ""
+
+#: ../../source/final_attrs.rst:116
+msgid ""
+"``Final`` can only be used as the outermost type in assignments or "
+"variable annotations. Using it in any other position is an error. In "
+"particular, ``Final`` can't be used in annotations for function "
+"arguments:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:127
+msgid ""
+"``Final`` and :py:data:`~typing.ClassVar` should not be used together. "
+"Mypy will infer the scope of a final declaration automatically depending "
+"on whether it was initialized in the class body or in :py:meth:`__init__ "
+"<object.__init__>`."
+msgstr ""
+
+#: ../../source/final_attrs.rst:131
+msgid ""
+"A final attribute can't be overridden by a subclass (even with another "
+"explicit final declaration). Note however that a final attribute can "
+"override a read-only property:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:144
+msgid ""
+"Declaring a name as final only guarantees that the name will not be re-"
+"bound to another value. It doesn't make the value immutable. You can use "
+"immutable ABCs and containers to prevent mutating such values:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:158
+msgid "Final methods"
+msgstr ""
+
+#: ../../source/final_attrs.rst:160
+msgid ""
+"Like with attributes, sometimes it is useful to protect a method from "
+"overriding. You can use the ``typing.final`` decorator for this purpose:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:176
+msgid ""
+"This ``@final`` decorator can be used with instance methods, class "
+"methods, static methods, and properties."
+msgstr ""
+
+#: ../../source/final_attrs.rst:179
+msgid ""
+"For overloaded methods you should add ``@final`` on the implementation to"
+" make it final (or on the first overload in stubs):"
+msgstr ""
+
+#: ../../source/final_attrs.rst:196
+msgid "Final classes"
+msgstr ""
+
+#: ../../source/final_attrs.rst:198
+msgid ""
+"You can apply the ``typing.final`` decorator to a class to indicate to "
+"mypy that it should not be subclassed:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:212
+msgid ""
+"The decorator acts as a declaration for mypy (and as documentation for "
+"humans), but it doesn't actually prevent subclassing at runtime."
+msgstr ""
+
+#: ../../source/final_attrs.rst:215
+msgid "Here are some situations where using a final class may be useful:"
+msgstr ""
+
+#: ../../source/final_attrs.rst:217
+msgid ""
+"A class wasn't designed to be subclassed. Perhaps subclassing would not "
+"work as expected, or subclassing would be error-prone."
+msgstr ""
+
+#: ../../source/final_attrs.rst:219
+msgid ""
+"Subclassing would make code harder to understand or maintain. For "
+"example, you may want to prevent unnecessarily tight coupling between "
+"base classes and subclasses."
+msgstr ""
+
+#: ../../source/final_attrs.rst:222
+msgid ""
+"You want to retain the freedom to arbitrarily change the class "
+"implementation in the future, and these changes might break subclasses."
+msgstr ""
+
+#: ../../source/final_attrs.rst:225
+msgid ""
+"An abstract class that defines at least one abstract method or property "
+"and has ``@final`` decorator will generate an error from mypy, since "
+"those attributes could never be implemented."
+msgstr ""
+

@@ -46,6 +46,7 @@ jobs:
 
       - name: 🔧 Build HTML
         run: |
+          cd docs
           make html
 
       - name: 🚀 Deploy to GitHub pages

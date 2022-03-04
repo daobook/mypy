@@ -1,0 +1,730 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/common_issues.rst:4
+msgid "Common issues and solutions"
+msgstr ""
+
+#: ../../source/common_issues.rst:6
+msgid ""
+"This section has examples of cases when you need to update your code to "
+"use static typing, and ideas for working around issues if mypy doesn't "
+"work as expected. Statically typed code is often identical to normal "
+"Python code (except for type annotations), but sometimes you need to do "
+"things slightly differently."
+msgstr ""
+
+#: ../../source/common_issues.rst:13
+msgid "Can't install mypy using pip"
+msgstr ""
+
+#: ../../source/common_issues.rst:15
+msgid "If installation fails, you've probably hit one of these issues:"
+msgstr ""
+
+#: ../../source/common_issues.rst:17
+msgid "Mypy needs Python 3.6 or later to run."
+msgstr ""
+
+#: ../../source/common_issues.rst:18
+msgid "You may have to run pip like this: ``python3 -m pip install mypy``."
+msgstr ""
+
+#: ../../source/common_issues.rst:24
+msgid "No errors reported for obviously wrong code"
+msgstr ""
+
+#: ../../source/common_issues.rst:26
+msgid ""
+"There are several common reasons why obviously wrong code is not flagged "
+"as an error."
+msgstr ""
+
+#: ../../source/common_issues.rst:29
+msgid ""
+"**The function containing the error is not annotated.** Functions that do"
+" not have any annotations (neither for any argument nor for the return "
+"type) are not type-checked, and even the most blatant type errors (e.g. "
+"``2 + 'a'``) pass silently.  The solution is to add annotations. Where "
+"that isn't possible, functions without annotations can be checked using "
+":option:`--check-untyped-defs <mypy --check-untyped-defs>`."
+msgstr ""
+
+#: ../../source/common_issues.rst:36
+msgid "Example:"
+msgstr ""
+
+#: ../../source/common_issues.rst:43
+msgid ""
+"This gives no error even though ``a.split()`` is \"obviously\" a list "
+"(the author probably meant ``a.strip()``).  The error is reported once "
+"you add annotations:"
+msgstr ""
+
+#: ../../source/common_issues.rst:53
+msgid "If you don't know what types to add, you can use ``Any``, but beware:"
+msgstr ""
+
+#: ../../source/common_issues.rst:55
+msgid ""
+"**One of the values involved has type 'Any'.** Extending the above "
+"example, if we were to leave out the annotation for ``a``, we'd get no "
+"error:"
+msgstr ""
+
+#: ../../source/common_issues.rst:64
+msgid ""
+"The reason is that if the type of ``a`` is unknown, the type of "
+"``a.split()`` is also unknown, so it is inferred as having type ``Any``, "
+"and it is no error to add a string to an ``Any``."
+msgstr ""
+
+#: ../../source/common_issues.rst:68
+msgid ""
+"If you're having trouble debugging such situations, :ref:`reveal_type() "
+"<reveal-type>` might come in handy."
+msgstr ""
+
+#: ../../source/common_issues.rst:71
+msgid ""
+"Note that sometimes library stubs have imprecise type information, e.g. "
+"the :py:func:`pow` builtin returns ``Any`` (see `typeshed issue 285 "
+"<https://github.com/python/typeshed/issues/285>`_ for the reason)."
+msgstr ""
+
+#: ../../source/common_issues.rst:75
+msgid ""
+":py:meth:`__init__ <object.__init__>` **method has no annotated arguments"
+" or return type annotation.** :py:meth:`__init__ <object.__init__>` is "
+"considered fully-annotated **if at least one argument is annotated**, "
+"while mypy will infer the return type as ``None``. The implication is "
+"that, for a :py:meth:`__init__ <object.__init__>` method that has no "
+"argument, you'll have to explicitly annotate the return type as ``None`` "
+"to type-check this :py:meth:`__init__ <object.__init__>` method:"
+msgstr ""
+
+#: ../../source/common_issues.rst:101
+msgid ""
+"**Some imports may be silently ignored**.  Another source of unexpected "
+"``Any`` values are the :option:`--ignore-missing-imports <mypy --ignore-"
+"missing-imports>` and :option:`--follow-imports=skip <mypy --follow-"
+"imports>` flags.  When you use :option:`--ignore-missing-imports <mypy "
+"--ignore-missing-imports>`, any imported module that cannot be found is "
+"silently replaced with ``Any``.  When using :option:`--follow-"
+"imports=skip <mypy --follow-imports>` the same is true for modules for "
+"which a ``.py`` file is found but that are not specified on the command "
+"line.  (If a ``.pyi`` stub is found it is always processed normally, "
+"regardless of the value of :option:`--follow-imports <mypy --follow-"
+"imports>`.)  To help debug the former situation (no module found at all) "
+"leave out :option:`--ignore-missing-imports <mypy --ignore-missing-"
+"imports>`; to get clarity about the latter use :option:`--follow-"
+"imports=error <mypy --follow-imports>`.  You can read up about these and "
+"other useful flags in :ref:`command-line`."
+msgstr ""
+
+#: ../../source/common_issues.rst:115
+msgid ""
+"**A function annotated as returning a non-optional type returns 'None' "
+"and mypy doesn't complain**."
+msgstr ""
+
+#: ../../source/common_issues.rst:123
+msgid ""
+"You may have disabled strict optional checking (see "
+":ref:`no_strict_optional` for more)."
+msgstr ""
+
+#: ../../source/common_issues.rst:129
+msgid "Spurious errors and locally silencing the checker"
+msgstr ""
+
+#: ../../source/common_issues.rst:131
+msgid ""
+"You can use a ``# type: ignore`` comment to silence the type checker on a"
+" particular line. For example, let's say our code is using the C "
+"extension module ``frobnicate``, and there's no stub available. Mypy will"
+" complain about this, as it has no information about the module:"
+msgstr ""
+
+#: ../../source/common_issues.rst:142
+msgid ""
+"You can add a ``# type: ignore`` comment to tell mypy to ignore this "
+"error:"
+msgstr ""
+
+#: ../../source/common_issues.rst:150
+msgid ""
+"The second line is now fine, since the ignore comment causes the name "
+"``frobnicate`` to get an implicit ``Any`` type."
+msgstr ""
+
+#: ../../source/common_issues.rst:155
+msgid ""
+"You can use the form ``# type: ignore[<code>]`` to only ignore specific "
+"errors on the line. This way you are less likely to silence unexpected "
+"errors that are not safe to ignore, and this will also document what the "
+"purpose of the comment is.  See :ref:`error-codes` for more information."
+msgstr ""
+
+#: ../../source/common_issues.rst:163
+msgid ""
+"The ``# type: ignore`` comment will only assign the implicit ``Any`` type"
+" if mypy cannot find information about that particular module. So, if we "
+"did have a stub available for ``frobnicate`` then mypy would ignore the "
+"``# type: ignore`` comment and typecheck the stub as usual."
+msgstr ""
+
+#: ../../source/common_issues.rst:168
+msgid ""
+"Another option is to explicitly annotate values with type ``Any`` -- mypy"
+" will let you perform arbitrary operations on ``Any`` values. Sometimes "
+"there is no more precise type you can use for a particular value, "
+"especially if you use dynamic Python features such as "
+":py:meth:`__getattr__ <object.__getattr__>`:"
+msgstr ""
+
+#: ../../source/common_issues.rst:181
+msgid ""
+"Finally, you can create a stub file (``.pyi``) for a file that generates "
+"spurious errors. Mypy will only look at the stub file and ignore the "
+"implementation, since stub files take precedence over ``.py`` files."
+msgstr ""
+
+#: ../../source/common_issues.rst:187
+msgid "Ignoring a whole file"
+msgstr ""
+
+#: ../../source/common_issues.rst:189
+msgid ""
+"A ``# type: ignore`` comment at the top of a module (before any "
+"statements, including imports or docstrings) has the effect of ignoring "
+"the *entire* module."
+msgstr ""
+
+#: ../../source/common_issues.rst:201
+msgid "Unexpected errors about 'None' and/or 'Optional' types"
+msgstr ""
+
+#: ../../source/common_issues.rst:203
+msgid ""
+"Starting from mypy 0.600, mypy uses :ref:`strict optional checking "
+"<strict_optional>` by default, and the ``None`` value is not compatible "
+"with non-optional types. It's easy to switch back to the older behavior "
+"where ``None`` was compatible with arbitrary types (see "
+":ref:`no_strict_optional`). You can also fall back to this behavior if "
+"strict optional checking would require a large number of ``assert foo is "
+"not None`` checks to be inserted, and you want to minimize the number of "
+"code changes required to get a clean mypy run."
+msgstr ""
+
+#: ../../source/common_issues.rst:214
+msgid "Issues with code at runtime"
+msgstr ""
+
+#: ../../source/common_issues.rst:216
+msgid ""
+"Idiomatic use of type annotations can sometimes run up against what a "
+"given version of Python considers legal code. These can result in some of"
+" the following errors when trying to run your code:"
+msgstr ""
+
+#: ../../source/common_issues.rst:220
+msgid "``ImportError`` from circular imports"
+msgstr ""
+
+#: ../../source/common_issues.rst:221
+msgid "``NameError: name \"X\" is not defined`` from forward references"
+msgstr ""
+
+#: ../../source/common_issues.rst:222
+msgid ""
+"``TypeError: 'type' object is not subscriptable`` from types that are not"
+" generic at runtime"
+msgstr ""
+
+#: ../../source/common_issues.rst:223
+msgid ""
+"``ImportError`` or ``ModuleNotFoundError`` from use of stub definitions "
+"not available at runtime"
+msgstr ""
+
+#: ../../source/common_issues.rst:224
+msgid ""
+"``TypeError: unsupported operand type(s) for |: 'type' and 'type'`` from "
+"use of new syntax"
+msgstr ""
+
+#: ../../source/common_issues.rst:226
+msgid "For dealing with these, see :ref:`runtime_troubles`."
+msgstr ""
+
+#: ../../source/common_issues.rst:229
+msgid "Mypy runs are slow"
+msgstr ""
+
+#: ../../source/common_issues.rst:231
+msgid ""
+"If your mypy runs feel slow, you should probably use the :ref:`mypy "
+"daemon <mypy_daemon>`, which can speed up incremental mypy runtimes by a "
+"factor of 10 or more. :ref:`Remote caching <remote-cache>` can make cold "
+"mypy runs several times faster."
+msgstr ""
+
+#: ../../source/common_issues.rst:237
+msgid "Types of empty collections"
+msgstr ""
+
+#: ../../source/common_issues.rst:239
+msgid ""
+"You often need to specify the type when you assign an empty list or dict "
+"to a new variable, as mentioned earlier:"
+msgstr ""
+
+#: ../../source/common_issues.rst:246
+msgid ""
+"Without the annotation mypy can't always figure out the precise type of "
+"``a``."
+msgstr ""
+
+#: ../../source/common_issues.rst:249
+msgid ""
+"You can use a simple empty list literal in a dynamically typed function "
+"(as the type of ``a`` would be implicitly ``Any`` and need not be "
+"inferred), if type of the variable has been declared or inferred before, "
+"or if you perform a simple modification operation in the same scope (such"
+" as ``append`` for a list):"
+msgstr ""
+
+#: ../../source/common_issues.rst:260
+msgid ""
+"However, in more complex cases an explicit type annotation can be "
+"required (mypy will tell you this). Often the annotation can make your "
+"code easier to understand, so it doesn't only help mypy but everybody who"
+" is reading the code!"
+msgstr ""
+
+#: ../../source/common_issues.rst:266
+msgid "Redefinitions with incompatible types"
+msgstr ""
+
+#: ../../source/common_issues.rst:268
+msgid ""
+"Each name within a function only has a single 'declared' type. You can "
+"reuse for loop indices etc., but if you want to use a variable with "
+"multiple types within a single function, you may need to declare it with "
+"the ``Any`` type."
+msgstr ""
+
+#: ../../source/common_issues.rst:282
+msgid "This limitation could be lifted in a future mypy release."
+msgstr ""
+
+#: ../../source/common_issues.rst:285
+msgid ""
+"Note that you can redefine a variable with a more *precise* or a more "
+"concrete type. For example, you can redefine a sequence (which does not "
+"support ``sort()``) as a list and sort it in-place:"
+msgstr ""
+
+#: ../../source/common_issues.rst:300
+msgid "Invariance vs covariance"
+msgstr ""
+
+#: ../../source/common_issues.rst:302
+msgid ""
+"Most mutable generic collections are invariant, and mypy considers all "
+"user-defined generic classes invariant by default (see :ref:`variance-of-"
+"generics` for motivation). This could lead to some unexpected errors when"
+" combined with type inference. For example:"
+msgstr ""
+
+#: ../../source/common_issues.rst:316
+msgid "Possible strategies in such situations are:"
+msgstr ""
+
+#: ../../source/common_issues.rst:318
+msgid "Use an explicit type annotation:"
+msgstr ""
+
+#: ../../source/common_issues.rst:325
+msgid "Make a copy of the right hand side:"
+msgstr ""
+
+#: ../../source/common_issues.rst:331
+msgid "Use immutable collections as annotations whenever possible:"
+msgstr ""
+
+#: ../../source/common_issues.rst:344
+msgid "Declaring a supertype as variable type"
+msgstr ""
+
+#: ../../source/common_issues.rst:346
+msgid ""
+"Sometimes the inferred type is a subtype (subclass) of the desired type. "
+"The type inference uses the first assignment to infer the type of a name "
+"(assume here that ``Shape`` is the base class of both ``Circle`` and "
+"``Triangle``):"
+msgstr ""
+
+#: ../../source/common_issues.rst:357
+msgid ""
+"You can just give an explicit type for the variable in cases such the "
+"above example:"
+msgstr ""
+
+#: ../../source/common_issues.rst:368
+msgid "Complex type tests"
+msgstr ""
+
+#: ../../source/common_issues.rst:370
+msgid ""
+"Mypy can usually infer the types correctly when using "
+":py:func:`isinstance <isinstance>`, :py:func:`issubclass <issubclass>`, "
+"or ``type(obj) is some_class`` type tests, and even :ref:`user-defined "
+"type guards <type-guards>`, but for other kinds of checks you may need to"
+" add an explicit type cast:"
+msgstr ""
+
+#: ../../source/common_issues.rst:389
+msgid ""
+"Alternatively, you can use an ``assert`` statement together with some of "
+"the supported type inference techniques:"
+msgstr ""
+
+#: ../../source/common_issues.rst:405
+msgid ""
+"Note that the :py:class:`object` type used in the above example is "
+"similar to ``Object`` in Java: it only supports operations defined for "
+"*all* objects, such as equality and :py:func:`isinstance`. The type "
+"``Any``, in contrast, supports all operations, even if they may fail at "
+"runtime. The cast above would have been unnecessary if the type of ``o`` "
+"was ``Any``."
+msgstr ""
+
+#: ../../source/common_issues.rst:414
+msgid ""
+"You can read more about type narrowing techniques :ref:`here <type-"
+"narrowing>`."
+msgstr ""
+
+#: ../../source/common_issues.rst:416
+msgid ""
+"Type inference in Mypy is designed to work well in common cases, to be "
+"predictable and to let the type checker give useful error messages. More "
+"powerful type inference strategies often have complex and difficult-to-"
+"predict failure modes and could result in very confusing error messages. "
+"The tradeoff is that you as a programmer sometimes have to give the type "
+"checker a little help."
+msgstr ""
+
+#: ../../source/common_issues.rst:426
+msgid "Python version and system platform checks"
+msgstr ""
+
+#: ../../source/common_issues.rst:428
+msgid ""
+"Mypy supports the ability to perform Python version checks and platform "
+"checks (e.g. Windows vs Posix), ignoring code paths that won't be run on "
+"the targeted Python version or platform. This allows you to more "
+"effectively typecheck code that supports multiple versions of Python or "
+"multiple operating systems."
+msgstr ""
+
+#: ../../source/common_issues.rst:434
+msgid ""
+"More specifically, mypy will understand the use of "
+":py:data:`sys.version_info` and :py:data:`sys.platform` checks within "
+"``if/elif/else`` statements. For example:"
+msgstr ""
+
+#: ../../source/common_issues.rst:459
+msgid ""
+"As a special case, you can also use one of these checks in a top-level "
+"(unindented) ``assert``; this makes mypy skip the rest of the file. "
+"Example:"
+msgstr ""
+
+#: ../../source/common_issues.rst:471
+msgid ""
+"Some other expressions exhibit similar behavior; in particular, "
+":py:data:`~typing.TYPE_CHECKING`, variables named ``MYPY``, and any "
+"variable whose name is passed to :option:`--always-true <mypy --always-"
+"true>` or :option:`--always-false <mypy --always-false>`. (However, "
+"``True`` and ``False`` are not treated specially!)"
+msgstr ""
+
+#: ../../source/common_issues.rst:478
+msgid ""
+"Mypy currently does not support more complex checks, and does not assign "
+"any special meaning when assigning a :py:data:`sys.version_info` or "
+":py:data:`sys.platform` check to a variable. This may change in future "
+"versions of mypy."
+msgstr ""
+
+#: ../../source/common_issues.rst:482
+msgid ""
+"By default, mypy will use your current version of Python and your current"
+" operating system as default values for :py:data:`sys.version_info` and "
+":py:data:`sys.platform`."
+msgstr ""
+
+#: ../../source/common_issues.rst:486
+msgid ""
+"To target a different Python version, use the :option:`--python-version "
+"X.Y <mypy --python-version>` flag. For example, to verify your code "
+"typechecks if were run using Python 2, pass in :option:`--python-version "
+"2.7 <mypy --python-version>` from the command line. Note that you do not "
+"need to have Python 2.7 installed to perform this check."
+msgstr ""
+
+#: ../../source/common_issues.rst:491
+msgid ""
+"To target a different operating system, use the :option:`--platform "
+"PLATFORM <mypy --platform>` flag. For example, to verify your code "
+"typechecks if it were run in Windows, pass in :option:`--platform win32 "
+"<mypy --platform>`. See the documentation for :py:data:`sys.platform` for"
+" examples of valid platform parameters."
+msgstr ""
+
+#: ../../source/common_issues.rst:499
+msgid "Displaying the type of an expression"
+msgstr ""
+
+#: ../../source/common_issues.rst:501
+msgid ""
+"You can use ``reveal_type(expr)`` to ask mypy to display the inferred "
+"static type of an expression. This can be useful when you don't quite "
+"understand how mypy handles a particular piece of code. Example:"
+msgstr ""
+
+#: ../../source/common_issues.rst:509
+msgid ""
+"You can also use ``reveal_locals()`` at any line in a file to see the "
+"types of all local variables at once. Example:"
+msgstr ""
+
+#: ../../source/common_issues.rst:522
+msgid ""
+"``reveal_type`` and ``reveal_locals`` are only understood by mypy and "
+"don't exist in Python. If you try to run your program, you'll have to "
+"remove any ``reveal_type`` and ``reveal_locals`` calls before you can run"
+" your code. Both are always available and you don't need to import them."
+msgstr ""
+
+#: ../../source/common_issues.rst:531
+msgid "Silencing linters"
+msgstr ""
+
+#: ../../source/common_issues.rst:533
+msgid ""
+"In some cases, linters will complain about unused imports or code. In "
+"these cases, you can silence them with a comment after type comments, or "
+"on the same line as the import:"
+msgstr ""
+
+#: ../../source/common_issues.rst:544
+msgid ""
+"To silence the linter on the same line as a type comment put the linter "
+"comment *after* the type comment:"
+msgstr ""
+
+#: ../../source/common_issues.rst:552
+msgid "Covariant subtyping of mutable protocol members is rejected"
+msgstr ""
+
+#: ../../source/common_issues.rst:554
+msgid ""
+"Mypy rejects this because this is potentially unsafe. Consider this "
+"example:"
+msgstr ""
+
+#: ../../source/common_issues.rst:573
+msgid ""
+"To work around this problem consider whether \"mutating\" is actually "
+"part of a protocol. If not, then one can use a :py:class:`@property "
+"<property>` in the protocol definition:"
+msgstr ""
+
+#: ../../source/common_issues.rst:594
+msgid "Dealing with conflicting names"
+msgstr ""
+
+#: ../../source/common_issues.rst:596
+msgid ""
+"Suppose you have a class with a method whose name is the same as an "
+"imported (or built-in) type, and you want to use the type in another "
+"method signature.  E.g.:"
+msgstr ""
+
+#: ../../source/common_issues.rst:608
+msgid ""
+"The third line elicits an error because mypy sees the argument type "
+"``bytes`` as a reference to the method by that name.  Other than renaming"
+" the method, a work-around is to use an alias:"
+msgstr ""
+
+#: ../../source/common_issues.rst:622
+msgid "Using a development mypy build"
+msgstr ""
+
+#: ../../source/common_issues.rst:624
+msgid ""
+"You can install the latest development version of mypy from source. Clone"
+" the `mypy repository on GitHub <https://github.com/python/mypy>`_, and "
+"then run ``pip install`` locally:"
+msgstr ""
+
+#: ../../source/common_issues.rst:635
+msgid "Variables vs type aliases"
+msgstr ""
+
+#: ../../source/common_issues.rst:637
+msgid ""
+"Mypy has both *type aliases* and variables with types like ``Type[...]``."
+" These are subtly different, and it's important to understand how they "
+"differ to avoid pitfalls."
+msgstr ""
+
+#: ../../source/common_issues.rst:640
+msgid ""
+"A variable with type ``Type[...]`` is defined using an assignment with an"
+" explicit type annotation:"
+msgstr ""
+
+#: ../../source/common_issues.rst:648
+msgid ""
+"You can define a type alias using an assignment without an explicit type "
+"annotation at the top level of a module:"
+msgstr ""
+
+#: ../../source/common_issues.rst:656
+msgid ""
+"You can also use ``TypeAlias`` (:pep:`613`) to define an *explicit type "
+"alias*:"
+msgstr ""
+
+#: ../../source/common_issues.rst:665
+msgid ""
+"You should always use ``TypeAlias`` to define a type alias in a class "
+"body or inside a function."
+msgstr ""
+
+#: ../../source/common_issues.rst:668
+msgid ""
+"The main difference is that the target of an alias is precisely known "
+"statically, and this means that they can be used in type annotations and "
+"other *type contexts*. Type aliases can't be defined conditionally "
+"(unless using :ref:`supported Python version and platform checks "
+"<version_and_platform_checks>`):"
+msgstr ""
+
+#: ../../source/common_issues.rst:695
+msgid "Incompatible overrides"
+msgstr ""
+
+#: ../../source/common_issues.rst:697
+msgid ""
+"It's unsafe to override a method with a more specific argument type, as "
+"it violates the `Liskov substitution principle "
+"<https://stackoverflow.com/questions/56860/what-is-an-example-of-the-"
+"liskov-substitution-principle>`_. For return types, it's unsafe to "
+"override a method with a more general return type."
+msgstr ""
+
+#: ../../source/common_issues.rst:703
+msgid ""
+"Other incompatible signature changes in method overrides, such as adding "
+"an extra required parameter, or removing an optional parameter, will also"
+" generate errors. The signature of a method in a subclass should accept "
+"all valid calls to the base class method. Mypy treats a subclass as a "
+"subtype of the base class. An instance of a subclass is valid everywhere "
+"where an instance of the base class is valid."
+msgstr ""
+
+#: ../../source/common_issues.rst:711
+msgid "This example demonstrates both safe and unsafe overrides:"
+msgstr ""
+
+#: ../../source/common_issues.rst:741
+msgid ""
+"You can use ``# type: ignore[override]`` to silence the error. Add it to "
+"the line that generates the error, if you decide that type safety is not "
+"necessary:"
+msgstr ""
+
+#: ../../source/common_issues.rst:754
+msgid "Unreachable code"
+msgstr ""
+
+#: ../../source/common_issues.rst:756
+msgid ""
+"Mypy may consider some code as *unreachable*, even if it might not be "
+"immediately obvious why.  It's important to note that mypy will *not* "
+"type check such code. Consider this example:"
+msgstr ""
+
+#: ../../source/common_issues.rst:770
+msgid ""
+"It's easy to see that any statement after ``return`` is unreachable, and "
+"hence mypy will not complain about the mis-typed code below it. For a "
+"more subtle example, consider this code:"
+msgstr ""
+
+#: ../../source/common_issues.rst:784
+msgid ""
+"Again, mypy will not report any errors. The type of ``foo.bar`` is "
+"``str``, and mypy reasons that it can never be ``None``.  Hence the "
+"``assert`` statement will always fail and the statement below will never "
+"be executed.  (Note that in Python, ``None`` is not an empty reference "
+"but an object of type ``None``.)"
+msgstr ""
+
+#: ../../source/common_issues.rst:790
+msgid ""
+"In this example mypy will go on to check the last line and report an "
+"error, since mypy thinks that the condition could be either True or "
+"False:"
+msgstr ""
+
+#: ../../source/common_issues.rst:805
+msgid ""
+"If you use the :option:`--warn-unreachable <mypy --warn-unreachable>` "
+"flag, mypy will generate an error about each unreachable code block."
+msgstr ""
+
+#: ../../source/common_issues.rst:809
+msgid "Narrowing and inner functions"
+msgstr ""
+
+#: ../../source/common_issues.rst:811
+msgid ""
+"Because closures in Python are late-binding (https://docs.python-"
+"guide.org/writing/gotchas/#late-binding-closures), mypy will not narrow "
+"the type of a captured variable in an inner function. This is best "
+"understood via an example:"
+msgstr ""
+
+#: ../../source/common_issues.rst:830
+msgid ""
+"To get this code to type check, you could assign ``y = x`` after ``x`` "
+"has been narrowed, and use ``y`` in the inner function, or add an assert "
+"in the inner function."
+msgstr ""
+

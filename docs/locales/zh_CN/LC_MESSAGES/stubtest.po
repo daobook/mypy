@@ -1,0 +1,181 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/stubtest.rst:6
+msgid "Automatic stub testing (stubtest)"
+msgstr ""
+
+#: ../../source/stubtest.rst:8
+msgid ""
+"Stub files are files containing type annotations. See `PEP 484 "
+"<https://www.python.org/dev/peps/pep-0484/#stub-files>`_ for more "
+"motivation and details."
+msgstr ""
+
+#: ../../source/stubtest.rst:12
+msgid ""
+"A common problem with stub files is that they tend to diverge from the "
+"actual implementation. Mypy includes the ``stubtest`` tool that can "
+"automatically check for discrepancies between the stubs and the "
+"implementation at runtime."
+msgstr ""
+
+#: ../../source/stubtest.rst:18
+msgid "What stubtest does and does not do"
+msgstr ""
+
+#: ../../source/stubtest.rst:20
+msgid ""
+"Stubtest will import your code and introspect your code objects at "
+"runtime, for example, by using the capabilities of the :py:mod:`inspect` "
+"module. Stubtest will then analyse the stub files, and compare the two, "
+"pointing out things that differ between stubs and the implementation at "
+"runtime."
+msgstr ""
+
+#: ../../source/stubtest.rst:25
+msgid ""
+"It's important to be aware of the limitations of this comparison. "
+"Stubtest will not make any attempt to statically analyse your actual code"
+" and relies only on dynamic runtime introspection (in particular, this "
+"approach means stubtest works well with extension modules). However, this"
+" means that stubtest has limited visibility; for instance, it cannot tell"
+" if a return type of a function is accurately typed in the stubs."
+msgstr ""
+
+#: ../../source/stubtest.rst:32
+msgid "For clarity, here are some additional things stubtest can't do:"
+msgstr ""
+
+#: ../../source/stubtest.rst:34
+msgid "Type check your code -- use ``mypy`` instead"
+msgstr ""
+
+#: ../../source/stubtest.rst:35
+msgid "Generate stubs -- use ``stubgen`` or ``pyright --createstub`` instead"
+msgstr ""
+
+#: ../../source/stubtest.rst:36
+msgid ""
+"Generate stubs based on running your application or test suite -- use "
+"``monkeytype`` instead"
+msgstr ""
+
+#: ../../source/stubtest.rst:37
+msgid ""
+"Apply stubs to code to produce inline types -- use ``retype`` or "
+"``libcst`` instead"
+msgstr ""
+
+#: ../../source/stubtest.rst:39
+msgid ""
+"In summary, stubtest works very well for ensuring basic consistency "
+"between stubs and implementation or to check for stub completeness. It's "
+"used to test Python's official collection of library stubs, `typeshed "
+"<https://github.com/python/typeshed>`_."
+msgstr ""
+
+#: ../../source/stubtest.rst:45
+msgid "Example"
+msgstr ""
+
+#: ../../source/stubtest.rst:47
+msgid "Here's a quick example of what stubtest can do:"
+msgstr ""
+
+#: ../../source/stubtest.rst:79
+msgid "Usage"
+msgstr ""
+
+#: ../../source/stubtest.rst:81
+msgid ""
+"Running stubtest can be as simple as ``stubtest module_to_check``. Run "
+":option:`stubtest --help` for a quick summary of options."
+msgstr ""
+
+#: ../../source/stubtest.rst:84
+msgid ""
+"Subtest must be able to import the code to be checked, so make sure that "
+"mypy is installed in the same environment as the library to be tested. In"
+" some cases, setting ``PYTHONPATH`` can help stubtest find the code to "
+"import."
+msgstr ""
+
+#: ../../source/stubtest.rst:88
+msgid ""
+"Similarly, stubtest must be able to find the stubs to be checked. "
+"Stubtest respects the ``MYPYPATH`` environment variable."
+msgstr ""
+
+#: ../../source/stubtest.rst:91
+msgid ""
+"If you wish to ignore some of stubtest's complaints, stubtest supports a "
+"pretty handy allowlist system."
+msgstr ""
+
+#: ../../source/stubtest.rst:94
+msgid "The rest of this section documents the command line interface of stubtest."
+msgstr ""
+
+#: ../../source/stubtest.rst:98
+msgid "Makes stubtest's output more concise, one line per error"
+msgstr ""
+
+#: ../../source/stubtest.rst:102
+msgid "Ignore errors for stub missing things that are present at runtime"
+msgstr ""
+
+#: ../../source/stubtest.rst:106
+msgid ""
+"Ignore errors for whether an argument should or shouldn't be positional-"
+"only"
+msgstr ""
+
+#: ../../source/stubtest.rst:110
+msgid ""
+"Use file as an allowlist. Can be passed multiple times to combine "
+"multiple allowlists. Allowlists can be created with --generate-allowlist."
+" Allowlists support regular expressions."
+msgstr ""
+
+#: ../../source/stubtest.rst:116
+msgid "Print an allowlist (to stdout) to be used with --allowlist"
+msgstr ""
+
+#: ../../source/stubtest.rst:120
+msgid "Ignore unused allowlist entries"
+msgstr ""
+
+#: ../../source/stubtest.rst:124
+msgid "Use specified mypy config file to determine mypy plugins and mypy path"
+msgstr ""
+
+#: ../../source/stubtest.rst:128
+msgid "Use the custom typeshed in DIR"
+msgstr ""
+
+#: ../../source/stubtest.rst:132
+msgid "Check all stdlib modules in typeshed"
+msgstr ""
+
+#: ../../source/stubtest.rst:136
+msgid "Show a help message :-)"
+msgstr ""
+

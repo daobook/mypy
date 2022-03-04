@@ -1,0 +1,284 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/type_narrowing.rst:4
+msgid "Type narrowing"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:6
+msgid ""
+"This section is dedicated to  several type narrowing techniques which are"
+" supported by mypy."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:9
+msgid ""
+"Type narrowing is when you convince a type checker that a broader type is"
+" actually more specific, for instance, that an object of type ``Shape`` "
+"is actually of the narrower type ``Square``."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:13
+msgid "Type narrowing expressions"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:15
+msgid ""
+"The simplest way to narrow a type is to use one of the supported "
+"expressions:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:17
+msgid ""
+":py:func:`isinstance` like in ``isinstance(obj, float)`` will narrow "
+"``obj`` to have ``float`` type"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:18
+msgid ""
+":py:func:`issubclass` like in ``issubclass(cls, MyClass)`` will narrow "
+"``cls`` to be ``Type[MyClass]``"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:19
+msgid ""
+":py:func:`type` like in ``type(obj) is int`` will narrow ``obj`` to have "
+"``int`` type"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:20
+msgid ""
+":py:func:`callable` like in ``callable(obj)`` will narrow object to "
+"callable type"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:22
+msgid ""
+"Type narrowing is contextual. For example, based on the condition, mypy "
+"will narrow an expression only within an ``if`` branch:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:41
+msgid ""
+"Mypy understands the implications ``return`` or exception raising can "
+"have for what type an object could be:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:53
+msgid "We can also use ``assert`` to narrow types in the same context:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:63
+msgid ""
+"With :option:`--warn-unreachable <mypy --warn-unreachable>` narrowing "
+"types to some impossible state will be treated as an error."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:76
+msgid ""
+"Without ``--warn-unreachable`` mypy will simply not check code it deems "
+"to be unreachable. See :ref:`unreachable` for more information."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:87
+msgid "issubclass"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:89
+msgid ""
+"Mypy can also use :py:func:`issubclass` for better type inference when "
+"working with types and metaclasses:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:108
+msgid "callable"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:110
+msgid ""
+"Mypy knows what types are callable and which ones are not during type "
+"checking. So, we know what ``callable()`` will return. For example:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:124
+msgid ""
+"``callable`` function can even split ``Union`` type for callable and non-"
+"callable parts:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:141
+msgid "Casts"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:143
+msgid ""
+"Mypy supports type casts that are usually used to coerce a statically "
+"typed value to a subtype. Unlike languages such as Java or C#, however, "
+"mypy casts are only used as hints for the type checker, and they don't "
+"perform a runtime type check. Use the function :py:func:`~typing.cast` to"
+" perform a cast:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:157
+msgid ""
+"To support runtime checking of casts such as the above, we'd have to "
+"check the types of all list items, which would be very inefficient for "
+"large lists. Casts are used to silence spurious type checker warnings and"
+" give the type checker a little help when it can't quite understand what "
+"is going on."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:165
+msgid "You can use an assertion if you want to perform an actual runtime check:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:174
+msgid ""
+"You don't need a cast for expressions with type ``Any``, or when "
+"assigning to a variable with type ``Any``, as was explained earlier. You "
+"can also use ``Any`` as the cast target type -- this lets you perform any"
+" operations on the result. For example:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:192
+msgid "User-Defined Type Guards"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:194
+msgid "Mypy supports User-Defined Type Guards (:pep:`647`)."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:196
+msgid ""
+"A type guard is a way for programs to influence conditional type "
+"narrowing employed by a type checker based on runtime checks."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:199
+msgid ""
+"Basically, a ``TypeGuard`` is a \"smart\" alias for a ``bool`` type. "
+"Let's have a look at the regular ``bool`` example:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:213
+msgid "The same example with ``TypeGuard``:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:228
+msgid ""
+"How does it work? ``TypeGuard`` narrows the first function argument "
+"(``val``) to the type specified as the first type parameter "
+"(``list[str]``)."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:233
+msgid ""
+"Narrowing is `not strict <https://www.python.org/dev/peps/pep-0647"
+"/#enforcing-strict-narrowing>`_. For example, you can narrow ``str`` to "
+"``int``:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:242
+msgid ""
+"Note: since strict narrowing is not enforced, it's easy to break type "
+"safety."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:245
+msgid ""
+"However, there are many ways a determined or uninformed developer can "
+"subvert type safety -- most commonly by using cast or Any. If a Python "
+"developer takes the time to learn about and implement user-defined type "
+"guards within their code, it is safe to assume that they are interested "
+"in type safety and will not write their type guard functions in a way "
+"that will undermine type safety or produce nonsensical results."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:254
+msgid "Generic TypeGuards"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:256
+msgid "``TypeGuard`` can also work with generic types:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:275
+msgid "Typeguards with parameters"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:277
+msgid "Type guard functions can accept extra arguments:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:294
+msgid "TypeGuards as methods"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:296
+msgid "A method can also serve as the ``TypeGuard``:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:310
+msgid ""
+"Note, that ``TypeGuard`` `does not narrow "
+"<https://www.python.org/dev/peps/pep-0647/#narrowing-of-implicit-self-"
+"and-cls-parameters>`_ types of ``self`` or ``cls`` implicit arguments."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:314
+msgid ""
+"If narrowing of ``self`` or ``cls`` is required, the value can be passed "
+"as an explicit argument to a type guard function:"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:332
+msgid "Assignment expressions as TypeGuards"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:334
+msgid ""
+"Sometimes you might need to create a new variable and narrow it to some "
+"specific type at the same time. This can be achieved by using "
+"``TypeGuard`` together with `:= operator "
+"<https://docs.python.org/3/whatsnew/3.8.html#assignment-expressions>`_."
+msgstr ""
+
+#: ../../source/type_narrowing.rst:353
+msgid "What happens here?"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:355
+msgid "We create a new variable ``x`` and assign a value of ``a`` to it"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:356
+msgid "We run ``is_float()`` type guard on ``x``"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:357
+msgid ""
+"It narrows ``x`` to be ``float`` in the ``if`` context and does not touch"
+" ``a``"
+msgstr ""
+
+#: ../../source/type_narrowing.rst:361
+msgid "The same will work with ``isinstance(x := a, float)`` as well."
+msgstr ""
+

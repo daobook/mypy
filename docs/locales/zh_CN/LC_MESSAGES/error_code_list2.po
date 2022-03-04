@@ -1,0 +1,215 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/error_code_list2.rst:4
+msgid "Error codes for optional checks"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:6
+msgid ""
+"This section documents various errors codes that mypy generates only if "
+"you enable certain options. See :ref:`error-codes` for general "
+"documentation about error codes. :ref:`error-code-list` documents error "
+"codes that are enabled by default."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:13
+msgid ""
+"The examples in this section use :ref:`inline configuration <inline-"
+"config>` to specify mypy options. You can also set the same options by "
+"using a :ref:`configuration file <config-file>` or :ref:`command-line "
+"options <command-line>`."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:19
+msgid "Check that type arguments exist [type-arg]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:21
+msgid ""
+"If you use :option:`--disallow-any-generics <mypy --disallow-any-"
+"generics>`, mypy requires that each generic type has values for each type"
+" argument. For example, the types ``list`` or ``dict`` would be rejected."
+" You should instead use types like ``list[int]`` or ``dict[str, int]``. "
+"Any omitted generic type arguments get implicit ``Any`` values. The type "
+"``list`` is equivalent to ``list[Any]``, and so on."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:27 ../../source/error_code_list2.rst:43
+#: ../../source/error_code_list2.rst:71 ../../source/error_code_list2.rst:95
+#: ../../source/error_code_list2.rst:122 ../../source/error_code_list2.rst:143
+#: ../../source/error_code_list2.rst:269
+msgid "Example:"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:38
+msgid "Check that every function has an annotation [no-untyped-def]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:40
+msgid ""
+"If you use :option:`--disallow-untyped-defs <mypy --disallow-untyped-"
+"defs>`, mypy requires that all functions have annotations (either a "
+"Python 3 annotation or a type comment)."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:66
+msgid "Check that cast is not redundant [redundant-cast]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:68
+msgid ""
+"If you use :option:`--warn-redundant-casts <mypy --warn-redundant-"
+"casts>`, mypy will generate an error if the source type of a cast is the "
+"same as the target type."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:86
+msgid "Check that comparisons are overlapping [comparison-overlap]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:88
+msgid ""
+"If you use :option:`--strict-equality <mypy --strict-equality>`, mypy "
+"will generate an error if it thinks that a comparison operation is always"
+" true or false. These are often bugs. Sometimes mypy is too picky and the"
+" comparison can actually be useful. Instead of disabling strict equality "
+"checking everywhere, you can use ``# type: ignore[comparison-overlap]`` "
+"to ignore the issue on a particular line only."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:106
+msgid "We can fix the error by changing the string literal to a bytes literal:"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:117
+msgid "Check that no untyped functions are called [no-untyped-call]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:119
+msgid ""
+"If you use :option:`--disallow-untyped-calls <mypy --disallow-untyped-"
+"calls>`, mypy generates an error when you call an unannotated function in"
+" an annotated function."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:137
+msgid "Check that function does not return Any value [no-any-return]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:139
+msgid ""
+"If you use :option:`--warn-return-any <mypy --warn-return-any>`, mypy "
+"generates an error if you return a value with an ``Any`` type in a "
+"function that is annotated to return a non-``Any`` value."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:157
+msgid ""
+"Check that types have no Any components due to missing imports [no-any-"
+"unimported]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:159
+msgid ""
+"If you use :option:`--disallow-any-unimported <mypy --disallow-any-"
+"unimported>`, mypy generates an error if a component of a type becomes "
+"``Any`` because mypy couldn't resolve an import. These \"stealth\" "
+"``Any`` types can be surprising and accidentally cause imprecise type "
+"checking."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:163
+msgid ""
+"In this example, we assume that mypy can't find the module ``animals``, "
+"which means that ``Cat`` falls back to ``Any`` in a type annotation:"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:177
+msgid "Check that statement or expression is unreachable [unreachable]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:179
+msgid ""
+"If you use :option:`--warn-unreachable <mypy --warn-unreachable>`, mypy "
+"generates an error if it thinks that a statement or expression will never"
+" be executed. In most cases, this is due to incorrect control flow or "
+"conditional checks that are accidentally always true or false."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:196
+msgid "Check that expression is redundant [redundant-expr]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:198
+msgid ""
+"If you use :option:`--enable-error-code redundant-expr <mypy --enable-"
+"error-code>`, mypy generates an error if it thinks that an expression is "
+"redundant."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:218
+msgid ""
+"Check that expression is not implicitly true in boolean context [truthy-"
+"bool]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:220
+msgid ""
+"Warn when an expression whose type does not implement ``__bool__`` or "
+"``__len__`` is used in boolean context, since unless implemented by a "
+"sub-type, the expression will always evaluate to true."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:235
+msgid ""
+"This check might falsely imply an error. For example, ``Iterable`` does "
+"not implement ``__len__`` and so this code will be flagged:"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:251
+msgid ""
+"If called as ``transform((int(s) for s in []))``, this function would not"
+" return ``[42]`` unlike what the author might have intended. Of course "
+"it's possible that ``transform`` is only passed ``list`` objects, and so "
+"there is no error in practice. In such case, it might be prudent to "
+"annotate ``items: Sequence[int]``."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:255
+msgid ""
+"This is similar in concept to ensuring that an expression's type "
+"implements an expected interface (e.g. ``Sized``), except that attempting"
+" to invoke an undefined method (e.g. ``__len__``) results in an error, "
+"while attempting to evaluate an object in boolean context without a "
+"concrete implementation results in a truthy value."
+msgstr ""
+
+#: ../../source/error_code_list2.rst:263
+msgid "Check that ``# type: ignore`` include an error code [ignore-without-code]"
+msgstr ""
+
+#: ../../source/error_code_list2.rst:265
+msgid ""
+"Warn when a ``# type: ignore`` comment does not specify any error codes. "
+"This clarifies the intent of the ignore and ensures that only the "
+"expected errors are silenced."
+msgstr ""
+

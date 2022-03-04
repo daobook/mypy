@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2016, Jukka Lehtosalo
+# This file is distributed under the same license as the Mypy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Mypy "
+"0.940+dev.ff5f71d674aece3095b7a623cc910e48c5a01c1e.dirty\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-04 14:39+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../source/dynamic_typing.rst:5
+msgid "Dynamically typed code"
+msgstr ""
+
+#: ../../source/dynamic_typing.rst:7
+msgid ""
+"As mentioned earlier, bodies of functions that don't have any explicit "
+"types in their function annotation are dynamically typed (operations are "
+"checked at runtime). Code outside functions is statically typed by "
+"default, and types of variables are inferred. This does usually the right"
+" thing, but you can also make any variable dynamically typed by defining "
+"it explicitly with the type ``Any``:"
+msgstr ""
+
+#: ../../source/dynamic_typing.rst:24
+msgid "Operations on Any values"
+msgstr ""
+
+#: ../../source/dynamic_typing.rst:26
+msgid ""
+"You can do anything using a value with type ``Any``, and type checker "
+"does not complain:"
+msgstr ""
+
+#: ../../source/dynamic_typing.rst:40
+msgid ""
+"Values derived from an ``Any`` value also often have the type ``Any`` "
+"implicitly, as mypy can't infer a more precise result type. For example, "
+"if you get the attribute of an ``Any`` value or call a ``Any`` value the "
+"result is ``Any``:"
+msgstr ""
+
+#: ../../source/dynamic_typing.rst:51
+msgid ""
+"``Any`` types may propagate through your program, making type checking "
+"less effective, unless you are careful."
+msgstr ""
+
+#: ../../source/dynamic_typing.rst:55
+msgid "Any vs. object"
+msgstr ""
+
+#: ../../source/dynamic_typing.rst:57
+msgid ""
+"The type :py:class:`object` is another type that can have an instance of "
+"arbitrary type as a value. Unlike ``Any``, :py:class:`object` is an "
+"ordinary static type (it is similar to ``Object`` in Java), and only "
+"operations valid for *all* types are accepted for :py:class:`object` "
+"values. These are all valid:"
+msgstr ""
+
+#: ../../source/dynamic_typing.rst:71
+msgid ""
+"These are, however, flagged as errors, since not all objects support "
+"these operations:"
+msgstr ""
+
+#: ../../source/dynamic_typing.rst:83
+msgid ""
+"You can use different :ref:`type narrowing <type-narrowing>` techniques "
+"to narrow :py:class:`object` to a more specific type (subtype) such as "
+"``int``. Type narrowing is not needed with dynamically typed values "
+"(values with type ``Any``)."
+msgstr ""
+
