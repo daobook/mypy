@@ -815,7 +815,6 @@ class ChainedPlugin(Plugin):
 
     def _find_hook(self, lookup: Callable[[Plugin], T]) -> Optional[T]:
         for plugin in self._plugins:
-            hook = lookup(plugin)
-            if hook:
+            if hook := lookup(plugin):
                 return hook
         return None

@@ -88,10 +88,9 @@ def compress(chunk: JsonDict) -> JsonDict:
 
         if id in cache:
             return cache[id]
-        else:
-            cache[id] = {'.id': counter}
-            chunk['.cache_id'] = counter
-            counter += 1
+        cache[id] = {'.id': counter}
+        chunk['.cache_id'] = counter
+        counter += 1
 
         for name in sorted(chunk.keys()):
             value = chunk[name]
@@ -148,11 +147,11 @@ def main() -> None:
     print("Most common literal chunks:")
     report_most_common(class_chunks, 15)
 
-    build = None
-    for chunk in json_chunks:
-        if 'build.*.json' in chunk.filename:
-            build = chunk
-            break
+    build = next(
+        (chunk for chunk in json_chunks if 'build.*.json' in chunk.filename),
+        None,
+    )
+
     original = json.dumps(build.data, sort_keys=True)
     print("Size of build.data.json, in kilobytes: {:.3f}".format(len(original) / 1024))
 

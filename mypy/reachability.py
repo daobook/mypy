@@ -103,10 +103,9 @@ def infer_condition_value(expr: Expression, options: Options) -> int:
     name = ''
     negated = False
     alias = expr
-    if isinstance(alias, UnaryExpr):
-        if alias.op == 'not':
-            expr = alias.expr
-            negated = True
+    if isinstance(alias, UnaryExpr) and alias.op == 'not':
+        expr = alias.expr
+        negated = True
     result = TRUTH_VALUE_UNKNOWN
     if isinstance(expr, NameExpr):
         name = expr.name
@@ -260,14 +259,13 @@ def contains_int_or_tuple_of_ints(expr: Expression
                                   ) -> Union[None, int, Tuple[int], Tuple[int, ...]]:
     if isinstance(expr, IntExpr):
         return expr.value
-    if isinstance(expr, TupleExpr):
-        if literal(expr) == LITERAL_YES:
-            thing = []
-            for x in expr.items:
-                if not isinstance(x, IntExpr):
-                    return None
-                thing.append(x.value)
-            return tuple(thing)
+    if isinstance(expr, TupleExpr) and literal(expr) == LITERAL_YES:
+        thing = []
+        for x in expr.items:
+            if not isinstance(x, IntExpr):
+                return None
+            thing.append(x.value)
+        return tuple(thing)
     return None
 
 
@@ -280,9 +278,11 @@ def contains_sys_version_info(expr: Expression
         if isinstance(index, IntExpr):
             return index.value
         if isinstance(index, SliceExpr):
-            if index.stride is not None:
-                if not isinstance(index.stride, IntExpr) or index.stride.value != 1:
-                    return None
+            if index.stride is not None and (
+                not isinstance(index.stride, IntExpr)
+                or index.stride.value != 1
+            ):
+                return None
             begin = end = None
             if index.begin_index is not None:
                 if not isinstance(index.begin_index, IntExpr):
@@ -300,12 +300,12 @@ def is_sys_attr(expr: Expression, name: str) -> bool:
     # TODO: This currently doesn't work with code like this:
     # - import sys as _sys
     # - from sys import version_info
-    if isinstance(expr, MemberExpr) and expr.name == name:
-        if isinstance(expr.expr, NameExpr) and expr.expr.name == 'sys':
-            # TODO: Guard against a local named sys, etc.
-            # (Though later passes will still do most checking.)
-            return True
-    return False
+    return (
+        isinstance(expr, MemberExpr)
+        and expr.name == name
+        and isinstance(expr.expr, NameExpr)
+        and expr.expr.name == 'sys'
+    )
 
 
 def mark_block_unreachable(block: Block) -> None:

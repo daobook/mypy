@@ -40,8 +40,8 @@ def lookup_fully_qualified(name: str, modules: Dict[str, MypyFile], *,
         if raise_on_missing:
             assert rest, "Cannot find %s, got a module symbol" % (name,)
         return None
+    key = rest.pop()
     while True:
-        key = rest.pop()
         if key not in names:
             if raise_on_missing:
                 assert key in names, "Cannot find component %r for %r" % (key, name)

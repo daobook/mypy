@@ -42,10 +42,7 @@ def confirm(resp: bool=False, **kargs) -> bool:
         if ans not in ['y','n']:
             print( 'Please, enter (y) or (n).')
             continue
-        if ans == 'y':
-            return True
-        else:
-            return False
+        return ans == 'y'
 
 actions = ['cp', 'mv', 'rm']
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))
@@ -94,17 +91,17 @@ def main(action: str, directory: str, extension: str, to_extension: str,
         extension = ".{}".format(extension)
     if not to_extension.startswith('.'):
         to_extension = ".{}".format(to_extension)
-    if directory.endswith('/'):
-        directory = directory[:-1]
+    directory = directory.removesuffix('/')
     if action == 'cp':
         if confirm(act='Copy',rec=rec, f1=directory, e1=extension, f2=directory, e2=to_extension):
             apply_all(shutil.copy, directory, extension, to_extension, exclude, not_recursive)
-    elif action == 'rm':
-        if confirm(act='Remove',rec=rec, f1=directory, e1=extension):
-            apply_all(os.remove, directory, extension, exclude=exclude, recursive=not_recursive)
     elif action == 'mv':
         if confirm(act='Move',rec=rec, f1=directory, e1=extension, f2=directory, e2=to_extension):
             apply_all(shutil.move, directory, extension, to_extension, exclude, not_recursive)
+
+    elif action == 'rm':
+        if confirm(act='Remove',rec=rec, f1=directory, e1=extension):
+            apply_all(os.remove, directory, extension, exclude=exclude, recursive=not_recursive)
 
 
 if __name__ == '__main__':

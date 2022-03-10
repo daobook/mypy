@@ -77,21 +77,20 @@ class NodeFixer(NodeVisitor[None]):
                     stnode = lookup_fully_qualified(cross_ref, self.modules,
                                                     raise_on_missing=not self.allow_missing)
                     if stnode is not None:
-                        assert stnode.node is not None, (table_fullname + "." + key, cross_ref)
+                        assert stnode.node is not None, (f'{table_fullname}.{key}', cross_ref)
                         value.node = stnode.node
                     elif not self.allow_missing:
                         assert False, "Could not find cross-ref %s" % (cross_ref,)
                     else:
                         # We have a missing crossref in allow missing mode, need to put something
                         value.node = missing_info(self.modules)
+            elif isinstance(value.node, TypeInfo):
+                # TypeInfo has no accept().  TODO: Add it?
+                self.visit_type_info(value.node)
+            elif value.node is not None:
+                value.node.accept(self)
             else:
-                if isinstance(value.node, TypeInfo):
-                    # TypeInfo has no accept().  TODO: Add it?
-                    self.visit_type_info(value.node)
-                elif value.node is not None:
-                    value.node.accept(self)
-                else:
-                    assert False, 'Unexpected empty node %r: %s' % (key, value)
+                assert False, 'Unexpected empty node %r: %s' % (key, value)
 
     def visit_func_def(self, func: FuncDef) -> None:
         if self.current_info is not None:
@@ -230,12 +229,18 @@ class TypeFixer(TypeVisitor[None]):
             for it in tdt.items.values():
                 it.accept(self)
         if tdt.fallback is not None:
-            if tdt.fallback.type_ref is not None:
-                if lookup_fully_qualified(tdt.fallback.type_ref, self.modules,
-                                          raise_on_missing=not self.allow_missing) is None:
-                    # We reject fake TypeInfos for TypedDict fallbacks because
-                    # the latter are used in type checking and must be valid.
-                    tdt.fallback.type_ref = 'typing._TypedDict'
+            if (
+                tdt.fallback.type_ref is not None
+                and lookup_fully_qualified(
+                    tdt.fallback.type_ref,
+                    self.modules,
+                    raise_on_missing=not self.allow_missing,
+                )
+                is None
+            ):
+                # We reject fake TypeInfos for TypedDict fallbacks because
+                # the latter are used in type checking and must be valid.
+                tdt.fallback.type_ref = 'typing._TypedDict'
             tdt.fallback.accept(self)
 
     def visit_literal_type(self, lt: LiteralType) -> None:
@@ -273,13 +278,12 @@ def lookup_fully_qualified_typeinfo(modules: Dict[str, MypyFile], name: str, *,
     node = stnode.node if stnode else None
     if isinstance(node, TypeInfo):
         return node
-    else:
-        # Looks like a missing TypeInfo during an initial daemon load, put something there
-        assert allow_missing, "Should never get here in normal mode," \
-                              " got {}:{} instead of TypeInfo".format(type(node).__name__,
-                                                                      node.fullname if node
-                                                                      else '')
-        return missing_info(modules)
+    # Looks like a missing TypeInfo during an initial daemon load, put something there
+    assert allow_missing, "Should never get here in normal mode," \
+                          " got {}:{} instead of TypeInfo".format(type(node).__name__,
+                                                                  node.fullname if node
+                                                                  else '')
+    return missing_info(modules)
 
 
 def lookup_fully_qualified_alias(modules: Dict[str, MypyFile], name: str, *,
@@ -288,13 +292,12 @@ def lookup_fully_qualified_alias(modules: Dict[str, MypyFile], name: str, *,
     node = stnode.node if stnode else None
     if isinstance(node, TypeAlias):
         return node
-    else:
-        # Looks like a missing TypeAlias during an initial daemon load, put something there
-        assert allow_missing, "Should never get here in normal mode," \
-                              " got {}:{} instead of TypeAlias".format(type(node).__name__,
-                                                                       node.fullname if node
-                                                                       else '')
-        return missing_alias()
+    # Looks like a missing TypeAlias during an initial daemon load, put something there
+    assert allow_missing, "Should never get here in normal mode," \
+                          " got {}:{} instead of TypeAlias".format(type(node).__name__,
+                                                                   node.fullname if node
+                                                                   else '')
+    return missing_alias()
 
 
 _SUGGESTION: Final = "<missing {}: *should* have gone away during fine-grained update>"

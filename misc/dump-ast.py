@@ -35,11 +35,7 @@ def main() -> None:
     parser.add_argument('FILE', nargs='*', help='files to parse')
     args = parser.parse_args()
 
-    if args.py2:
-        pyversion = defaults.PYTHON2_VERSION
-    else:
-        pyversion = defaults.PYTHON3_VERSION
-
+    pyversion = defaults.PYTHON2_VERSION if args.py2 else defaults.PYTHON3_VERSION
     status = 0
     for fname in args.FILE:
         try:

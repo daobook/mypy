@@ -696,10 +696,8 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             # Awaitable: ty is Any.
             return AnyType(TypeOfAny.special_form)
         elif return_type.args:
-            # AwaitableGenerator, Generator, AsyncGenerator, Iterator, or Iterable; ty is args[0].
-            ret_type = return_type.args[0]
             # TODO not best fix, better have dedicated yield token
-            return ret_type
+            return return_type.args[0]
         else:
             # If the function's declared supertype of Generator has no type
             # parameters (i.e. is `object`), then the yielded values can't
@@ -804,10 +802,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                     if orig_type.type is None:
                         # Ah this is a partial type. Give it the type of the function.
                         orig_def = defn.original_def
-                        if isinstance(orig_def, Decorator):
-                            var = orig_def.var
-                        else:
-                            var = orig_def
+                        var = orig_def.var if isinstance(orig_def, Decorator) else orig_def
                         partial_types = self.find_partial_types(var)
                         if partial_types is not None:
                             var.type = new_type

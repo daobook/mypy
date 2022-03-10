@@ -78,12 +78,10 @@ else:
         # See https://stackoverflow.com/questions/473620/how-do-you-create-a-daemon-in-python
         sys.stdout.flush()
         sys.stderr.flush()
-        pid = os.fork()
-        if pid:
+        if pid := os.fork():
             # Parent process: wait for child in case things go bad there.
             npid, sts = os.waitpid(pid, 0)
-            sig = sts & 0xff
-            if sig:
+            if sig := sts & 0xFF:
                 print("Child killed by signal", sig)
                 return -sig
             sts = sts >> 8
@@ -260,16 +258,15 @@ class Server:
 
     def run_command(self, command: str, data: Dict[str, object]) -> Dict[str, object]:
         """Run a specific command from the registry."""
-        key = 'cmd_' + command
+        key = f'cmd_{command}'
         method = getattr(self.__class__, key, None)
         if method is None:
             return {'error': "Unrecognized command '%s'" % command}
-        else:
-            if command not in {'check', 'recheck', 'run'}:
-                # Only the above commands use some error formatting.
-                del data['is_tty']
-                del data['terminal_width']
-            return method(self, **data)
+        if command not in {'check', 'recheck', 'run'}:
+            # Only the above commands use some error formatting.
+            del data['is_tty']
+            del data['terminal_width']
+        return method(self, **data)
 
     # Command functions (run in the server via RPC).
 
@@ -425,10 +422,7 @@ class Server:
                                       fscache=self.fscache)
         except mypy.errors.CompileError as e:
             output = ''.join(s + '\n' for s in e.messages)
-            if e.use_stdout:
-                out, err = output, ''
-            else:
-                out, err = '', output
+            out, err = (output, '') if e.use_stdout else ('', output)
             return {'out': out, 'err': err, 'status': 2}
         messages = result.errors
         self.fine_grained_manager = FineGrainedBuildManager(result)
@@ -891,10 +885,7 @@ def get_meminfo() -> Dict[str, Any]:
             # See https://stackoverflow.com/questions/938733/total-memory-used-by-python-process
             import resource  # Since it doesn't exist on Windows.
             rusage = resource.getrusage(resource.RUSAGE_SELF)
-            if sys.platform == 'darwin':
-                factor = 1
-            else:
-                factor = 1024  # Linux
+            factor = 1 if sys.platform == 'darwin' else 1024
             res['memory_maxrss_mib'] = rusage.ru_maxrss * factor / MiB
     return res
 
@@ -902,7 +893,7 @@ def get_meminfo() -> Dict[str, Any]:
 def find_all_sources_in_build(graph: mypy.build.Graph,
                               extra: Sequence[BuildSource] = ()) -> List[BuildSource]:
     result = list(extra)
-    seen = set(source.module for source in result)
+    seen = {source.module for source in result}
     for module, state in graph.items():
         if module not in seen:
             result.append(BuildSource(state.path, module))

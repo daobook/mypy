@@ -201,34 +201,29 @@ def analyze_instance_member_access(name: str,
 
     # Look up the member. First look up the method dictionary.
     method = info.get_method(name)
-    if method and not isinstance(method, Decorator):
-        if method.is_property:
-            assert isinstance(method, OverloadedFuncDef)
-            first_item = cast(Decorator, method.items[0])
-            return analyze_var(name, first_item.var, typ, info, mx)
-        if mx.is_lvalue:
-            mx.msg.cant_assign_to_method(mx.context)
-        signature = function_type(method, mx.named_type('builtins.function'))
-        signature = freshen_function_type_vars(signature)
-        if name == '__new__':
-            # __new__ is special and behaves like a static method -- don't strip
-            # the first argument.
-            pass
-        else:
-            if isinstance(signature, FunctionLike) and name != '__call__':
-                # TODO: use proper treatment of special methods on unions instead
-                #       of this hack here and below (i.e. mx.self_type).
-                dispatched_type = meet.meet_types(mx.original_type, typ)
-                signature = check_self_arg(signature, dispatched_type, method.is_class,
-                                           mx.context, name, mx.msg)
-            signature = bind_self(signature, mx.self_type, is_classmethod=method.is_class)
-        typ = map_instance_to_supertype(typ, method.info)
-        member_type = expand_type_by_instance(signature, typ)
-        freeze_type_vars(member_type)
-        return member_type
-    else:
+    if not method or isinstance(method, Decorator):
         # Not a method.
         return analyze_member_var_access(name, typ, info, mx)
+    if method.is_property:
+        assert isinstance(method, OverloadedFuncDef)
+        first_item = cast(Decorator, method.items[0])
+        return analyze_var(name, first_item.var, typ, info, mx)
+    if mx.is_lvalue:
+        mx.msg.cant_assign_to_method(mx.context)
+    signature = function_type(method, mx.named_type('builtins.function'))
+    signature = freshen_function_type_vars(signature)
+    if name != '__new__':
+        if isinstance(signature, FunctionLike) and name != '__call__':
+            # TODO: use proper treatment of special methods on unions instead
+            #       of this hack here and below (i.e. mx.self_type).
+            dispatched_type = meet.meet_types(mx.original_type, typ)
+            signature = check_self_arg(signature, dispatched_type, method.is_class,
+                                       mx.context, name, mx.msg)
+        signature = bind_self(signature, mx.self_type, is_classmethod=method.is_class)
+    typ = map_instance_to_supertype(typ, method.info)
+    member_type = expand_type_by_instance(signature, typ)
+    freeze_type_vars(member_type)
+    return member_type
 
 
 def analyze_type_callable_member_access(name: str,
@@ -242,23 +237,9 @@ def analyze_type_callable_member_access(name: str,
         ret_type = tuple_fallback(ret_type)
     if isinstance(ret_type, Instance):
         if not mx.is_operator:
-            # When Python sees an operator (eg `3 == 4`), it automatically translates that
-            # into something like `int.__eq__(3, 4)` instead of `(3).__eq__(4)` as an
-            # optimization.
-            #
-            # While it normally it doesn't matter which of the two versions are used, it
-            # does cause inconsistencies when working with classes. For example, translating
-            # `int == int` to `int.__eq__(int)` would not work since `int.__eq__` is meant to
-            # compare two int _instances_. What we really want is `type(int).__eq__`, which
-            # is meant to compare two types or classes.
-            #
-            # This check makes sure that when we encounter an operator, we skip looking up
-            # the corresponding method in the current instance to avoid this edge case.
-            # See https://github.com/python/mypy/pull/1787 for more info.
-            # TODO: do not rely on same type variables being present in all constructor overloads.
-            result = analyze_class_attribute_access(ret_type, name, mx,
-                                                    original_vars=typ.items[0].variables)
-            if result:
+            if result := analyze_class_attribute_access(
+                ret_type, name, mx, original_vars=typ.items[0].variables
+            ):
                 return result
         # Look up from the 'type' type.
         return _analyze_member_access(name, typ.fallback, mx)
@@ -298,9 +279,9 @@ def analyze_type_type_member_access(name: str,
         if isinstance(typ.item.item, Instance):
             item = typ.item.item.type.metaclass_type
     if item and not mx.is_operator:
-        # See comment above for why operators are skipped
-        result = analyze_class_attribute_access(item, name, mx, override_info)
-        if result:
+        if result := analyze_class_attribute_access(
+            item, name, mx, override_info
+        ):
             if not (isinstance(get_proper_type(result), AnyType) and item.type.fallback_to_any):
                 return result
             else:
@@ -410,8 +391,7 @@ def analyze_member_var_access(name: str,
 
                     # Call the attribute hook before returning.
                     fullname = '{}.{}'.format(method.info.fullname, name)
-                    hook = mx.chk.plugin.get_attribute_hook(fullname)
-                    if hook:
+                    if hook := mx.chk.plugin.get_attribute_hook(fullname):
                         result = hook(AttributeContext(get_proper_type(mx.original_type),
                                                        result, mx.context, mx.chk))
                     return result
@@ -430,16 +410,21 @@ def analyze_member_var_access(name: str,
     if itype.type.fallback_to_any:
         return AnyType(TypeOfAny.special_form)
 
-    # Could not find the member.
-    if mx.is_super:
-        mx.msg.undefined_in_superclass(name, mx.context)
-        return AnyType(TypeOfAny.from_error)
-    else:
-        if mx.chk and mx.chk.should_suppress_optional_error([itype]):
-            return AnyType(TypeOfAny.from_error)
-        return mx.msg.has_no_attr(
-            mx.original_type, itype, name, mx.context, mx.module_symbol_table
+    if not mx.is_super:
+        return (
+            AnyType(TypeOfAny.from_error)
+            if mx.chk and mx.chk.should_suppress_optional_error([itype])
+            else mx.msg.has_no_attr(
+                mx.original_type,
+                itype,
+                name,
+                mx.context,
+                mx.module_symbol_table,
+            )
         )
+
+    mx.msg.undefined_in_superclass(name, mx.context)
+    return AnyType(TypeOfAny.from_error)
 
 
 def check_final_member(name: str, info: TypeInfo, msg: MessageBuilder, ctx: Context) -> None:
@@ -557,8 +542,7 @@ def analyze_var(name: str,
     """
     # Found a member variable.
     itype = map_instance_to_supertype(itype, var.info)
-    typ = var.type
-    if typ:
+    if typ := var.type:
         if isinstance(typ, PartialType):
             return mx.chk.handle_partial_var_type(typ, mx.is_lvalue, var, mx.context)
         if mx.is_lvalue and var.is_property and not var.is_settable_property:
@@ -631,12 +615,7 @@ def freeze_type_vars(member_type: Type) -> None:
 def lookup_member_var_or_accessor(info: TypeInfo, name: str,
                                   is_lvalue: bool) -> Optional[SymbolNode]:
     """Find the attribute/accessor node that refers to a member of a type."""
-    # TODO handle lvalues
-    node = info.get(name)
-    if node:
-        return node.node
-    else:
-        return None
+    return node.node if (node := info.get(name)) else None
 
 
 def check_self_arg(functype: FunctionLike,

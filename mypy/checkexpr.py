@@ -434,9 +434,8 @@ class ExpressionChecker(ExpressionVisitor[Type]):
 
     def always_returns_none(self, node: Expression) -> bool:
         """Check if `node` refers to something explicitly annotated as only returning None."""
-        if isinstance(node, RefExpr):
-            if self.defn_returns_none(node.node):
-                return True
+        if isinstance(node, RefExpr) and self.defn_returns_none(node.node):
+            return True
         if isinstance(node, MemberExpr) and node.node is None:  # instance or class attribute
             typ = get_proper_type(self.chk.type_map.get(node.expr))
             if isinstance(typ, Instance):
@@ -485,8 +484,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             tp = get_proper_type(self.chk.type_map[expr])
             if (isinstance(tp, CallableType) and tp.is_type_obj() and
                     tp.type_object().is_protocol):
-                attr_members = non_method_protocol_members(tp.type_object())
-                if attr_members:
+                if attr_members := non_method_protocol_members(tp.type_object()):
                     self.chk.msg.report_non_method_protocol(tp.type_object(),
                                                             attr_members, e)
 
@@ -495,7 +493,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                              arg_names: Sequence[Optional[str]],
                              args: List[Expression],
                              context: Context) -> Type:
-        if len(args) >= 1 and all([ak == ARG_NAMED for ak in arg_kinds]):
+        if args and all(ak == ARG_NAMED for ak in arg_kinds):
             # ex: Point(x=42, y=1337)
             assert all(arg_name is not None for arg_name in arg_names)
             item_names = cast(List[str], arg_names)
@@ -512,7 +510,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 # ex: Point(dict(x=42, y=1337))
                 return self.check_typeddict_call_with_dict(callee, unique_arg.analyzed, context)
 
-        if len(args) == 0:
+        if not args:
             # ex: EmptyDict()
             return self.check_typeddict_call_with_kwargs(
                 callee, OrderedDict(), context)
@@ -700,11 +698,14 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             arg_type = get_proper_type(self.accept(e.args[0]))
             if isinstance(arg_type, Instance):
                 arg_typename = arg_type.type.fullname
-                if arg_typename in self.container_args[typename][methodname]:
-                    if all(mypy.checker.is_valid_inferred_type(item_type)
-                           for item_type in arg_type.args):
-                        return self.chk.named_generic_type(typename,
-                                                           list(arg_type.args))
+                if arg_typename in self.container_args[typename][
+                    methodname
+                ] and all(
+                    mypy.checker.is_valid_inferred_type(item_type)
+                    for item_type in arg_type.args
+                ):
+                    return self.chk.named_generic_type(typename,
+                                                       list(arg_type.args))
             elif isinstance(arg_type, AnyType):
                 return self.chk.named_type(typename)
 
@@ -837,15 +838,16 @@ class ExpressionChecker(ExpressionVisitor[Type]):
         callee = get_proper_type(callee)
         if callable_name is not None and isinstance(callee, FunctionLike):
             if object_type is not None:
-                method_sig_hook = self.plugin.get_method_signature_hook(callable_name)
-                if method_sig_hook:
+                if method_sig_hook := self.plugin.get_method_signature_hook(
+                    callable_name
+                ):
                     return self.apply_method_signature_hook(
                         callee, args, arg_kinds, context, arg_names, object_type, method_sig_hook)
-            else:
-                function_sig_hook = self.plugin.get_function_signature_hook(callable_name)
-                if function_sig_hook:
-                    return self.apply_function_signature_hook(
-                        callee, args, arg_kinds, context, arg_names, function_sig_hook)
+            elif function_sig_hook := self.plugin.get_function_signature_hook(
+                callable_name
+            ):
+                return self.apply_function_signature_hook(
+                    callee, args, arg_kinds, context, arg_names, function_sig_hook)
 
         return callee
 
@@ -952,7 +954,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                                                   is_super=False, is_operator=True, msg=self.msg,
                                                   original_type=callee, chk=self.chk,
                                                   in_literal_context=self.is_literal_context())
-            callable_name = callee.type.fullname + ".__call__"
+            callable_name = f'{callee.type.fullname}.__call__'
             # Apply method signature hook, if one exists
             call_function = self.transform_callee_type(
                 callable_name, call_function, args, arg_kinds, context, arg_names, callee)
@@ -1191,30 +1193,12 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             #     variables in an expression are inferred at the same time.
             #     (And this is hard, also we need to be careful with lambdas that require
             #     two passes.)
-        if isinstance(ret_type, TypeVarType):
-            # Another special case: the return type is a type variable. If it's unrestricted,
-            # we could infer a too general type for the type variable if we use context,
-            # and this could result in confusing and spurious type errors elsewhere.
-            #
-            # So we give up and just use function arguments for type inference, with just two
-            # exceptions:
-            #
-            # 1. If the context is a generic instance type, actually use it as context, as
-            #    this *seems* to usually be the reasonable thing to do.
-            #
-            #    See also github issues #462 and #360.
-            #
-            # 2. If the context is some literal type, we want to "propagate" that information
-            #    down so that we infer a more precise type for literal expressions. For example,
-            #    the expression `3` normally has an inferred type of `builtins.int`: but if it's
-            #    in a literal context like below, we want it to infer `Literal[3]` instead.
-            #
-            #        def expects_literal(x: Literal[3]) -> None: pass
-            #        def identity(x: T) -> T: return x
-            #
-            #        expects_literal(identity(3))  # Should type-check
-            if not is_generic_instance(ctx) and not is_literal_type_like(ctx):
-                return callable.copy_modified()
+        if (
+            isinstance(ret_type, TypeVarType)
+            and not is_generic_instance(ctx)
+            and not is_literal_type_like(ctx)
+        ):
+            return callable.copy_modified()
         args = infer_type_arguments(callable.type_var_ids(), ret_type, erased_ctx)
         # Only substitute non-Uninhabited and non-erased types.
         new_args: List[Optional[Type]] = []
@@ -1458,10 +1442,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                     kind != nodes.ARG_STAR2):
                 # Extra actual: not matched by a formal argument.
                 ok = False
-                if kind != nodes.ARG_NAMED:
-                    if messages:
-                        messages.too_many_arguments(callee, context)
-                else:
+                if kind == nodes.ARG_NAMED:
                     if messages:
                         assert actual_names, "Internal error: named kinds without names given"
                         act_name = actual_names[i]
@@ -1469,23 +1450,26 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                         act_type = actual_types[i]
                         messages.unexpected_keyword_argument(callee, act_name, act_type, context)
                     is_unexpected_arg_error = True
+                elif messages:
+                    messages.too_many_arguments(callee, context)
             elif ((kind == nodes.ARG_STAR and nodes.ARG_STAR not in callee.arg_kinds)
                   or kind == nodes.ARG_STAR2):
                 actual_type = get_proper_type(actual_types[i])
-                if isinstance(actual_type, (TupleType, TypedDictType)):
-                    if all_actuals.count(i) < len(actual_type.items):
-                        # Too many tuple/dict items as some did not match.
-                        if messages:
-                            if (kind != nodes.ARG_STAR2
-                                    or not isinstance(actual_type, TypedDictType)):
-                                messages.too_many_arguments(callee, context)
-                            else:
-                                messages.too_many_arguments_from_typed_dict(callee, actual_type,
-                                                                            context)
-                                is_unexpected_arg_error = True
-                        ok = False
-                # *args/**kwargs can be applied even if the function takes a fixed
-                # number of positional arguments. This may succeed at runtime.
+                if isinstance(
+                    actual_type, (TupleType, TypedDictType)
+                ) and all_actuals.count(i) < len(actual_type.items):
+                    # Too many tuple/dict items as some did not match.
+                    if messages:
+                        if (kind != nodes.ARG_STAR2
+                                or not isinstance(actual_type, TypedDictType)):
+                            messages.too_many_arguments(callee, context)
+                        else:
+                            messages.too_many_arguments_from_typed_dict(callee, actual_type,
+                                                                        context)
+                            is_unexpected_arg_error = True
+                    ok = False
+                        # *args/**kwargs can be applied even if the function takes a fixed
+                        # number of positional arguments. This may succeed at runtime.
 
         return ok, is_unexpected_arg_error
 
@@ -1660,10 +1644,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             target = AnyType(TypeOfAny.from_error)
 
             if not self.chk.should_suppress_optional_error(arg_types):
-                if not is_operator_method(callable_name):
-                    code = None
-                else:
-                    code = codes.OPERATOR
+                code = None if not is_operator_method(callable_name) else codes.OPERATOR
                 arg_messages.no_variant_matches_arguments(
                     callee, arg_types, context, code=code)
 
@@ -1783,7 +1764,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
                 return_types.append(ret_type)
                 inferred_types.append(infer_type)
 
-        if len(matches) == 0:
+        if not matches:
             # No match was found
             return None
         elif any_causes_overload_ambiguity(matches, return_types, arg_types, arg_kinds, arg_names):
@@ -1817,12 +1798,13 @@ class ExpressionChecker(ExpressionVisitor[Type]):
 
         Assumes all of the given targets have argument counts compatible with the caller.
         """
-        matches: List[CallableType] = []
-        for typ in plausible_targets:
-            if self.erased_signature_similarity(arg_types, arg_kinds, arg_names, args, typ,
-                                                context):
-                matches.append(typ)
-        return matches
+        return [
+            typ
+            for typ in plausible_targets
+            if self.erased_signature_similarity(
+                arg_types, arg_kinds, arg_names, args, typ, context
+            )
+        ]
 
     def union_overload_result(self,
                               plausible_targets: List[CallableType],

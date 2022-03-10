@@ -25,10 +25,7 @@ def trivial_meet(s: Type, t: Type) -> ProperType:
     elif is_subtype(t, s):
         return get_proper_type(t)
     else:
-        if state.strict_optional:
-            return UninhabitedType()
-        else:
-            return NoneType()
+        return UninhabitedType() if state.strict_optional else NoneType()
 
 
 def meet_types(s: Type, t: Type) -> ProperType:
@@ -66,10 +63,7 @@ def narrow_declared_type(declared: Type, narrowed: Type) -> Type:
                                       for x in declared.relevant_items()])
     elif not is_overlapping_types(declared, narrowed,
                                   prohibit_none_typevar_overlap=True):
-        if state.strict_optional:
-            return UninhabitedType()
-        else:
-            return NoneType()
+        return UninhabitedType() if state.strict_optional else NoneType()
     elif isinstance(narrowed, UnionType):
         return make_simplified_union([narrow_declared_type(declared, x)
                                       for x in narrowed.relevant_items()])
@@ -122,16 +116,11 @@ def get_possible_variants(typ: Type) -> List[Type]:
     """
     typ = get_proper_type(typ)
 
-    if isinstance(typ, TypeVarType):
-        if len(typ.values) > 0:
-            return typ.values
-        else:
-            return [typ.upper_bound]
-    elif isinstance(typ, UnionType):
-        return list(typ.items)
-    elif isinstance(typ, Overloaded):
-        # Note: doing 'return typ.items()' makes mypy
-        # infer a too-specific return type of List[CallableType]
+    if isinstance(typ, TypeVarType) and len(typ.values) > 0:
+        return typ.values
+    elif isinstance(typ, TypeVarType):
+        return [typ.upper_bound]
+    elif isinstance(typ, (UnionType, Overloaded)):
         return list(typ.items)
     else:
         return [typ]
@@ -443,15 +432,15 @@ class TypeMeetVisitor(TypeVisitor[ProperType]):
         self.s = s
 
     def visit_unbound_type(self, t: UnboundType) -> ProperType:
-        if isinstance(self.s, NoneType):
-            if state.strict_optional:
-                return AnyType(TypeOfAny.special_form)
-            else:
-                return self.s
-        elif isinstance(self.s, UninhabitedType):
-            return self.s
-        else:
+        if (
+            isinstance(self.s, NoneType)
+            and state.strict_optional
+            or not isinstance(self.s, NoneType)
+            and not isinstance(self.s, UninhabitedType)
+        ):
             return AnyType(TypeOfAny.special_form)
+        else:
+            return self.s
 
     def visit_any(self, t: AnyType) -> ProperType:
         return self.s
@@ -460,36 +449,34 @@ class TypeMeetVisitor(TypeVisitor[ProperType]):
         if isinstance(self.s, UnionType):
             meets: List[Type] = []
             for x in t.items:
-                for y in self.s.items:
-                    meets.append(meet_types(x, y))
+                meets.extend(meet_types(x, y) for y in self.s.items)
         else:
             meets = [meet_types(x, self.s)
                      for x in t.items]
         return make_simplified_union(meets)
 
     def visit_none_type(self, t: NoneType) -> ProperType:
-        if state.strict_optional:
-            if isinstance(self.s, NoneType) or (isinstance(self.s, Instance) and
-                                               self.s.type.fullname == 'builtins.object'):
-                return t
-            else:
-                return UninhabitedType()
-        else:
+        if not state.strict_optional:
             return t
+        if isinstance(self.s, NoneType) or (isinstance(self.s, Instance) and
+                                           self.s.type.fullname == 'builtins.object'):
+            return t
+        else:
+            return UninhabitedType()
 
     def visit_uninhabited_type(self, t: UninhabitedType) -> ProperType:
         return t
 
     def visit_deleted_type(self, t: DeletedType) -> ProperType:
-        if isinstance(self.s, NoneType):
-            if state.strict_optional:
-                return t
-            else:
-                return self.s
-        elif isinstance(self.s, UninhabitedType):
-            return self.s
-        else:
+        if (
+            isinstance(self.s, NoneType)
+            and state.strict_optional
+            or not isinstance(self.s, NoneType)
+            and not isinstance(self.s, UninhabitedType)
+        ):
             return t
+        else:
+            return self.s
 
     def visit_erased_type(self, t: ErasedType) -> ProperType:
         return self.s
@@ -501,28 +488,17 @@ class TypeMeetVisitor(TypeVisitor[ProperType]):
             return self.default(self.s)
 
     def visit_param_spec(self, t: ParamSpecType) -> ProperType:
-        if self.s == t:
-            return self.s
-        else:
-            return self.default(self.s)
+        return self.s if self.s == t else self.default(self.s)
 
     def visit_instance(self, t: Instance) -> ProperType:
         if isinstance(self.s, Instance):
             if t.type == self.s.type:
-                if is_subtype(t, self.s) or is_subtype(self.s, t):
+                if not is_subtype(t, self.s) and not is_subtype(self.s, t):
+                    return UninhabitedType() if state.strict_optional else NoneType()
                     # Combine type arguments. We could have used join below
                     # equivalently.
-                    args: List[Type] = []
-                    # N.B: We use zip instead of indexing because the lengths might have
-                    # mismatches during daemon reprocessing.
-                    for ta, sia in zip(t.args, self.s.args):
-                        args.append(self.meet(ta, sia))
-                    return Instance(t.type, args)
-                else:
-                    if state.strict_optional:
-                        return UninhabitedType()
-                    else:
-                        return NoneType()
+                args: List[Type] = [self.meet(ta, sia) for ta, sia in zip(t.args, self.s.args)]
+                return Instance(t.type, args)
             else:
                 if is_subtype(t, self.s):
                     return t
@@ -530,18 +506,12 @@ class TypeMeetVisitor(TypeVisitor[ProperType]):
                     # See also above comment.
                     return self.s
                 else:
-                    if state.strict_optional:
-                        return UninhabitedType()
-                    else:
-                        return NoneType()
+                    return UninhabitedType() if state.strict_optional else NoneType()
         elif isinstance(self.s, FunctionLike) and t.type.is_protocol:
-            call = join.unpack_callback_protocol(t)
-            if call:
+            if call := join.unpack_callback_protocol(t):
                 return meet_types(call, self.s)
         elif isinstance(self.s, FunctionLike) and self.s.is_type_obj() and t.type.is_metaclass():
-            if is_subtype(self.s.fallback, t):
-                return self.s
-            return self.default(self.s)
+            return self.s if is_subtype(self.s.fallback, t) else self.default(self.s)
         elif isinstance(self.s, TypeType):
             return meet_types(t, self.s)
         elif isinstance(self.s, TupleType):
@@ -573,8 +543,7 @@ class TypeMeetVisitor(TypeVisitor[ProperType]):
                 return TypeType.make_normalized(res)
             return self.default(self.s)
         elif isinstance(self.s, Instance) and self.s.type.is_protocol:
-            call = join.unpack_callback_protocol(self.s)
-            if call:
+            if call := join.unpack_callback_protocol(self.s):
                 return meet_types(t, call)
         return self.default(self.s)
 
@@ -592,16 +561,16 @@ class TypeMeetVisitor(TypeVisitor[ProperType]):
             else:
                 return meet_types(t.fallback, s.fallback)
         elif isinstance(self.s, Instance) and self.s.type.is_protocol:
-            call = join.unpack_callback_protocol(self.s)
-            if call:
+            if call := join.unpack_callback_protocol(self.s):
                 return meet_types(t, call)
         return meet_types(t.fallback, s)
 
     def visit_tuple_type(self, t: TupleType) -> ProperType:
         if isinstance(self.s, TupleType) and self.s.length() == t.length():
-            items: List[Type] = []
-            for i in range(t.length()):
-                items.append(self.meet(t.items[i], self.s.items[i]))
+            items: List[Type] = [
+                self.meet(t.items[i], self.s.items[i]) for i in range(t.length())
+            ]
+
             # TODO: What if the fallbacks are different?
             return TupleType(items, tuple_fallback(t))
         elif isinstance(self.s, Instance):
@@ -671,18 +640,17 @@ class TypeMeetVisitor(TypeVisitor[ProperType]):
         if isinstance(typ, UnboundType):
             return AnyType(TypeOfAny.special_form)
         else:
-            if state.strict_optional:
-                return UninhabitedType()
-            else:
-                return NoneType()
+            return UninhabitedType() if state.strict_optional else NoneType()
 
 
 def meet_similar_callables(t: CallableType, s: CallableType) -> CallableType:
     from mypy.join import join_types
 
-    arg_types: List[Type] = []
-    for i in range(len(t.arg_types)):
-        arg_types.append(join_types(t.arg_types[i], s.arg_types[i]))
+    arg_types: List[Type] = [
+        join_types(t.arg_types[i], s.arg_types[i])
+        for i in range(len(t.arg_types))
+    ]
+
     # TODO in combine_similar_callables also applies here (names and kinds)
     # The fallback type can be either 'function' or 'type'. The result should have 'function' as
     # fallback only if both operands have it as 'function'.
@@ -781,11 +749,16 @@ def typed_dict_mapping_overlap(left: Type, right: Type,
         return not typed.required_keys
 
     if typed.required_keys:
-        if not overlapping(key_type, str_type):
-            return False
-        return all(overlapping(typed.items[k], value_type) for k in typed.required_keys)
-    else:
-        if not overlapping(key_type, str_type):
-            return False
-        non_required = set(typed.items.keys()) - typed.required_keys
-        return any(overlapping(typed.items[k], value_type) for k in non_required)
+        return (
+            False
+            if not overlapping(key_type, str_type)
+            else all(
+                overlapping(typed.items[k], value_type)
+                for k in typed.required_keys
+            )
+        )
+
+    if not overlapping(key_type, str_type):
+        return False
+    non_required = set(typed.items.keys()) - typed.required_keys
+    return any(overlapping(typed.items[k], value_type) for k in non_required)

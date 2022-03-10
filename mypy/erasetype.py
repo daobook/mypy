@@ -104,9 +104,7 @@ def erase_typevars(t: Type, ids_to_erase: Optional[Container[TypeVarId]] = None)
     or just the ones in the provided collection.
     """
     def erase_id(id: TypeVarId) -> bool:
-        if ids_to_erase is None:
-            return True
-        return id in ids_to_erase
+        return True if ids_to_erase is None else id in ids_to_erase
     return t.accept(TypeVarEraser(erase_id, AnyType(TypeOfAny.special_form)))
 
 
@@ -123,14 +121,10 @@ class TypeVarEraser(TypeTranslator):
         self.replacement = replacement
 
     def visit_type_var(self, t: TypeVarType) -> Type:
-        if self.erase_id(t.id):
-            return self.replacement
-        return t
+        return self.replacement if self.erase_id(t.id) else t
 
     def visit_param_spec(self, t: ParamSpecType) -> Type:
-        if self.erase_id(t.id):
-            return self.replacement
-        return t
+        return self.replacement if self.erase_id(t.id) else t
 
     def visit_type_alias_type(self, t: TypeAliasType) -> Type:
         # Type alias target can't contain bound type variables, so
